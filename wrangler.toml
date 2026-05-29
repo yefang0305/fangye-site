@@ -1,0 +1,6 @@
+name = "fangye-site"
+compatibility_date = "2024-11-01"
+
+# 纯静态站：把 Astro 构建产物 dist/ 作为静态资源部署，无需 Worker 脚本
+[assets]
+directory = "./dist"
