@@ -13,3 +13,6 @@ astro-dev.*.log
 /docs/
 /homepage-layout-preview.html
 /visual-style-preview.html
+
+# 内嵌的独立仓库/工具源码，不纳入站点仓库
+/tools/
