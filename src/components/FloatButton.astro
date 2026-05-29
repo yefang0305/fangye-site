@@ -2,9 +2,9 @@
 /* Floating WeChat Contact Button */
 ---
 <div class="float-contact" id="floatContact">
-  <button class="float-wx" id="copyWxBtn" data-clipboard-text="tyxs027">
+  <button class="float-wx" id="copyWxBtn" data-clipboard-text="keke623">
     <span class="wx-title" id="wxTitle">联系微信</span>
-    <span class="wx-id">tyxs027</span>
+    <span class="wx-id">keke623</span>
   </button>
 </div>
 
@@ -13,7 +13,7 @@
   const title = document.getElementById('wxTitle');
   if (btn && title) {
     btn.addEventListener('click', () => {
-      const textToCopy = btn.getAttribute('data-clipboard-text') || 'tyxs027';
+      const textToCopy = btn.getAttribute('data-clipboard-text') || 'keke623';
       navigator.clipboard.writeText(textToCopy).then(() => {
         const originalText = title.textContent;
         title.textContent = '复制成功！';

@@ -61,6 +61,36 @@ const toolCategories = [
       {featuredTools.map((tool) => (
         <ToolCard {...tool} />
       ))}
+      <article class="tool-card">
+        <a href="/tools/">
+          <div class="tool-header-row">
+            <div class="tool-icon-wrapper" title="查看更多">
+              <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="1" />
+                <circle cx="19" cy="12" r="1" />
+                <circle cx="5" cy="12" r="1" />
+              </svg>
+            </div>
+            <span class="status status-usable">
+              查看全部
+            </span>
+          </div>
+          
+          <h3>查看更多工具</h3>
+          <p>浏览全部 AI 文本处理、语音合成、视频剪辑与数据采集工具。</p>
+          
+          <div class="tool-footer">
+            <span class="tool-category">全部小工具</span>
+            <span class="tool-action-btn">
+              立即前往
+              <svg class="arrow-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-left:2px;">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </span>
+          </div>
+        </a>
+      </article>
     </div>
   </section>
 

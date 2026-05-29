@@ -221,6 +221,10 @@ p {
   padding: 34px 0;
 }
 
+.page-section + .page-section {
+  border-top: 1px solid var(--line);
+}
+
 .section-header {
   max-width: 720px;
   margin-bottom: 22px;
@@ -248,8 +252,14 @@ p {
 
 .tool-list {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 16px;
+}
+
+@media (min-width: 1024px) {
+  .tool-list {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
 }
 
 .grid-main .tool-list {
@@ -259,8 +269,14 @@ p {
 /* Tool Grid on Homepage */
 .tool-grid-home {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 16px;
+}
+
+@media (min-width: 1024px) {
+  .tool-grid-home {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
 }
 
 .category-grid {
@@ -383,19 +399,19 @@ p {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 24px;
+  padding: 18px;
 }
 
 .tool-card h3 {
-  font-size: 19px;
+  font-size: 16.5px;
   font-weight: 700;
-  margin-top: 12px;
-  margin-bottom: 8px;
+  margin-top: 10px;
+  margin-bottom: 6px;
   color: var(--text);
 }
 
 .tool-card p {
-  font-size: 14px;
+  font-size: 13.5px;
   color: var(--muted);
   line-height: 1.5;
   margin-bottom: auto;
@@ -414,11 +430,11 @@ p {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   background: rgba(159, 245, 215, 0.06);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 6px;
   color: var(--accent);
   transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
@@ -430,8 +446,8 @@ p {
 }
 
 .tool-icon {
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
 }
 
 /* Tool Footer */
@@ -439,10 +455,10 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 16px;
-  padding-top: 12px;
+  margin-top: 12px;
+  padding-top: 10px;
   border-top: 1px dashed var(--line);
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .tool-category {

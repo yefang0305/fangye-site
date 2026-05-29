@@ -85,45 +85,45 @@ const { title, description, eyebrow = 'Project', techStack = [], githubCta = tru
     max-width: 100%;
   }
 
-  .project-main h2 {
+  .project-main :global(h2) {
     margin-top: 34px;
     font-size: 28px;
   }
 
-  .project-main h3 {
+  .project-main :global(h3) {
     margin-top: 24px;
   }
 
-  .project-main p,
-  .project-main li {
+  .project-main :global(p),
+  .project-main :global(li) {
     color: #c7d8d2;
     font-size: 17px;
     line-height: 1.82;
   }
 
-  .project-main a {
+  .project-main :global(a) {
     color: var(--accent);
     text-decoration: underline;
     text-underline-offset: 4px;
   }
 
-  .project-main code {
+  .project-main :global(code) {
     border-radius: 5px;
     padding: 2px 5px;
     background: rgba(159, 245, 215, 0.1);
   }
 
-  .project-main ul,
-  .project-main ol {
+  .project-main :global(ul),
+  .project-main :global(ol) {
     padding-left: 20px;
   }
 
-  .project-main li {
+  .project-main :global(li) {
     margin-bottom: 8px;
   }
 
   /* SVG container */
-  .project-svg {
+  .project-main :global(.project-svg) {
     margin: 32px 0;
     border: 1px solid var(--line);
     border-radius: var(--radius);
@@ -135,7 +135,7 @@ const { title, description, eyebrow = 'Project', techStack = [], githubCta = tru
     overflow-x: auto;
   }
 
-  .project-svg svg {
+  .project-main :global(.project-svg svg) {
     width: 100%;
     max-width: 580px;
     height: auto;
@@ -143,14 +143,14 @@ const { title, description, eyebrow = 'Project', techStack = [], githubCta = tru
   }
 
   /* Capability cards grid */
-  .capability-grid {
+  .project-main :global(.capability-grid) {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 16px;
     margin: 20px 0;
   }
 
-  .capability-card {
+  .project-main :global(.capability-card) {
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background: rgba(20, 33, 40, 0.5);
@@ -158,24 +158,24 @@ const { title, description, eyebrow = 'Project', techStack = [], githubCta = tru
     transition: border-color 0.2s ease;
   }
 
-  .capability-card:hover {
+  .project-main :global(.capability-card:hover) {
     border-color: var(--line-strong);
   }
 
-  .capability-card h4 {
+  .project-main :global(.capability-card h4) {
     margin: 0 0 8px;
     font-size: 16px;
     color: var(--accent);
   }
 
-  .capability-card p {
+  .project-main :global(.capability-card p) {
     margin: 0;
     font-size: 14px;
     color: var(--muted);
     line-height: 1.6;
   }
 
-  .capability-icon {
+  .project-main :global(.capability-icon) {
     width: 28px;
     height: 28px;
     color: var(--accent);
@@ -297,7 +297,7 @@ const { title, description, eyebrow = 'Project', techStack = [], githubCta = tru
   }
 
   /* Note / Warning boxes */
-  .project-note {
+  .project-main :global(.project-note) {
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background: rgba(255, 198, 109, 0.05);
@@ -306,25 +306,25 @@ const { title, description, eyebrow = 'Project', techStack = [], githubCta = tru
     margin: 24px 0;
   }
 
-  .project-note p {
+  .project-main :global(.project-note p) {
     margin: 0;
     font-size: 15px;
     color: var(--amber);
   }
 
-  .project-note strong {
+  .project-main :global(.project-note strong) {
     color: var(--amber);
   }
 
   /* Workflow steps */
-  .workflow-steps {
+  .project-main :global(.workflow-steps) {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 12px;
     margin: 20px 0;
   }
 
-  .workflow-step {
+  .project-main :global(.workflow-step) {
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background: rgba(20, 33, 40, 0.4);
@@ -332,7 +332,7 @@ const { title, description, eyebrow = 'Project', techStack = [], githubCta = tru
     text-align: center;
   }
 
-  .workflow-step .step-num {
+  .project-main :global(.workflow-step .step-num) {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -346,13 +346,13 @@ const { title, description, eyebrow = 'Project', techStack = [], githubCta = tru
     margin-bottom: 10px;
   }
 
-  .workflow-step h4 {
+  .project-main :global(.workflow-step h4) {
     margin: 0 0 4px;
     font-size: 15px;
     color: var(--text);
   }
 
-  .workflow-step p {
+  .project-main :global(.workflow-step p) {
     margin: 0;
     font-size: 13px;
     color: var(--muted);
@@ -369,8 +369,8 @@ const { title, description, eyebrow = 'Project', techStack = [], githubCta = tru
       position: static;
     }
 
-    .capability-grid,
-    .workflow-steps {
+    .project-main :global(.capability-grid),
+    .project-main :global(.workflow-steps) {
       grid-template-columns: 1fr;
     }
   }
