@@ -1,0 +1,25 @@
+# 抖音批量视频生成工具
+# 依赖清单
+
+# ── 桌面工作台（main_desktop.py） ──
+PyQt5>=5.15.0
+
+# ── 核心依赖 ──
+pydub>=0.25.1
+Pillow>=10.0.0
+
+# ── TTS（火山引擎 WebSocket） ──
+websockets>=12.0
+
+# ── AI 分段 / LLM 重写（豆包大模型） ──
+openai>=1.0.0
+requests>=2.28.0
+
+# ── 环境配置 ──
+python-dotenv>=1.0.0
+
+# ── 工具 ──
+tqdm>=4.66.0
+
+# ── Python 3.13+ 兼容 ──
+audioop-lts>=0.2.1

@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# 虚拟环境
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 运行时输出
+output/
+temp/
+logs/
+*.log
+
+# 模型和二进制
+models/
+ffmpeg/
+bin/
+*.exe
+*.dll
+*.pyd
+*.so
+
+# 配置文件（含密钥）
+config/settings.json
+.env
+*.secret
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 打包相关
+*.spec
+dist/
+build/
+.spec

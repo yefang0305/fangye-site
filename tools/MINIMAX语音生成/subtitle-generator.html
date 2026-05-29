@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiniMax TTS 字幕生成工具</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: #0f0f13;
+    color: #e0e0e6;
+    min-height: 100vh;
+  }
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 20px 32px;
+    border-bottom: 1px solid #2a2a3e;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .header h1 { font-size: 20px; font-weight: 600; color: #fff; }
+  .header .badge {
+    background: #5b6ef5; color: #fff; font-size: 11px; padding: 2px 8px;
+    border-radius: 4px; font-weight: 500;
+  }
+  .header p { font-size: 13px; color: #888; margin-left: auto; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+  /* Config */
+  .config {
+    background: #1a1a24; border: 1px solid #2a2a3e; border-radius: 12px;
+    padding: 16px 20px; margin-bottom: 20px;
+    display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;
+  }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field.grow { flex: 1; min-width: 180px; }
+  .field label { font-size: 12px; color: #888; font-weight: 500; }
+  .field input, .field select {
+    background: #12121a; border: 1px solid #333; border-radius: 8px;
+    padding: 8px 12px; color: #e0e0e6; font-size: 13px; outline: none;
+  }
+  .field input:focus, .field select:focus { border-color: #5b6ef5; }
+  .field input::placeholder { color: #555; }
+
+  /* Main grid */
+  .main { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 860px) { .main { grid-template-columns: 1fr; } }
+  .panel {
+    background: #1a1a24; border: 1px solid #2a2a3e; border-radius: 12px;
+    padding: 20px; display: flex; flex-direction: column; gap: 14px;
+  }
+  .panel h2 { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+
+  /* Text input */
+  .text-area {
+    width: 100%; min-height: 200px; background: #12121a; border: 1px solid #333;
+    border-radius: 8px; padding: 12px; color: #e0e0e6; font-size: 14px;
+    line-height: 1.8; resize: vertical; outline: none; font-family: inherit;
+  }
+  .text-area:focus { border-color: #5b6ef5; }
+  .text-area::placeholder { color: #555; }
+  .char-count { font-size: 11px; color: #666; text-align: right; }
+
+  /* Settings row */
+  .settings { display: flex; gap: 12px; flex-wrap: wrap; }
+  .settings .field { min-width: 100px; }
+  .settings select, .settings input { width: 100%; }
+
+  /* Range */
+  .range-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .range-group { flex: 1; min-width: 100px; }
+  .range-group label {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: #888; margin-bottom: 4px;
+  }
+  .range-group label span { color: #5b6ef5; font-family: monospace; }
+  .range-group input[type="range"] {
+    width: 100%; -webkit-appearance: none; height: 4px;
+    background: #333; border-radius: 2px; outline: none;
+  }
+  .range-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 14px; height: 14px;
+    border-radius: 50%; background: #5b6ef5; cursor: pointer;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 10px 20px; border-radius: 8px; border: none;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    transition: all .2s; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary { background: #5b6ef5; color: #fff; }
+  .btn-primary:hover { background: #4a5ce0; }
+  .btn-primary:disabled { background: #333; color: #666; cursor: not-allowed; }
+  .btn-secondary { background: #2a2a3e; color: #ccc; }
+  .btn-secondary:hover { background: #333; }
+  .btn-success { background: #2e7d32; color: #fff; }
+  .btn-success:hover { background: #388e3c; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* Progress */
+  .progress-panel {
+    background: #12121a; border: 1px solid #2a2a3e; border-radius: 8px;
+    padding: 16px; display: none;
+  }
+  .progress-panel.show { display: block; }
+  .progress-bar-wrap {
+    height: 6px; background: #2a2a3e; border-radius: 3px; overflow: hidden; margin: 10px 0;
+  }
+  .progress-bar {
+    height: 100%; background: #5b6ef5; border-radius: 3px;
+    transition: width .3s; width: 0%;
+  }
+  .progress-bar.indeterminate {
+    width: 30%; animation: indeterminate 1.5s ease-in-out infinite;
+  }
+  @keyframes indeterminate {
+    0% { margin-left: 0; }
+    50% { margin-left: 70%; }
+    100% { margin-left: 0; }
+  }
+  .progress-status { font-size: 13px; color: #aaa; }
+  .progress-detail { font-size: 11px; color: #666; margin-top: 4px; }
+
+  /* Results */
+  .results { display: none; }
+  .results.show { display: flex; flex-direction: column; gap: 12px; }
+  .result-card {
+    background: #12121a; border: 1px solid #2a2a3e; border-radius: 8px; padding: 14px;
+  }
+  .result-card h3 { font-size: 13px; color: #888; margin-bottom: 8px; }
+  .result-card audio { width: 100%; }
+
+  /* Subtitle preview */
+  .subtitle-preview {
+    max-height: 300px; overflow-y: auto; font-size: 13px; line-height: 1.8;
+  }
+  .subtitle-preview::-webkit-scrollbar { width: 6px; }
+  .subtitle-preview::-webkit-scrollbar-track { background: transparent; }
+  .subtitle-preview::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  .sub-line {
+    display: flex; gap: 12px; padding: 4px 8px; border-radius: 4px;
+    transition: background .15s; cursor: pointer;
+  }
+  .sub-line:hover { background: #1e1e2e; }
+  .sub-line .time {
+    font-family: monospace; color: #5b6ef5; font-size: 12px;
+    min-width: 120px; flex-shrink: 0;
+  }
+  .sub-line .text { color: #ddd; }
+
+  /* SRT preview */
+  .srt-preview {
+    background: #0a0a10; border: 1px solid #2a2a3e; border-radius: 8px;
+    padding: 12px; font-family: monospace; font-size: 12px; line-height: 1.6;
+    color: #aaa; max-height: 250px; overflow-y: auto; white-space: pre-wrap;
+  }
+
+  /* Log */
+  .log {
+    background: #0a0a10; border: 1px solid #2a2a3e; border-radius: 8px;
+    padding: 12px; font-family: monospace; font-size: 11px; line-height: 1.6;
+    color: #666; max-height: 150px; overflow-y: auto;
+  }
+  .log .info { color: #5b6ef5; }
+  .log .ok { color: #4caf50; }
+  .log .err { color: #ef5350; }
+  .log .warn { color: #ff9800; }
+
+  .loading { display: inline-block; width: 14px; height: 14px; border: 2px solid #333; border-top-color: #5b6ef5; border-radius: 50%; animation: spin .6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .tag { font-size: 10px; padding: 2px 8px; border-radius: 4px; background: #2a2a3e; color: #888; }
+  .tag.green { background: #1b3a1b; color: #4caf50; }
+
+  .full-width { grid-column: 1 / -1; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>MiniMax 字幕生成工具</h1>
+  <span class="badge">T2A Async v2</span>
+  <p>长文本 → 语音 + SRT 字幕，精确到句</p>
+</div>
+
+<div class="container">
+  <!-- API Config -->
+  <div class="config">
+    <div class="field grow">
+      <label>API Key</label>
+      <input type="password" id="apiKey" placeholder="MiniMax API Key" />
+    </div>
+    <div class="field grow">
+      <label>Group ID</label>
+      <input type="text" id="groupId" placeholder="Group ID" />
+    </div>
+    <div class="field">
+      <label>&nbsp;</label>
+      <button class="btn btn-secondary" onclick="saveConfig()">保存</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- Left: Input -->
+    <div class="panel">
+      <h2>📝 输入文本</h2>
+      <textarea class="text-area" id="textInput" placeholder="输入要转语音的长文本...&#10;&#10;支持最长 5 万字符（直接输入）或 10 万字符（上传文件）&#10;可用 <#1.5#> 插入 1.5 秒静音间隔" oninput="updateCharCount()">大家好，欢迎收听今天的节目。今天我们来聊一聊人工智能技术在语音合成领域的最新进展。
+
+近年来，随着深度学习技术的不断突破，语音合成的质量已经有了质的飞跃。从最初的机械式朗读，到如今几乎可以以假乱真的自然语音，这一切的变化令人惊叹。
+
+接下来，让我们一起深入了解这些激动人心的技术发展吧！</textarea>
+      <div class="char-count" id="charCount">0 / 50,000 字符</div>
+
+      <h2 style="margin-top:8px">🎙 语音设置</h2>
+      <div class="settings">
+        <div class="field grow">
+          <label>模型</label>
+          <select id="model">
+            <option value="speech-2.5-hd-preview">speech-2.5-hd (最新HD)</option>
+            <option value="speech-2.5-turbo-preview">speech-2.5-turbo (最新快速)</option>
+            <option value="speech-02-hd">speech-02-hd</option>
+            <option value="speech-02-turbo">speech-02-turbo</option>
+            <option value="speech-01-hd">speech-01-hd</option>
+            <option value="speech-01-turbo">speech-01-turbo</option>
+          </select>
+        </div>
+        <div class="field grow">
+          <label>音色 (voice_id)</label>
+          <select id="voiceId">
+            <optgroup label="中文-通用">
+              <option value="male-qn-qingse">青涩青年</option>
+              <option value="male-qn-jingying">精英青年</option>
+              <option value="male-qn-badao">霸道青年</option>
+              <option value="male-qn-daxuesheng">青年大学生</option>
+              <option value="female-shaonv">少女</option>
+              <option value="female-yujie">御姐</option>
+              <option value="female-chengshu">成熟女性</option>
+              <option value="female-tianmei">甜美女性</option>
+            </optgroup>
+            <optgroup label="中文-主持/有声书">
+              <option value="presenter_male">男性主持人</option>
+              <option value="presenter_female">女性主持人</option>
+              <option value="audiobook_male_1" selected>有声书男声1</option>
+              <option value="audiobook_male_2">有声书男声2</option>
+              <option value="audiobook_female_1">有声书女声1</option>
+              <option value="audiobook_female_2">有声书女声2</option>
+            </optgroup>
+            <optgroup label="中文-Beta">
+              <option value="male-qn-qingse-jingpin">青涩青年-beta</option>
+              <option value="male-qn-jingying-jingpin">精英青年-beta</option>
+              <option value="male-qn-badao-jingpin">霸道青年-beta</option>
+              <option value="male-qn-daxuesheng-jingpin">大学生-beta</option>
+              <option value="female-shaonv-jingpin">少女-beta</option>
+              <option value="female-yujie-jingpin">御姐-beta</option>
+              <option value="female-chengshu-jingpin">成熟女性-beta</option>
+              <option value="female-tianmei-jingpin">甜美女性-beta</option>
+            </optgroup>
+            <optgroup label="中文-角色">
+              <option value="bingjiao_didi">病娇弟弟</option>
+              <option value="junlang_nanyou">俊朗男友</option>
+              <option value="chunzhen_xuedi">纯真学弟</option>
+              <option value="lengdan_xiongzhang">冷淡学长</option>
+              <option value="badao_shaoye">霸道少爷</option>
+              <option value="tianxin_xiaoling">甜心小玲</option>
+              <option value="qiaopi_mengmei">俏皮萌妹</option>
+              <option value="wumei_yujie">妩媚御姐</option>
+              <option value="diadia_xuemei">嗲嗲学妹</option>
+              <option value="danya_xuejie">淡雅学姐</option>
+            </optgroup>
+            <optgroup label="中文-新音色">
+              <option value="Chinese (Mandarin)_Reliable_Executive">沉稳高管</option>
+              <option value="Chinese (Mandarin)_News_Anchor">新闻女声</option>
+              <option value="Chinese (Mandarin)_Gentleman">温润男声</option>
+              <option value="Chinese (Mandarin)_Warm_Bestie">温暖闺蜜</option>
+              <option value="Chinese (Mandarin)_Male_Announcer">播报男声</option>
+              <option value="Chinese (Mandarin)_Sweet_Lady">甜美女声</option>
+              <option value="Chinese (Mandarin)_Radio_Host">电台男主播</option>
+              <option value="Chinese (Mandarin)_Lyrical_Voice">抒情男声</option>
+              <option value="Chinese (Mandarin)_Gentle_Youth">温润青年</option>
+              <option value="Chinese (Mandarin)_Warm_Girl">温暖少女</option>
+              <option value="Chinese (Mandarin)_Crisp_Girl">清脆少女</option>
+              <option value="Chinese (Mandarin)_Soft_Girl">柔和少女</option>
+            </optgroup>
+            <optgroup label="童声/卡通">
+              <option value="clever_boy">聪明男童</option>
+              <option value="cute_boy">可爱男童</option>
+              <option value="lovely_girl">萌萌女童</option>
+              <option value="cartoon_pig">卡通猪小琪</option>
+            </optgroup>
+            <optgroup label="英文">
+              <option value="English_Trustworthy_Man">Trustworthy Man</option>
+              <option value="English_Graceful_Lady">Graceful Lady</option>
+              <option value="English_Gentle-voiced_man">Gentle-voiced Man</option>
+              <option value="English_Whispering_girl">Whispering Girl</option>
+              <option value="Serene_Woman">Serene Woman</option>
+              <option value="Sweet_Girl">Sweet Girl</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="field">
+          <label>或手动输入 voice_id</label>
+          <input type="text" id="customVoiceId" placeholder="留空则用上方选择" style="width:160px" />
+        </div>
+      </div>
+
+      <div class="range-row">
+        <div class="range-group">
+          <label>语速 <span id="speedVal">1.0</span></label>
+          <input type="range" id="speed" min="0.5" max="2.0" step="0.05" value="1.0"
+            oninput="document.getElementById('speedVal').textContent=this.value" />
+        </div>
+        <div class="range-group">
+          <label>音量 <span id="volVal">1.0</span></label>
+          <input type="range" id="vol" min="0.1" max="10" step="0.1" value="1.0"
+            oninput="document.getElementById('volVal').textContent=this.value" />
+        </div>
+        <div class="range-group">
+          <label>语调 <span id="pitchVal">0</span></label>
+          <input type="range" id="pitch" min="-12" max="12" step="1" value="0"
+            oninput="document.getElementById('pitchVal').textContent=this.value" />
+        </div>
+      </div>
+
+      <div class="settings">
+        <div class="field">
+          <label>格式</label>
+          <select id="format">
+            <option value="mp3">MP3</option>
+            <option value="flac">FLAC</option>
+            <option value="pcm">PCM</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>采样率</label>
+          <select id="sampleRate">
+            <option value="32000" selected>32000</option>
+            <option value="44100">44100</option>
+            <option value="24000">24000</option>
+            <option value="22050">22050</option>
+            <option value="16000">16000</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>声道</label>
+          <select id="channel">
+            <option value="1">单声道</option>
+            <option value="2" selected>双声道</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>情绪</label>
+          <select id="emotion">
+            <option value="">默认</option>
+            <option value="neutral">neutral</option>
+            <option value="happy">happy</option>
+            <option value="sad">sad</option>
+            <option value="angry">angry</option>
+            <option value="fearful">fearful</option>
+            <option value="disgusted">disgusted</option>
+            <option value="surprised">surprised</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>语言增强</label>
+          <select id="langBoost">
+            <option value="auto" selected>auto</option>
+            <option value="Chinese">Chinese</option>
+            <option value="Chinese,Yue">粤语</option>
+            <option value="English">English</option>
+            <option value="Japanese">日本語</option>
+            <option value="Korean">한국어</option>
+          </select>
+        </div>
+      </div>
+
+      <h2 style="margin-top:8px">✂ 字幕断句控制</h2>
+      <div style="font-size:12px; color:#888; margin-bottom:8px; line-height:1.6;">
+        MiniMax 按句号/问号/感叹号断句生成时间戳。如果你的文本断句不够细，可以用下面的工具自动拆分。
+      </div>
+      <div class="settings" style="margin-bottom:10px">
+        <div class="field">
+          <label>最大字数/句</label>
+          <input type="number" id="maxCharsPerSentence" value="30" min="10" max="200" style="width:80px" />
+        </div>
+        <div class="field">
+          <label>断句方式</label>
+          <select id="splitMode">
+            <option value="smart">智能断句 (逗号→句号，长句拆分)</option>
+            <option value="comma">逗号全部转句号</option>
+            <option value="manual">不自动处理</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <button class="btn btn-secondary" onclick="preprocessText()">预览断句效果</button>
+        </div>
+      </div>
+      <div id="splitPreview" style="display:none; background:#12121a; border:1px solid #2a2a3e; border-radius:8px; padding:12px; max-height:150px; overflow-y:auto; font-size:12px; line-height:1.8; color:#aaa; margin-bottom:10px;"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="submitBtn" onclick="submitTask()">🚀 提交生成任务</button>
+        <button class="btn btn-secondary" id="cancelBtn" onclick="cancelPolling()" style="display:none">✕ 取消</button>
+      </div>
+    </div>
+
+    <!-- Right: Results -->
+    <div class="panel">
+      <h2>📊 生成结果</h2>
+
+      <div class="progress-panel" id="progressPanel">
+        <div class="progress-status" id="progressStatus">准备中...</div>
+        <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="progress-detail" id="progressDetail"></div>
+      </div>
+
+      <div class="results" id="resultsPanel">
+        <div class="result-card">
+          <h3>🔊 音频 <span class="tag green" id="audioInfo"></span></h3>
+          <audio controls id="audioPlayer" style="width:100%"></audio>
+          <div style="margin-top:8px">
+            <button class="btn btn-success btn-sm" onclick="downloadResult('audio')">⬇ 下载音频</button>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <h3>📄 字幕预览 <span class="tag green" id="subInfo"></span></h3>
+          <div class="subtitle-preview" id="subtitlePreview"></div>
+        </div>
+
+        <div class="result-card">
+          <h3>SRT 文件</h3>
+          <pre class="srt-preview" id="srtPreview"></pre>
+          <div style="margin-top:8px; display:flex; gap:8px;">
+            <button class="btn btn-success" onclick="downloadResult('srt')">⬇ 下载 SRT</button>
+            <button class="btn btn-secondary" onclick="downloadResult('json')">⬇ 下载字幕 JSON</button>
+            <button class="btn btn-secondary" onclick="copySrt()">📋 复制 SRT</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-card" style="margin-top:8px">
+        <h3>📋 运行日志</h3>
+        <div class="log" id="logPanel"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASE = 'https://api.minimaxi.com/v1';
+
+let pollingTimer = null;
+let currentTaskId = null;
+let currentFileId = null;
+let resultAudioUrl = null;
+let resultSubtitleData = null;
+let resultSrtText = null;
+
+// Init
+(function init() {
+  const k = localStorage.getItem('minimax_api_key');
+  const g = localStorage.getItem('minimax_group_id');
+  if (k) document.getElementById('apiKey').value = k;
+  if (g) document.getElementById('groupId').value = g;
+  updateCharCount();
+})();
+
+function saveConfig() {
+  localStorage.setItem('minimax_api_key', document.getElementById('apiKey').value.trim());
+  localStorage.setItem('minimax_group_id', document.getElementById('groupId').value.trim());
+  log('info', '配置已保存');
+}
+
+function getConfig() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  const groupId = document.getElementById('groupId').value.trim();
+  if (!apiKey || !groupId) { alert('请先填写 API Key 和 Group ID'); return null; }
+  return { apiKey, groupId };
+}
+
+// ========== 断句预处理 ==========
+function splitTextToSentences(text, maxChars, mode) {
+  if (mode === 'manual') return text;
+
+  // Step 1: Normalize - ensure sentence-ending punctuation
+  let result = text;
+
+  if (mode === 'comma') {
+    // Simple: all commas → periods
+    result = result.replace(/，/g, '。').replace(/,/g, '.');
+  } else {
+    // Smart mode
+    // Split into existing sentences first
+    const sentenceEnders = /([。！？!?.…]+)/g;
+    const parts = result.split(sentenceEnders);
+
+    let rebuilt = '';
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      // If this part is a punctuation group, keep it
+      if (sentenceEnders.test(part)) {
+        rebuilt += part;
+        sentenceEnders.lastIndex = 0;
+        continue;
+      }
+      // If this chunk is short enough, keep as-is
+      if (part.length <= maxChars) {
+        rebuilt += part;
+        continue;
+      }
+      // Long chunk - split at commas, semicolons, or other natural breaks
+      rebuilt += splitLongChunk(part, maxChars);
+    }
+    result = rebuilt;
+  }
+
+  // Step 2: Final cleanup
+  // Ensure every line ends with sentence-ending punctuation
+  result = result.replace(/\n+/g, '\n').trim();
+
+  return result;
+}
+
+function splitLongChunk(chunk, maxChars) {
+  // Try to split at natural break points: commas, semicolons, colons, etc.
+  const breakPoints = /([，,；;：:、])/g;
+  const segments = chunk.split(breakPoints);
+
+  let result = '';
+  let currentLen = 0;
+
+  for (let i = 0; i < segments.length; i++) {
+    const seg = segments[i];
+    const isBreak = breakPoints.test(seg);
+    breakPoints.lastIndex = 0;
+
+    if (isBreak) {
+      // This is a punctuation mark
+      if (currentLen >= maxChars) {
+        // Replace comma-like punct with period to force a sentence break
+        const periodMap = { '，': '。', ',': '.', '；': '。', ';': '.', '：': '。', ':': '.', '、': '。' };
+        result += periodMap[seg] || '。';
+        currentLen = 0;
+      } else {
+        result += seg;
+      }
+    } else {
+      // Regular text
+      if (seg.length > maxChars * 2 && currentLen === 0) {
+        // Even a single segment is too long - force split at maxChars
+        result += forceSplitText(seg, maxChars);
+        currentLen = 0;
+      } else {
+        result += seg;
+        currentLen += seg.length;
+      }
+    }
+  }
+  return result;
+}
+
+function forceSplitText(text, maxChars) {
+  // Last resort: split at spaces, or at maxChars boundary
+  let result = '';
+  let remaining = text;
+
+  while (remaining.length > maxChars) {
+    // Try to find a space or natural break near maxChars
+    let splitAt = maxChars;
+    for (let i = maxChars; i > maxChars * 0.6; i--) {
+      if (' \t　'.includes(remaining[i])) { splitAt = i; break; }
+    }
+    result += remaining.substring(0, splitAt) + '。';
+    remaining = remaining.substring(splitAt).trimStart();
+  }
+  result += remaining;
+  return result;
+}
+
+function preprocessText() {
+  const text = document.getElementById('textInput').value;
+  const maxChars = parseInt(document.getElementById('maxCharsPerSentence').value) || 30;
+  const mode = document.getElementById('splitMode').value;
+
+  const processed = splitTextToSentences(text, maxChars, mode);
+
+  // Count sentences
+  const sentences = processed.split(/[。！？!?.…]+/).filter(s => s.trim());
+
+  // Show preview with highlighting
+  const preview = document.getElementById('splitPreview');
+  preview.style.display = 'block';
+
+  // Highlight sentence boundaries
+  const highlighted = processed.replace(/([。！？!?.…]+)/g, '<span style="color:#5b6ef5;font-weight:bold;">$1</span>')
+    .replace(/\n/g, '<br>');
+
+  preview.innerHTML = `
+    <div style="margin-bottom:8px;color:#5b6ef5;font-size:11px;">
+      预计 ${sentences.length} 条字幕 | 处理后 ${processed.length} 字符
+      <button class="btn btn-secondary" style="padding:2px 10px;font-size:11px;margin-left:8px;" onclick="applyPreprocess()">应用到文本框</button>
+    </div>
+    <div style="color:#ccc;">${highlighted}</div>
+  `;
+
+  // Store for apply
+  preview.dataset.processed = processed;
+}
+
+function applyPreprocess() {
+  const preview = document.getElementById('splitPreview');
+  const processed = preview.dataset.processed;
+  if (processed) {
+    document.getElementById('textInput').value = processed;
+    updateCharCount();
+    log('ok', '已应用断句预处理');
+  }
+}
+
+function updateCharCount() {
+  const len = document.getElementById('textInput').value.length;
+  const el = document.getElementById('charCount');
+  el.textContent = `${len.toLocaleString()} / 50,000 字符`;
+  el.style.color = len > 50000 ? '#ef5350' : '#666';
+}
+
+function log(type, msg) {
+  const el = document.getElementById('logPanel');
+  const time = new Date().toLocaleTimeString();
+  el.innerHTML += `<div><span style="color:#555">[${time}]</span> <span class="${type}">${msg}</span></div>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+function setProgress(status, detail, percent) {
+  document.getElementById('progressStatus').textContent = status;
+  document.getElementById('progressDetail').textContent = detail || '';
+  const bar = document.getElementById('progressBar');
+  if (percent === undefined) {
+    bar.classList.add('indeterminate');
+    bar.style.width = '30%';
+  } else {
+    bar.classList.remove('indeterminate');
+    bar.style.width = percent + '%';
+  }
+}
+
+// ========== Step 1: Submit Task ==========
+async function submitTask() {
+  const cfg = getConfig();
+  if (!cfg) return;
+
+  const text = document.getElementById('textInput').value.trim();
+  if (!text) { alert('请输入文本'); return; }
+  if (text.length > 50000) { alert('文本超过 5 万字符限制，请缩短或使用文件上传'); return; }
+
+  const voiceId = document.getElementById('customVoiceId').value.trim() || document.getElementById('voiceId').value;
+  const emotion = document.getElementById('emotion').value;
+
+  const body = {
+    model: document.getElementById('model').value,
+    text: text,
+    language_boost: document.getElementById('langBoost').value,
+    voice_setting: {
+      voice_id: voiceId,
+      speed: parseFloat(document.getElementById('speed').value),
+      vol: parseFloat(document.getElementById('vol').value),
+      pitch: parseInt(document.getElementById('pitch').value),
+    },
+    audio_setting: {
+      sample_rate: parseInt(document.getElementById('sampleRate').value),
+      bitrate: 128000,
+      format: document.getElementById('format').value,
+      channel: parseInt(document.getElementById('channel').value),
+    }
+  };
+  if (emotion) body.voice_setting.emotion = emotion;
+
+  // UI state
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('submitBtn').innerHTML = '<span class="loading"></span> 提交中...';
+  document.getElementById('cancelBtn').style.display = '';
+  document.getElementById('progressPanel').classList.add('show');
+  document.getElementById('resultsPanel').classList.remove('show');
+  setProgress('正在提交生成任务...', `音色: ${voiceId} | 模型: ${body.model} | ${text.length} 字符`);
+  log('info', `提交任务: ${voiceId}, ${body.model}, ${text.length} 字符`);
+
+  try {
+    const resp = await fetch(`${API_BASE}/t2a_async_v2?GroupId=${cfg.groupId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${cfg.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    const data = await resp.json();
+    log('info', '创建任务响应: ' + JSON.stringify(data).substring(0, 300));
+
+    if (data.base_resp && data.base_resp.status_code !== 0) {
+      throw new Error(data.base_resp.status_msg || `错误码: ${data.base_resp.status_code}`);
+    }
+
+    currentTaskId = data.task_id;
+    currentFileId = data.file_id;
+    log('ok', `任务创建成功! task_id=${currentTaskId}, file_id=${currentFileId}`);
+    setProgress('任务已提交，开始轮询状态...', `task_id: ${currentTaskId}`);
+
+    // Start polling
+    startPolling(cfg);
+
+  } catch (err) {
+    log('err', '提交失败: ' + err.message);
+    alert('提交失败: ' + err.message);
+    resetUI();
+  }
+}
+
+// ========== Step 2: Poll Status ==========
+function startPolling(cfg) {
+  let pollCount = 0;
+  const maxPoll = 600; // 10 min max
+
+  pollingTimer = setInterval(async () => {
+    pollCount++;
+    if (pollCount > maxPoll) {
+      log('err', '轮询超时，请检查任务状态');
+      cancelPolling();
+      return;
+    }
+
+    try {
+      const resp = await fetch(
+        `${API_BASE}/query/t2a_async_query_v2?GroupId=${cfg.groupId}&task_id=${currentTaskId}`,
+        { headers: { 'Authorization': `Bearer ${cfg.apiKey}`, 'Content-Type': 'application/json' } }
+      );
+      const data = await resp.json();
+      const status = data.status;
+
+      setProgress(
+        `状态: ${status}`,
+        `第 ${pollCount} 次查询 | task_id: ${currentTaskId}`,
+        status === 'Success' ? 100 : undefined
+      );
+
+      if (status === 'Success') {
+        clearInterval(pollingTimer);
+        pollingTimer = null;
+        log('ok', '任务完成!');
+        currentFileId = data.file_id || currentFileId;
+        await downloadFiles(cfg);
+      } else if (status === 'Failed') {
+        clearInterval(pollingTimer);
+        pollingTimer = null;
+        log('err', '任务失败: ' + JSON.stringify(data));
+        setProgress('任务失败', data.base_resp?.status_msg || '未知错误', 0);
+        resetUI();
+      } else if (status === 'Expired') {
+        clearInterval(pollingTimer);
+        pollingTimer = null;
+        log('err', '任务已过期');
+        setProgress('任务已过期', '', 0);
+        resetUI();
+      }
+      // Processing - continue polling
+    } catch (err) {
+      log('warn', '查询出错(将重试): ' + err.message);
+    }
+  }, 2000); // Poll every 2 seconds
+}
+
+function cancelPolling() {
+  if (pollingTimer) {
+    clearInterval(pollingTimer);
+    pollingTimer = null;
+  }
+  log('warn', '已取消轮询');
+  resetUI();
+}
+
+// ========== Step 3: Download Files ==========
+async function downloadFiles(cfg) {
+  setProgress('正在下载结果文件...', `file_id: ${currentFileId}`, 80);
+  log('info', `下载文件 file_id=${currentFileId}`);
+
+  try {
+    const resp = await fetch(
+      `${API_BASE}/files/retrieve?GroupId=${cfg.groupId}&file_id=${currentFileId}`,
+      { headers: { 'Authorization': `Bearer ${cfg.apiKey}` } }
+    );
+    const data = await resp.json();
+    log('info', '文件检索响应: ' + JSON.stringify(data).substring(0, 500));
+
+    // Parse the response - try multiple possible structures
+    const file = data.file || data;
+    const downloadUrl = file.download_url || file.file_url || file.url;
+
+    if (!downloadUrl) {
+      // Maybe it returns file list?
+      log('warn', '响应中未找到 download_url，尝试解析文件列表...');
+      log('info', '完整响应: ' + JSON.stringify(data));
+
+      // Try to handle as ZIP or multi-file response
+      if (data.file_list || data.files) {
+        const files = data.file_list || data.files;
+        log('info', `发现 ${files.length} 个文件`);
+        await processFileList(files, cfg);
+        return;
+      }
+
+      // If has a purpose=assistants_output, might need different approach
+      if (downloadUrl === undefined && file.id) {
+        log('info', '尝试直接下载文件内容...');
+        const contentResp = await fetch(
+          `${API_BASE}/files/content?GroupId=${cfg.groupId}&file_id=${currentFileId}`,
+          { headers: { 'Authorization': `Bearer ${cfg.apiKey}` } }
+        );
+        if (contentResp.ok) {
+          // Might be the audio directly
+          log('ok', '通过 content 接口获取成功');
+        }
+      }
+
+      throw new Error('无法从响应中提取下载链接。响应: ' + JSON.stringify(data).substring(0, 500));
+    }
+
+    log('ok', '获取到下载链接');
+    await processDownloadUrl(downloadUrl, cfg);
+
+  } catch (err) {
+    log('err', '下载失败: ' + err.message);
+    setProgress('下载失败', err.message, 0);
+
+    // Provide manual download hint
+    log('info', '提示: 你也可以通过 MiniMax 控制台手动下载结果');
+    resetUI();
+  }
+}
+
+async function processDownloadUrl(url, cfg) {
+  try {
+    log('info', '正在下载文件包...');
+    const resp = await fetch(url);
+    const contentType = resp.headers.get('content-type') || '';
+    log('info', `Content-Type: ${contentType}`);
+
+    const blob = await resp.blob();
+    log('info', `文件大小: ${(blob.size / 1024).toFixed(1)} KB`);
+
+    // Determine type from content-type or URL
+    const urlLower = url.toLowerCase();
+
+    if (contentType.includes('tar') || urlLower.includes('.tar')) {
+      log('info', '检测到 TAR 文件，正在解压...');
+      await extractTar(blob);
+    } else if (contentType.includes('zip') || urlLower.includes('.zip')) {
+      log('info', '检测到 ZIP 文件，正在解压...');
+      await extractZip(blob);
+    } else if (contentType.includes('audio') || /\.(mp3|flac|wav|pcm)/.test(urlLower)) {
+      const fmt = document.getElementById('format').value;
+      const mimeMap = { mp3: 'audio/mpeg', flac: 'audio/flac', pcm: 'audio/pcm', wav: 'audio/wav' };
+      resultAudioUrl = URL.createObjectURL(new Blob([blob], { type: mimeMap[fmt] || 'audio/mpeg' }));
+      document.getElementById('audioInfo').textContent = `音频 (${(blob.size/1024).toFixed(0)}KB)`;
+      log('ok', '音频下载完成');
+    } else if (contentType.includes('json')) {
+      const text = await blob.text();
+      const data = JSON.parse(text);
+      log('info', 'JSON: ' + text.substring(0, 300));
+      if (data.sentences) processSubtitle(data);
+    } else if (contentType.includes('octet-stream')) {
+      // Unknown binary - try TAR first (MiniMax default), then ZIP
+      log('info', '未知二进制格式，尝试按 TAR 解压...');
+      try { await extractTar(blob); }
+      catch (e) {
+        log('warn', 'TAR 失败，尝试 ZIP...');
+        try { await extractZip(blob); }
+        catch (e2) { log('err', '无法解压: ' + e2.message); }
+      }
+    } else {
+      log('warn', `未识别的 Content-Type: ${contentType}，尝试按 TAR 解压...`);
+      try { await extractTar(blob); }
+      catch (e) { log('err', '解压失败: ' + e.message); }
+    }
+  } catch (err) {
+    log('err', '处理下载内容失败: ' + err.message);
+  }
+  showResults();
+}
+
+// ========== TAR 解压 (纯 JS，无需第三方库) ==========
+async function extractTar(blob) {
+  const buffer = await blob.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  const files = [];
+  let offset = 0;
+
+  log('info', `TAR 文件总大小: ${bytes.length} bytes`);
+
+  while (offset < bytes.length - 512) {
+    // Read 512-byte header
+    const header = bytes.slice(offset, offset + 512);
+
+    // Check for empty block (end of archive)
+    if (header.every(b => b === 0)) {
+      log('info', 'TAR: 到达文件末尾');
+      break;
+    }
+
+    // Parse filename (bytes 0-99, null-terminated)
+    let name = '';
+    for (let i = 0; i < 100 && header[i] !== 0; i++) {
+      name += String.fromCharCode(header[i]);
+    }
+
+    // Parse prefix (bytes 345-499 for UStar format) and prepend to name
+    let prefix = '';
+    for (let i = 345; i < 500 && header[i] !== 0; i++) {
+      prefix += String.fromCharCode(header[i]);
+    }
+    if (prefix) name = prefix + '/' + name;
+
+    // Parse file size (bytes 124-135, octal)
+    let sizeStr = '';
+    for (let i = 124; i < 136 && header[i] !== 0; i++) {
+      sizeStr += String.fromCharCode(header[i]);
+    }
+    const fileSize = parseInt(sizeStr.trim(), 8) || 0;
+
+    // Parse type flag (byte 156)
+    const typeFlag = String.fromCharCode(header[156]);
+
+    // Move past header
+    offset += 512;
+
+    if (typeFlag === '5' || name.endsWith('/')) {
+      // Directory - skip
+      log('info', `TAR 目录: ${name}`);
+      continue;
+    }
+
+    if (typeFlag === '0' || typeFlag === '\0' || typeFlag === '') {
+      // Regular file
+      const fileData = bytes.slice(offset, offset + fileSize);
+      files.push({ name, size: fileSize, data: fileData });
+      log('info', `TAR 文件: ${name} (${(fileSize/1024).toFixed(1)} KB)`);
+    }
+
+    // Advance past file data (padded to 512-byte boundary)
+    offset += Math.ceil(fileSize / 512) * 512;
+  }
+
+  log('ok', `TAR 解压完成，共 ${files.length} 个文件`);
+
+  // Process extracted files
+  const audioExts = ['mp3', 'flac', 'pcm', 'wav', 'ogg'];
+  const fmt = document.getElementById('format').value;
+  const mimeMap = { mp3: 'audio/mpeg', flac: 'audio/flac', pcm: 'audio/pcm', wav: 'audio/wav', ogg: 'audio/ogg' };
+
+  for (const f of files) {
+    const ext = f.name.split('.').pop().toLowerCase();
+    const baseName = f.name.split('/').pop(); // Strip path
+
+    if (audioExts.includes(ext)) {
+      const audioBlob = new Blob([f.data], { type: mimeMap[ext] || mimeMap[fmt] || 'audio/mpeg' });
+      resultAudioUrl = URL.createObjectURL(audioBlob);
+      document.getElementById('audioInfo').textContent = `${baseName} (${(f.size/1024).toFixed(0)}KB)`;
+      log('ok', `音频已提取: ${baseName}`);
+
+    } else if (ext === 'titles' || ext === 'json') {
+      // .titles = MiniMax 字幕文件, .json = 通用字幕
+      try {
+        const text = new TextDecoder('utf-8').decode(f.data);
+        log('info', `解析 ${baseName}: ${text.substring(0, 300)}`);
+        const data = JSON.parse(text);
+
+        // 兼容多种 JSON 结构:
+        // 1) MiniMax .titles: 顶层数组 [{ text, time_begin, time_end, ... }]
+        // 2) { sentences: [{ text, begin_time, end_time }] }
+        // 3) { subtitles: [...] }
+        const sentences = Array.isArray(data) ? data
+          : (data.sentences || data.subtitles || null);
+
+        if (sentences && sentences.length > 0) {
+          const first = sentences[0];
+          // 检测是否有任何时间字段
+          const hasTime = first.time_begin !== undefined
+            || first.begin_time !== undefined
+            || first.start_time !== undefined
+            || first.time_end !== undefined;
+
+          if (hasTime || first.text) {
+            const normalized = sentences.map(s => ({
+              text: s.text || s.content || '',
+              begin_time: s.time_begin ?? s.begin_time ?? s.start_time ?? 0,
+              end_time: s.time_end ?? s.end_time ?? 0,
+            }));
+            processSubtitle({ sentences: normalized });
+            log('ok', `字幕已提取: ${baseName} (${normalized.length} 句)`);
+          } else {
+            log('info', `文件无可识别字幕字段: ${baseName} → ${text.substring(0, 200)}`);
+          }
+        } else {
+          log('info', `文件非字幕数据: ${baseName} → ${text.substring(0, 200)}`);
+        }
+      } catch (e) {
+        log('warn', `解析失败 ${baseName}: ${e.message}`);
+      }
+
+    } else if (ext === 'extra') {
+      // .extra = MiniMax 额外信息文件
+      try {
+        const text = new TextDecoder('utf-8').decode(f.data);
+        log('info', `额外信息 ${baseName}: ${text.substring(0, 300)}`);
+      } catch (e) {
+        log('warn', `读取失败 ${baseName}: ${e.message}`);
+      }
+
+    } else {
+      log('info', `跳过: ${baseName} (.${ext})`);
+    }
+  }
+
+  if (!resultAudioUrl && !resultSubtitleData) {
+    log('warn', 'TAR 中未找到音频或字幕文件，请检查文件内容');
+  }
+}
+
+// ========== ZIP 解压 (依赖 JSZip CDN) ==========
+async function extractZip(blob) {
+  if (typeof JSZip === 'undefined') {
+    log('info', '加载 JSZip 库...');
+    await loadScript('https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js');
+  }
+  const zip = await JSZip.loadAsync(blob);
+  const fileNames = Object.keys(zip.files);
+  log('info', `ZIP 包含 ${fileNames.length} 个文件: ${fileNames.join(', ')}`);
+
+  const fmt = document.getElementById('format').value;
+  const mimeMap = { mp3: 'audio/mpeg', flac: 'audio/flac', pcm: 'audio/pcm', wav: 'audio/wav' };
+
+  for (const name of fileNames) {
+    if (zip.files[name].dir) continue;
+    const ext = name.split('.').pop().toLowerCase();
+
+    if (['mp3', 'flac', 'pcm', 'wav'].includes(ext)) {
+      const audioBlob = await zip.files[name].async('blob');
+      resultAudioUrl = URL.createObjectURL(new Blob([audioBlob], { type: mimeMap[ext] || mimeMap[fmt] || 'audio/mpeg' }));
+      document.getElementById('audioInfo').textContent = name;
+      log('ok', `音频已解压: ${name}`);
+    } else if (ext === 'json') {
+      const text = await zip.files[name].async('string');
+      try {
+        const data = JSON.parse(text);
+        if (data.sentences || (Array.isArray(data) && data[0]?.begin_time !== undefined)) {
+          processSubtitle(data);
+          log('ok', `字幕已解压: ${name}`);
+        } else {
+          log('info', `额外信息: ${name} -> ${text.substring(0, 200)}`);
+        }
+      } catch (e) {
+        log('warn', `JSON 解析失败: ${name}`);
+      }
+    }
+  }
+}
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+// ========== Process Subtitle ==========
+function processSubtitle(data) {
+  const sentences = data.sentences || data;
+  resultSubtitleData = sentences;
+  resultSrtText = generateSRT(sentences);
+  document.getElementById('subInfo').textContent = `${sentences.length} 句`;
+}
+
+function generateSRT(sentences) {
+  return sentences.map((s, i) => {
+    const start = formatSrtTime(s.begin_time);
+    const end = formatSrtTime(s.end_time);
+    return `${i + 1}\n${start} --> ${end}\n${s.text}\n`;
+  }).join('\n');
+}
+
+function formatSrtTime(ms) {
+  // MiniMax time_begin/time_end 是毫秒(可能带小数)
+  const totalMs = Math.round(ms);
+  const h = Math.floor(totalMs / 3600000);
+  const m = Math.floor((totalMs % 3600000) / 60000);
+  const s = Math.floor((totalMs % 60000) / 1000);
+  const msRem = totalMs % 1000;
+  return `${pad2(h)}:${pad2(m)}:${pad2(s)},${pad3(msRem)}`;
+}
+
+function pad2(n) { return n.toString().padStart(2, '0'); }
+function pad3(n) { return n.toString().padStart(3, '0'); }
+
+// ========== Show Results ==========
+function showResults() {
+  setProgress('完成!', '', 100);
+  document.getElementById('resultsPanel').classList.add('show');
+
+  if (resultAudioUrl) {
+    document.getElementById('audioPlayer').src = resultAudioUrl;
+  }
+
+  if (resultSubtitleData) {
+    // Subtitle preview
+    const preview = document.getElementById('subtitlePreview');
+    preview.innerHTML = resultSubtitleData.map((s, i) => `
+      <div class="sub-line" onclick="seekAudio(${s.begin_time})">
+        <span class="time">${formatSrtTime(s.begin_time)} → ${formatSrtTime(s.end_time)}</span>
+        <span class="text">${s.text}</span>
+      </div>
+    `).join('');
+
+    // SRT preview
+    document.getElementById('srtPreview').textContent = resultSrtText;
+  }
+
+  resetUI();
+  log('ok', '全部完成! 可以下载音频和 SRT 文件');
+}
+
+function seekAudio(ms) {
+  const player = document.getElementById('audioPlayer');
+  if (player.src) {
+    player.currentTime = ms / 1000;
+    player.play();
+  }
+}
+
+// ========== Downloads ==========
+function downloadResult(type) {
+  const a = document.createElement('a');
+  if (type === 'audio' && resultAudioUrl) {
+    a.href = resultAudioUrl;
+    const fmt = document.getElementById('format').value;
+    a.download = `tts_output_${Date.now()}.${fmt}`;
+  } else if (type === 'srt' && resultSrtText) {
+    const blob = new Blob(['﻿' + resultSrtText], { type: 'text/plain;charset=utf-8' });
+    a.href = URL.createObjectURL(blob);
+    a.download = `tts_subtitle_${Date.now()}.srt`;
+  } else if (type === 'json' && resultSubtitleData) {
+    const blob = new Blob([JSON.stringify({ sentences: resultSubtitleData }, null, 2)], { type: 'application/json' });
+    a.href = URL.createObjectURL(blob);
+    a.download = `tts_subtitle_${Date.now()}.json`;
+  } else {
+    alert('暂无可下载的内容');
+    return;
+  }
+  a.click();
+}
+
+function copySrt() {
+  if (!resultSrtText) { alert('暂无 SRT 内容'); return; }
+  navigator.clipboard.writeText(resultSrtText).then(() => log('ok', 'SRT 已复制到剪贴板'));
+}
+
+function resetUI() {
+  document.getElementById('submitBtn').disabled = false;
+  document.getElementById('submitBtn').innerHTML = '🚀 提交生成任务';
+  document.getElementById('cancelBtn').style.display = 'none';
+}
+</script>
+</body>
+</html>

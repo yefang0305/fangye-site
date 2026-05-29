@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "sessionKey": "big-project-batch-remix",
+  "createdAt": "2026-05-29T02:29:43.858966-08:00",
+  "updatedAt": "2026-05-29T02:45:59.416799-08:00",
+  "primary": {
+    "sessionId": null,
+    "status": "available",
+    "leaseRunId": null,
+    "leasePid": null,
+    "leasedAt": null,
+    "lastUsedAt": null,
+    "lastRunId": null,
+    "lastResetAt": null,
+    "lastResetReason": null,
+    "lastResetFromSessionId": null,
+    "lastResetFromRunId": null
+  },
+  "parallelPool": [
+    {
+      "sessionId": "f8ded7c6-0941-470e-a45a-e17751155f9b",
+      "status": "available",
+      "leaseRunId": null,
+      "leasePid": null,
+      "leasedAt": null,
+      "lastUsedAt": "2026-05-29T02:45:59.416640-08:00",
+      "lastRunId": "20260529_022943_830_717186e4",
+      "lastTaskFingerprint": "b50fc36687927f7ac65fa61659be83839c2bdbb3e537b8db4f0a99055749c06d",
+      "lastResetAt": null,
+      "lastResetReason": null,
+      "lastResetFromSessionId": null,
+      "lastResetFromRunId": null
+    }
+  ]
+}

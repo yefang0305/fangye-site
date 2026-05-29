@@ -1,0 +1,101 @@
+---
+interface Props {
+  name: string;
+  description: string;
+  category: string;
+  status: 'usable' | 'showcase';
+  href: string;
+  hasPage?: boolean;
+}
+
+const { name, description, category, status, href, hasPage = false } = Astro.props;
+const ctaLabel = status === 'usable' ? (hasPage ? '进入工具' : '计划中') : (hasPage ? '查看项目' : '了解更多');
+---
+
+<article class="tool-card">
+  <a href={href}>
+    <div class="tool-header-row">
+      <div class="tool-icon-wrapper" title={category}>
+        {category === '文本处理' && (
+          <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+            <path d="M9 12h6" />
+            <path d="M9 16h6" />
+          </svg>
+        )}
+        {category === '提示词助手' && (
+          <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m15 4 5 5" />
+            <path d="m3 20 12-12" />
+            <path d="m19 2-1 1" />
+            <path d="m22 5-1 1" />
+            <path d="m16 2-1 1" />
+            <path d="m20 1-1 1" />
+            <path d="M12 2v2" />
+            <path d="M5 12H3" />
+          </svg>
+        )}
+        {category === '语音工具' && (
+          <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+            <line x1="12" y1="19" x2="12" y2="23" />
+            <line x1="8" y1="23" x2="16" y2="23" />
+          </svg>
+        )}
+        {category === '效率工具' && (
+          <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
+        )}
+        {category === '图片处理' && (
+          <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <polyline points="21 15 16 10 5 21" />
+          </svg>
+        )}
+        {category === '视频工具' && (
+          <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="23 7 16 12 23 17 23 7" />
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+          </svg>
+        )}
+        {category === '数据采集' && (
+          <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 0 1 9-9" />
+          </svg>
+        )}
+        {category === '发布工具' && (
+          <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13" />
+            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+          </svg>
+        )}
+        {category !== '文本处理' && category !== '提示词助手' && category !== '语音工具' && category !== '效率工具' && category !== '图片处理' && category !== '视频工具' && category !== '数据采集' && category !== '发布工具' && (
+          <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+          </svg>
+        )}
+      </div>
+      <span class={`status status-${status}`}>
+        {status === 'usable' ? '站内可用' : '项目展示'}
+      </span>
+    </div>
+    
+    <h3>{name}</h3>
+    <p>{description}</p>
+    
+    <div class="tool-footer">
+      <span class="tool-category">{category}</span>
+      <span class="tool-action-btn">
+        {ctaLabel}
+        <svg class="arrow-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-left:2px;">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </span>
+    </div>
+  </a>
+</article>

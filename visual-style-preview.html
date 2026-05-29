@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>fangye.cc 视觉风格草图</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      color: #172033;
+      background: #f7f6f2;
+    }
+    main { max-width: 1180px; margin: 0 auto; padding: 48px 24px; }
+    h1 { margin: 0 0 8px; font-size: 32px; letter-spacing: 0; }
+    .subtitle { margin: 0 0 28px; color: #5d6572; line-height: 1.65; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .card {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(23, 32, 51, .12);
+      background: #fff;
+      box-shadow: 0 12px 32px rgba(23, 32, 51, .08);
+    }
+    .preview { min-height: 310px; padding: 20px; }
+    .nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 34px; font-size: 13px; }
+    .links { display: flex; gap: 12px; color: inherit; opacity: .7; }
+    .name { font-weight: 800; }
+    .title { font-size: 28px; line-height: 1.16; font-weight: 800; margin-bottom: 12px; letter-spacing: 0; }
+    .copy { font-size: 14px; line-height: 1.7; opacity: .72; margin-bottom: 22px; }
+    .row { display: grid; grid-template-columns: 1.2fr .8fr; gap: 12px; }
+    .block { min-height: 72px; border-radius: 7px; padding: 13px; font-size: 13px; line-height: 1.45; }
+    .body { padding: 18px; }
+    h2 { margin: 0 0 8px; font-size: 19px; }
+    p { line-height: 1.65; margin: 0; color: #596171; }
+    .a .preview { color: #18202f; background: #f4f1ea; }
+    .a .block { background: #fffdf8; border: 1px solid #ddd6c8; }
+    .b .preview { color: #101820; background: #eef4f0; }
+    .b .block { background: #ffffff; border: 1px solid #cbd9d1; }
+    .c .preview { color: #f1f6f5; background: #11181c; }
+    .c .block { background: #18252a; border: 1px solid #2f4f56; }
+    .c .copy, .c .links { opacity: .78; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>fangye.cc 视觉风格草图</h1>
+    <p class="subtitle">结构已选：内容优先。现在选整体气质，后面我会按这个方向细化首页和栏目。</p>
+    <section class="grid">
+      <article class="card a">
+        <div class="preview">
+          <div class="nav"><span class="name">fangye.cc</span><span class="links"><span>Notes</span><span>Tools</span><span>About</span></span></div>
+          <div class="title">写一点有用的文章，做一点顺手的工具。</div>
+          <div class="copy">关于 AI、产品、开发和效率的个人记录。</div>
+          <div class="row">
+            <div class="block">最新文章<br>AI 工作流如何变成日常生产力</div>
+            <div class="block">小工具<br>文本处理 / 图片工具 / 效率助手</div>
+          </div>
+        </div>
+        <div class="body">
+          <h2>A. 温和创作者</h2>
+          <p>暖色纸感，阅读舒服，适合长期写作和个人表达。</p>
+        </div>
+      </article>
+      <article class="card b">
+        <div class="preview">
+          <div class="nav"><span class="name">fangye.cc</span><span class="links"><span>Notes</span><span>Tools</span><span>About</span></span></div>
+          <div class="title">Articles, tools, and experiments.</div>
+          <div class="copy">清晰、克制、偏产品工程师的个人工作台。</div>
+          <div class="row">
+            <div class="block">Featured notes<br>AI, product, code, workflows</div>
+            <div class="block">Tools<br>useful things I built</div>
+          </div>
+        </div>
+        <div class="body">
+          <h2>B. 清爽专业</h2>
+          <p>浅绿灰和白色，干净可信，适合技术文章和工具展示。</p>
+        </div>
+      </article>
+      <article class="card c">
+        <div class="preview">
+          <div class="nav"><span class="name">fangye.cc</span><span class="links"><span>Lab</span><span>Writing</span><span>Tools</span></span></div>
+          <div class="title">Building small systems for sharper thinking.</div>
+          <div class="copy">更像个人实验室，突出探索感和技术味。</div>
+          <div class="row">
+            <div class="block">Research notes<br>interfaces, prompts, automation</div>
+            <div class="block">Lab tools<br>tiny products and demos</div>
+          </div>
+        </div>
+        <div class="body">
+          <h2>C. 深色实验室</h2>
+          <p>更酷、更技术，但阅读压力略高，适合强调 AI/工具实验。</p>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

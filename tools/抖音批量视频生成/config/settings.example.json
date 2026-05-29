@@ -1,0 +1,22 @@
+{
+  "volcengine_app_id": "",
+  "volcengine_token": "",
+  "volcengine_resource_id": "seed-tts-2.0",
+  "tts_voice": "zh_female_zhimeng_uranus_bigtts",
+  "tts_speed": 1.0,
+  "output_resolution": "1080x1920",
+  "output_fps": 30,
+  "bgm_volume": 30,
+  "output_dir": "./output/",
+  "ffmpeg_path": "./ffmpeg/ffmpeg.exe",
+  "script_llm_api_key": "",
+  "script_llm_model": "doubao-seed-2.0-pro",
+  "subtitle_font": "Microsoft YaHei",
+  "subtitle_font_size": 52,
+  "subtitle_color": "&H00FFFFFF",
+  "subtitle_outline": true,
+  "text_segment_min_duration": 1.8,
+  "default_material_folder": "",
+  "default_bgm_folder": "",
+  "to_publish_dir": "./to_publish/"
+}

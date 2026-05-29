@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "sessionKey": "big-project-batch-remix-rework",
+  "createdAt": "2026-05-29T02:53:44.533981-08:00",
+  "updatedAt": "2026-05-29T02:53:44.534084-08:00",
+  "primary": {
+    "sessionId": "db096004-5dfd-4ade-b573-b5a98e568a00",
+    "status": "leased",
+    "leaseRunId": "20260529_025344_514_3abbb2eb",
+    "leasePid": 8384,
+    "leasedAt": "2026-05-29T02:53:44.533994-08:00",
+    "lastUsedAt": null,
+    "lastRunId": null,
+    "lastResetAt": null,
+    "lastResetReason": null,
+    "lastResetFromSessionId": null,
+    "lastResetFromRunId": null
+  },
+  "parallelPool": []
+}

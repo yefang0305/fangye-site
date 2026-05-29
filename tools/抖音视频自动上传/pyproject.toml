@@ -1,0 +1,19 @@
+[project]
+name = "mediapush"
+version = "0.1.0"
+description = "抖音多账号视频批量发布桌面工作台 — Douyin multi-account video batch publishing workbench"
+requires-python = ">=3.11"
+dependencies = [
+    "pyqt5>=5.15",
+    "playwright>=1.40",
+    "python-dotenv>=1.0",
+    "pytest>=7.4",
+    "imageio-ffmpeg>=0.5",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["account", "db", "publisher", "mediapush_ui"]

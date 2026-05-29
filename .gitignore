@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.astro/
+.vercel/
+.netlify/
+.superpowers/
+*.log
+
+.codex/
+astro-dev.*.log

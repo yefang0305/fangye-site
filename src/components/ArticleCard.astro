@@ -1,0 +1,30 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags: string[];
+  href: string;
+}
+
+const { title, description, pubDate, tags, href } = Astro.props;
+const date = new Intl.DateTimeFormat('zh-CN', {
+  dateStyle: 'medium',
+  timeZone: 'UTC',
+}).format(pubDate);
+---
+
+<article class="article-card">
+  <a href={href}>
+    <div class="article-header-meta">
+      <span class="article-date">{date}</span>
+      <span class="article-divider">•</span>
+      <span class="article-reading-time">阅读约 3 分钟</span>
+    </div>
+    <h3 class="article-title">{title}</h3>
+    <p class="article-description">{description}</p>
+    <div class="tag-row">
+      {tags.map((tag) => <span class="tag">#{tag}</span>)}
+    </div>
+  </a>
+</article>

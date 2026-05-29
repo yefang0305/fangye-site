@@ -1,0 +1,138 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectPageLayout from '../../components/ProjectPageLayout.astro';
+---
+
+<BaseLayout title="MediaPush 发布工作台" description="多账号视频批量发布桌面工具，支持账号管理、定时发布、作品清理和私信管理。PyQt5 加 Playwright。">
+  <ProjectPageLayout
+    title="MediaPush 发布工作台"
+    description="面向多账号创作者的视频批量发布桌面工具，基于 PyQt5 和 Playwright 浏览器自动化，支持账号管理、定时发布队列和作品生命周期管理。"
+    eyebrow="Project"
+    techStack={[
+      { label: '运行时', items: ['Python 3.11+', 'PyQt5', 'Playwright'] },
+      { label: '浏览器', items: ['Chromium (Playwright)'] },
+      { label: '存储', items: ['SQLite', 'python-dotenv'] },
+      { label: '平台', items: ['Windows (桌面)'] },
+    ]}
+  >
+    <h2>项目定位</h2>
+    <p>
+      一个<strong>桌面端多账号发布管理工具</strong>，帮助创作者在多个账号之间高效分发视频内容。
+      通过 Playwright 驱动真实浏览器完成发布流程，提供账号隔离、定时任务和发布历史追踪。
+    </p>
+
+    <h2>核心能力</h2>
+    <div class="capability-grid">
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <h4>多账号管理</h4>
+        <p>独立账号 Profile，Cookie 隔离，一键切换发布身份。</p>
+      </div>
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <h4>定时发布</h4>
+        <p>支持立即发布和定时发布队列，灵活安排发布时间。</p>
+      </div>
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <h4>发布队列</h4>
+        <p>批量导入视频，自动排队处理，实时状态追踪和失败重试。</p>
+      </div>
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <h4>作品管理</h4>
+        <p>已发布作品列表、播放数据追踪和批量清理功能。</p>
+      </div>
+    </div>
+
+    <div class="project-svg">
+      <svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="mp-panel" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#142128"/>
+            <stop offset="100%" stop-color="#0d161b"/>
+          </linearGradient>
+        </defs>
+        <!-- Desktop UI Frame -->
+        <rect x="10" y="10" width="700" height="230" rx="8" fill="url(#mp-panel)" stroke="#2a4a3f" stroke-width="2"/>
+        <!-- Title bar -->
+        <rect x="10" y="10" width="700" height="28" rx="8" fill="#1a2a2f"/>
+        <rect x="10" y="28" width="700" height="2" fill="#1a2a2f"/>
+        <text x="30" y="28" fill="#78908c" font-size="11" font-family="monospace">MediaPush — 发布工作台</text>
+
+        <!-- Sidebar -->
+        <rect x="20" y="48" width="140" height="180" rx="4" fill="#0a1014" stroke="#2a4a3f" stroke-width="0.8"/>
+        <text x="90" y="72" fill="#9ff5d7" font-size="11" font-weight="bold" text-anchor="middle" font-family="monospace">账号</text>
+        <rect x="30" y="82" width="120" height="28" rx="4" fill="#142128" stroke="#2a4a3f" stroke-width="0.8"/>
+        <text x="90" y="100" fill="#a9bbb6" font-size="10" text-anchor="middle" font-family="monospace">账号 A ●</text>
+        <rect x="30" y="115" width="120" height="28" rx="4" fill="#0a1014"/>
+        <text x="90" y="133" fill="#78908c" font-size="10" text-anchor="middle" font-family="monospace">账号 B</text>
+        <rect x="30" y="148" width="120" height="28" rx="4" fill="#0a1014"/>
+        <text x="90" y="166" fill="#78908c" font-size="10" text-anchor="middle" font-family="monospace">账号 C</text>
+
+        <text x="90" y="200" fill="#9ff5d7" font-size="11" font-weight="bold" text-anchor="middle" font-family="monospace">导航</text>
+        <text x="90" y="218" fill="#a9bbb6" font-size="10" text-anchor="middle" font-family="monospace">发布 · 作品 · 私信</text>
+
+        <!-- Main content area -->
+        <rect x="170" y="48" width="530" height="180" rx="4" fill="#0a1014" stroke="#2a4a3f" stroke-width="0.8"/>
+        <text x="435" y="72" fill="#9ff5d7" font-size="12" font-weight="bold" text-anchor="middle" font-family="monospace">发布队列 — 账号 A</text>
+        <line x1="185" y1="82" x2="685" y2="82" stroke="#2a4a3f" stroke-width="0.8"/>
+
+        <!-- Table header -->
+        <text x="195" y="102" fill="#78908c" font-size="9" font-family="monospace">视频</text>
+        <text x="410" y="102" fill="#78908c" font-size="9" font-family="monospace">状态</text>
+        <text x="520" y="102" fill="#78908c" font-size="9" font-family="monospace">时间</text>
+        <text x="620" y="102" fill="#78908c" font-size="9" font-family="monospace">操作</text>
+        <line x1="185" y1="108" x2="685" y2="108" stroke="#2a4a3f" stroke-width="0.5"/>
+
+        <!-- Row 1 -->
+        <text x="195" y="128" fill="#a9bbb6" font-size="10" font-family="monospace">video_001.mp4</text>
+        <rect x="405" y="116" width="55" height="16" rx="8" fill="#47d6b2" opacity="0.15"/>
+        <text x="432" y="128" fill="#47d6b2" font-size="9" text-anchor="middle" font-family="monospace">已完成</text>
+        <text x="520" y="128" fill="#78908c" font-size="9" font-family="monospace">14:30</text>
+        <text x="620" y="128" fill="#a9bbb6" font-size="9" font-family="monospace">查看</text>
+
+        <!-- Row 2 -->
+        <text x="195" y="150" fill="#a9bbb6" font-size="10" font-family="monospace">video_002.mp4</text>
+        <rect x="405" y="138" width="55" height="16" rx="8" fill="#ffc66d" opacity="0.15"/>
+        <text x="432" y="150" fill="#ffc66d" font-size="9" text-anchor="middle" font-family="monospace">发布中</text>
+        <text x="520" y="150" fill="#78908c" font-size="9" font-family="monospace">—</text>
+        <text x="620" y="150" fill="#78908c" font-size="9" font-family="monospace">取消</text>
+
+        <!-- Row 3 -->
+        <text x="195" y="172" fill="#a9bbb6" font-size="10" font-family="monospace">video_003.mp4</text>
+        <rect x="405" y="160" width="55" height="16" rx="8" fill="#78908c" opacity="0.15"/>
+        <text x="432" y="172" fill="#78908c" font-size="9" text-anchor="middle" font-family="monospace">排队中</text>
+        <text x="520" y="172" fill="#78908c" font-size="9" font-family="monospace">16:00</text>
+        <text x="620" y="172" fill="#a9bbb6" font-size="9" font-family="monospace">移除</text>
+
+        <!-- Bottom bar -->
+        <rect x="185" y="192" width="200" height="28" rx="4" fill="#47d6b2"/>
+        <text x="285" y="210" fill="#06100d" font-size="11" font-weight="bold" text-anchor="middle" font-family="monospace">+ 添加视频到队列</text>
+        <text x="620" y="210" fill="#78908c" font-size="10" text-anchor="middle" font-family="monospace">共 3 个任务</text>
+      </svg>
+    </div>
+
+    <h2>本地运行</h2>
+    <ol>
+      <li>安装 Python 3.11+</li>
+      <li>安装依赖：<code>pip install pyqt5 playwright python-dotenv</code></li>
+      <li>安装浏览器：<code>playwright install chromium</code></li>
+      <li>配置 <code>.env</code> 文件（账号信息和存储路径）</li>
+      <li>启动：<code>python main.py</code></li>
+    </ol>
+
+    <h2>依赖与限制</h2>
+    <ul>
+      <li><strong>桌面应用：</strong>PyQt5 桌面应用，主要在 Windows 上测试。不支持 Web 部署。</li>
+      <li><strong>浏览器自动化：</strong>使用 Playwright 操控 Chromium 浏览器访问创作者后台，需要稳定的网络环境。</li>
+      <li><strong>账号安全：</strong>频繁自动化操作可能触发平台风控检测。建议合理控制发布频率。</li>
+      <li><strong>数据存储：</strong>SQLite 本地数据库存储发布记录和账号信息，不涉及云端同步。</li>
+      <li><strong>功能范围：</strong>当前版本专注抖音平台，小红书和快手发布功能规划中。</li>
+    </ul>
+
+    <div class="project-note">
+      <p><strong>注意：</strong>本工具通过 Playwright 操控真实浏览器完成发布，本质上是将手动操作自动化。请合理使用，遵守平台运营规范。账号 Cookie 和 Profile 数据仅存储在本地，不会上传到任何服务器。</p>
+    </div>
+  </ProjectPageLayout>
+</BaseLayout>

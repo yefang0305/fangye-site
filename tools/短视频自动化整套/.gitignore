@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Environment
+.env
+
+# Runtime artifacts
+data/
+logs/
+output/
+temp/
+*.log
+
+# Models (large files)
+models/
+
+# Videos (large binary files)
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.flv
+*.webm
+
+# OS
+.DS_Store
+Thumbs.db
+*.tmp
+*.part
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Cookies / credentials
+cookies*.txt
+*.cookies

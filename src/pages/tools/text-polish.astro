@@ -1,0 +1,133 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolPageLayout from '../../components/ToolPageLayout.astro';
+---
+
+<BaseLayout title="口播文案后处理" description="清理 ASR 转录文本中的语气词、常见误识、标点和分段。">
+  <ToolPageLayout
+    title="口播文案后处理"
+    description="把视频转写出来的口播稿做一次轻量清洗：去语气词、修正常见误识、补标点、合并自然段。"
+    eyebrow="Speech Text"
+    badges={[
+      { label: '浏览器本地', variant: 'local' },
+      { label: '无需上传', variant: 'no-upload' },
+    ]}
+  >
+    <div class="tool-grid">
+      <label>
+        原始转写文本
+        <textarea id="inputText" placeholder="粘贴 ASR 转写结果，比如：嗯 今天咱先说这个食候应该怎么做"></textarea>
+      </label>
+      <label>
+        后处理结果
+        <textarea id="outputText" readonly placeholder="清理后的口播文案会出现在这里"></textarea>
+      </label>
+    </div>
+
+    <div class="checkbox-row" aria-label="处理选项">
+      <label><input id="removeFillers" type="checkbox" checked /> 去语气词</label>
+      <label><input id="fixWords" type="checkbox" checked /> 修正常见误识</label>
+      <label><input id="addPunctuation" type="checkbox" checked /> 补标点</label>
+      <label><input id="removeSales" type="checkbox" checked /> 过滤明显带货文本</label>
+    </div>
+
+    <div class="button-row">
+      <button id="polishButton" type="button">处理文案</button>
+      <button id="copyButton" class="secondary" type="button">复制结果</button>
+      <button id="clearButton" class="secondary" type="button">清空</button>
+    </div>
+    <p id="toolMessage" class="tool-message" aria-live="polite"></p>
+
+    <script>
+      const corrections = [
+        ['看挂', '看卦'], ['看卦子', '看卦'], ['借色', '戒色'], ['甚虚', '肾虚'],
+        ['甚好的人', '肾好的人'], ['甚好', '肾好'], ['精满不思音', '精满不思淫'],
+        ['气满不思时', '气满不思食'], ['精化器', '精化气'], ['面红耳深', '面红耳赤'],
+        ['死语', '私欲'], ['地狱下', '地狱相'], ['奶头乐', '奶嘴乐'], ['音符经', '阴符经'],
+        ['重彩票', '中彩票'], ['道德底下', '道德底线'], ['的食候', '的时候'],
+        ['这个食候', '这个时候'], ['那个食候', '那个时候'], ['有食候', '有时候'],
+        ['食间', '时间'], ['食代', '时代'],
+      ];
+      const fullLineFillers = new Set(['嗯', '啊', '对吧', '是吧', '你知道吗', '明白吗']);
+      const lineStartFillers = ['然后呢', '然后', '咱先说', '咱可以先', '我告诉你', '就是说', '嗯', '啊'];
+      const salesKeywords = ['下单', '购买', '链接', '小黄车', '橱窗', '商品', '价格', '优惠', '限时', '秒杀', '点击'];
+      const breakWords = ['第一', '第二', '第三', '首先', '其次', '最后', '那么', '所以', '但是', '因为', '因此', '其实', '为什么', '怎么'];
+
+      const input = document.querySelector('#inputText');
+      const output = document.querySelector('#outputText');
+      const message = document.querySelector('#toolMessage');
+
+      function isSalesContent(lines) {
+        return lines.reduce((sum, line) => sum + salesKeywords.filter((keyword) => line.includes(keyword)).length, 0) >= 3;
+      }
+
+      function removeFiller(line) {
+        let value = line.trim();
+        if (fullLineFillers.has(value)) return '';
+        const filler = lineStartFillers.find((item) => value.startsWith(item));
+        if (filler) {
+          value = value.slice(filler.length).trim();
+          if ('，。！？'.includes(value[0])) value = value.slice(1).trim();
+        }
+        return value;
+      }
+
+      function addPunctuation(line) {
+        if (!line || '。！？：；'.includes(line.at(-1))) return line;
+        if (['吗', '呢', '啥'].some((suffix) => line.endsWith(suffix))) return `${line}？`;
+        return `${line}。`;
+      }
+
+      function createParagraphs(lines) {
+        const paragraphs = [];
+        let current = [];
+        for (const line of lines) {
+          const shouldBreak = current.length > 0 && (breakWords.some((word) => line.startsWith(word)) || current.length >= 5);
+          if (shouldBreak) {
+            paragraphs.push(current.join(''));
+            current = [line];
+          } else {
+            current.push(line);
+          }
+        }
+        if (current.length) paragraphs.push(current.join(''));
+        return paragraphs;
+      }
+
+      function polishText() {
+        let lines = input.value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+        if (!lines.length && input.value.trim()) lines = [input.value.trim()];
+        if (document.querySelector('#removeSales').checked && isSalesContent(lines)) {
+          output.value = '';
+          message.textContent = '检测到明显带货关键词，已按规则过滤。';
+          return;
+        }
+        if (document.querySelector('#fixWords').checked) {
+          let text = lines.join('\n');
+          for (const [wrong, right] of corrections) text = text.replaceAll(wrong, right);
+          lines = text.split('\n');
+        }
+        let processed = lines;
+        if (document.querySelector('#removeFillers').checked) processed = processed.map(removeFiller).filter(Boolean);
+        if (document.querySelector('#addPunctuation').checked) processed = processed.map(addPunctuation);
+        output.value = createParagraphs(processed).join('\n\n').trim();
+        message.textContent = '已完成口播文案后处理。';
+      }
+
+      document.querySelector('#polishButton').addEventListener('click', polishText);
+      document.querySelector('#copyButton').addEventListener('click', async () => {
+        if (!output.value) {
+          message.textContent = '还没有可复制的结果。';
+          return;
+        }
+        await navigator.clipboard.writeText(output.value);
+        message.textContent = '结果已复制。';
+      });
+      document.querySelector('#clearButton').addEventListener('click', () => {
+        input.value = '';
+        output.value = '';
+        message.textContent = '已清空。';
+      });
+    </script>
+  </ToolPageLayout>
+</BaseLayout>

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <rect width="1200" height="720" fill="#f6f7f2"/>
+  <text x="600" y="72" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="38" font-weight="700" fill="#202124">第一次让 Codex 真正帮你干活</text>
+  <g font-family="Microsoft YaHei, Arial, sans-serif" font-size="22">
+    <defs>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L9,3 z" fill="#202124" />
+      </marker>
+    </defs>
+    <g>
+      <rect x="80" y="160" width="180" height="105" rx="14" fill="#ffffff" stroke="#202124" stroke-width="3"/>
+      <text x="170" y="205" text-anchor="middle" font-weight="700" fill="#202124">准备文件夹</text>
+      <text x="170" y="238" text-anchor="middle" fill="#5f6368">放 2-3 篇文章</text>
+    </g>
+    <line x1="260" y1="212" x2="350" y2="212" stroke="#202124" stroke-width="3" marker-end="url(#arrow)"/>
+    <g>
+      <rect x="350" y="160" width="180" height="105" rx="14" fill="#ffffff" stroke="#202124" stroke-width="3"/>
+      <text x="440" y="205" text-anchor="middle" font-weight="700" fill="#202124">打开 Codex</text>
+      <text x="440" y="238" text-anchor="middle" fill="#5f6368">选择项目目录</text>
+    </g>
+    <line x1="530" y1="212" x2="620" y2="212" stroke="#202124" stroke-width="3" marker-end="url(#arrow)"/>
+    <g>
+      <rect x="620" y="160" width="180" height="105" rx="14" fill="#ffffff" stroke="#202124" stroke-width="3"/>
+      <text x="710" y="205" text-anchor="middle" font-weight="700" fill="#202124">先看不改</text>
+      <text x="710" y="238" text-anchor="middle" fill="#5f6368">总结内容定位</text>
+    </g>
+    <line x1="800" y1="212" x2="890" y2="212" stroke="#202124" stroke-width="3" marker-end="url(#arrow)"/>
+    <g>
+      <rect x="890" y="160" width="230" height="105" rx="14" fill="#ffffff" stroke="#202124" stroke-width="3"/>
+      <text x="1005" y="205" text-anchor="middle" font-weight="700" fill="#202124">生成结果文件</text>
+      <text x="1005" y="238" text-anchor="middle" fill="#5f6368">选题建议.md</text>
+    </g>
+    <rect x="166" y="370" width="868" height="160" rx="18" fill="#ffffff" stroke="#14703d" stroke-width="4"/>
+    <text x="600" y="430" text-anchor="middle" font-size="30" font-weight="700" fill="#14703d">这就是 Codex 和普通对话框的区别</text>
+    <text x="600" y="482" text-anchor="middle" font-size="24" fill="#5f6368">普通对话框把答案留在聊天窗口里</text>
+    <text x="600" y="522" text-anchor="middle" font-size="24" fill="#5f6368">Codex 会把结果落到你的真实工作文件夹里</text>
+  </g>
+</svg>

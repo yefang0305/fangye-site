@@ -1,0 +1,297 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolPageLayout from '../../components/ToolPageLayout.astro';
+---
+
+<BaseLayout title="MiniMax TTS 字幕" description="使用 MiniMax TTS API 将文本转成语音，并按句子生成粗略字幕。">
+  <ToolPageLayout
+    title="MiniMax TTS 字幕"
+    description="把文本提交到 MiniMax TTS，生成语音文件，并按文本句子切分出可下载的 SRT 字幕草稿。"
+    eyebrow="Voice Tool"
+    badges={[
+      { label: '需要 API Key', variant: 'api-key' },
+      { label: '浏览器调用', variant: 'default' },
+    ]}
+  >
+    <div class="tool-form-grid two">
+      <label class="tool-control">
+        API Key
+        <input id="apiKey" type="password" autocomplete="off" placeholder="只保存在当前浏览器" />
+      </label>
+      <label class="tool-control">
+        Group ID
+        <input id="groupId" type="text" autocomplete="off" placeholder="MiniMax 控制台里的 GroupId" />
+      </label>
+      <label class="tool-control">
+        模型
+        <select id="model">
+          <option value="speech-02-hd">speech-02-hd</option>
+          <option value="speech-02-turbo">speech-02-turbo</option>
+        </select>
+      </label>
+      <label class="tool-control">
+        音色
+        <select id="voiceId">
+          <option value="audiobook_male_1">audiobook_male_1</option>
+          <option value="audiobook_female_1">audiobook_female_1</option>
+          <option value="male-qn-qingse">male-qn-qingse</option>
+          <option value="female-shaonv">female-shaonv</option>
+        </select>
+      </label>
+      <label class="tool-control">
+        语速
+        <input id="speed" type="number" min="0.5" max="2" step="0.1" value="1" />
+      </label>
+      <label class="tool-control">
+        音量
+        <input id="volume" type="number" min="0.1" max="10" step="0.1" value="1" />
+      </label>
+      <label class="tool-control">
+        音调
+        <input id="pitch" type="number" min="-12" max="12" step="1" value="0" />
+      </label>
+      <label class="tool-control">
+        格式
+        <select id="format">
+          <option value="mp3">mp3</option>
+          <option value="wav">wav</option>
+        </select>
+      </label>
+    </div>
+
+    <label class="tool-control">
+      合成文本
+      <textarea id="ttsText" placeholder="粘贴需要生成语音的文案。建议先用口播文案后处理工具整理一遍。"></textarea>
+    </label>
+
+    <div class="button-row">
+      <button id="generateButton" type="button">生成语音</button>
+      <button id="downloadAudioButton" class="secondary" type="button" disabled>下载音频</button>
+      <button id="downloadSrtButton" class="secondary" type="button" disabled>下载字幕</button>
+    </div>
+
+    <div class="tool-result-stack">
+      <div class="tool-result-card">
+        <strong>音频预览</strong>
+        <audio id="audioPreview" controls></audio>
+      </div>
+      <div class="tool-log" id="statusLog" aria-live="polite">等待输入文本和 API 信息。</div>
+    </div>
+
+    <script>
+      const storageKeys = {
+        apiKey: 'fangye_minimax_api_key',
+        groupId: 'fangye_minimax_group_id',
+      };
+
+      const apiKeyInput = document.querySelector('#apiKey');
+      const groupIdInput = document.querySelector('#groupId');
+      const textInput = document.querySelector('#ttsText');
+      const modelInput = document.querySelector('#model');
+      const voiceInput = document.querySelector('#voiceId');
+      const speedInput = document.querySelector('#speed');
+      const volumeInput = document.querySelector('#volume');
+      const pitchInput = document.querySelector('#pitch');
+      const formatInput = document.querySelector('#format');
+      const generateButton = document.querySelector('#generateButton');
+      const downloadAudioButton = document.querySelector('#downloadAudioButton');
+      const downloadSrtButton = document.querySelector('#downloadSrtButton');
+      const audioPreview = document.querySelector('#audioPreview');
+      const statusLog = document.querySelector('#statusLog');
+
+      let audioUrl = '';
+      let audioBlob = null;
+      let srtText = '';
+
+      apiKeyInput.value = localStorage.getItem(storageKeys.apiKey) || '';
+      groupIdInput.value = localStorage.getItem(storageKeys.groupId) || '';
+
+      function log(message) {
+        const time = new Date().toLocaleTimeString();
+        statusLog.textContent = `[${time}] ${message}\n${statusLog.textContent}`.trim();
+      }
+
+      function setBusy(isBusy) {
+        generateButton.disabled = isBusy;
+        generateButton.textContent = isBusy ? '生成中...' : '生成语音';
+      }
+
+      function saveConfig() {
+        localStorage.setItem(storageKeys.apiKey, apiKeyInput.value.trim());
+        localStorage.setItem(storageKeys.groupId, groupIdInput.value.trim());
+      }
+
+      function splitSentences(text) {
+        return text
+          .replace(/\s+/g, ' ')
+          .split(/(?<=[。！？!?；;])\s*/)
+          .map((item) => item.trim())
+          .filter(Boolean);
+      }
+
+      function formatTime(seconds) {
+        const totalMs = Math.max(0, Math.round(seconds * 1000));
+        const ms = String(totalMs % 1000).padStart(3, '0');
+        const totalSeconds = Math.floor(totalMs / 1000);
+        const s = String(totalSeconds % 60).padStart(2, '0');
+        const m = String(Math.floor(totalSeconds / 60) % 60).padStart(2, '0');
+        const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+        return `${h}:${m}:${s},${ms}`;
+      }
+
+      function buildSrt(text, duration = 0) {
+        const sentences = splitSentences(text);
+        if (!sentences.length) return '';
+        const weights = sentences.map((sentence) => Math.max(1, sentence.length));
+        const totalWeight = weights.reduce((sum, item) => sum + item, 0);
+        const totalDuration = duration || Math.max(4, text.length / 4.2);
+        let cursor = 0;
+
+        return sentences
+          .map((sentence, index) => {
+            const segmentDuration = Math.max(1.2, (weights[index] / totalWeight) * totalDuration);
+            const start = cursor;
+            const end = Math.min(totalDuration, cursor + segmentDuration);
+            cursor = end;
+            return `${index + 1}\n${formatTime(start)} --> ${formatTime(end)}\n${sentence}`;
+          })
+          .join('\n\n');
+      }
+
+      async function requestJson(url, options) {
+        const response = await fetch(url, options);
+        const text = await response.text();
+        let data = {};
+        try {
+          data = text ? JSON.parse(text) : {};
+        } catch {
+          data = { raw: text };
+        }
+        if (!response.ok) {
+          throw new Error(data?.base_resp?.status_msg || data?.message || `请求失败：${response.status}`);
+        }
+        return data;
+      }
+
+      function getTaskId(data) {
+        return data.task_id || data?.data?.task_id || data?.result?.task_id;
+      }
+
+      function getFileId(data) {
+        return data.file_id || data?.data?.file_id || data?.result?.file_id || data?.task_result?.file_id;
+      }
+
+      function getDownloadUrl(data) {
+        return data.download_url || data.file_url || data.url || data?.file?.download_url || data?.data?.download_url || data?.data?.url;
+      }
+
+      async function waitForFile(apiBase, headers, taskId) {
+        for (let index = 0; index < 40; index += 1) {
+          await new Promise((resolve) => setTimeout(resolve, 2500));
+          const query = await requestJson(`${apiBase}/query/t2a_async_query_v2?GroupId=${encodeURIComponent(groupIdInput.value.trim())}&task_id=${encodeURIComponent(taskId)}`, {
+            headers,
+          });
+          const status = query.status || query?.data?.status || query?.task_status;
+          log(`任务状态：${status || '查询中'}`);
+          const fileId = getFileId(query);
+          if (fileId) return fileId;
+          if (String(status).toLowerCase().includes('fail')) throw new Error('MiniMax 返回任务失败。');
+        }
+        throw new Error('等待任务超时，请稍后到 MiniMax 控制台确认。');
+      }
+
+      async function generate() {
+        const apiKey = apiKeyInput.value.trim();
+        const groupId = groupIdInput.value.trim();
+        const text = textInput.value.trim();
+        if (!apiKey || !groupId || !text) {
+          log('请先填写 API Key、Group ID 和合成文本。');
+          return;
+        }
+
+        saveConfig();
+        setBusy(true);
+        downloadAudioButton.disabled = true;
+        downloadSrtButton.disabled = true;
+        if (audioUrl) URL.revokeObjectURL(audioUrl);
+        audioUrl = '';
+        audioBlob = null;
+
+        const apiBase = 'https://api.minimaxi.com/v1';
+        const headers = {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        };
+
+        try {
+          log('已提交 MiniMax TTS 任务。');
+          const task = await requestJson(`${apiBase}/t2a_async_v2?GroupId=${encodeURIComponent(groupId)}`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+              model: modelInput.value,
+              text,
+              voice_setting: {
+                voice_id: voiceInput.value,
+                speed: Number(speedInput.value),
+                vol: Number(volumeInput.value),
+                pitch: Number(pitchInput.value),
+              },
+              audio_setting: {
+                sample_rate: 32000,
+                bitrate: 128000,
+                format: formatInput.value,
+                channel: 1,
+              },
+            }),
+          });
+
+          const taskId = getTaskId(task);
+          if (!taskId) throw new Error('没有拿到 task_id，请检查 MiniMax 接口返回。');
+          const fileId = getFileId(task) || await waitForFile(apiBase, headers, taskId);
+          log(`拿到文件 ID：${fileId}`);
+
+          const fileInfo = await requestJson(`${apiBase}/files/retrieve?GroupId=${encodeURIComponent(groupId)}&file_id=${encodeURIComponent(fileId)}`, {
+            headers,
+          });
+          const downloadUrl = getDownloadUrl(fileInfo);
+          if (!downloadUrl) throw new Error('没有拿到音频下载地址。');
+
+          const audioResponse = await fetch(downloadUrl);
+          if (!audioResponse.ok) throw new Error(`下载音频失败：${audioResponse.status}`);
+          audioBlob = await audioResponse.blob();
+          audioUrl = URL.createObjectURL(audioBlob);
+          audioPreview.src = audioUrl;
+          downloadAudioButton.disabled = false;
+          srtText = buildSrt(text);
+          downloadSrtButton.disabled = false;
+          log('音频生成完成。字幕会在音频读取时长后自动重新估算。');
+        } catch (error) {
+          log(`${error.message || error} 如果浏览器提示 CORS，后续上线时需要加一个服务端代理。`);
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function downloadBlob(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+
+      audioPreview.addEventListener('loadedmetadata', () => {
+        srtText = buildSrt(textInput.value.trim(), audioPreview.duration);
+      });
+      generateButton.addEventListener('click', generate);
+      downloadAudioButton.addEventListener('click', () => {
+        if (audioBlob) downloadBlob(audioBlob, `minimax-tts.${formatInput.value}`);
+      });
+      downloadSrtButton.addEventListener('click', () => {
+        if (srtText) downloadBlob(new Blob([srtText], { type: 'text/plain;charset=utf-8' }), 'minimax-tts.srt');
+      });
+    </script>
+  </ToolPageLayout>
+</BaseLayout>

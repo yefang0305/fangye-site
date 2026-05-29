@@ -1,0 +1,312 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolPageLayout from '../../components/ToolPageLayout.astro';
+---
+
+<BaseLayout title="公众号排版助手" description="把 Markdown 或普通文章整理成适合复制到微信公众号编辑器的排版。">
+  <ToolPageLayout
+    title="公众号排版助手"
+    description="把文章内容整理成公众号友好的富文本排版。可先本地预览，也可以填入兼容 OpenAI 的接口做结构化润色。"
+    eyebrow="WeChat Editor"
+    badges={[
+      { label: '本地预览', variant: 'local' },
+      { label: '可接 AI', variant: 'api-key' },
+    ]}
+  >
+    <div class="tool-form-grid two">
+      <label class="tool-control">
+        API Key
+        <input id="apiKey" type="password" autocomplete="off" placeholder="可选，只保存在当前浏览器" />
+      </label>
+      <label class="tool-control">
+        Base URL
+        <input id="baseUrl" type="text" value="https://ark.cn-beijing.volces.com/api/v3" />
+      </label>
+      <label class="tool-control">
+        Model ID
+        <input id="modelId" type="text" value="doubao-seed-1-6-250615" />
+      </label>
+      <label class="tool-control">
+        排版主题
+        <select id="theme">
+          <option value="clean-blue">清爽蓝</option>
+          <option value="warm">暖白</option>
+          <option value="ink">墨色</option>
+          <option value="minimal">极简</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="tool-grid">
+      <label>
+        原文
+        <textarea id="sourceText" placeholder="粘贴文章正文，支持普通文本和简单 Markdown。"></textarea>
+      </label>
+      <div>
+        <span class="field-label">排版预览</span>
+        <div id="preview" class="tool-preview light-preview" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button id="localButton" type="button">本地排版</button>
+      <button id="aiButton" class="secondary" type="button">AI 结构排版</button>
+      <button id="copyRichButton" class="secondary" type="button">复制富文本</button>
+      <button id="copyHtmlButton" class="secondary" type="button">复制 HTML</button>
+      <button id="clearButton" class="secondary" type="button">清空</button>
+    </div>
+    <p id="message" class="tool-message" aria-live="polite"></p>
+
+    <script>
+      const keys = {
+        apiKey: 'fangye_wechat_formatter_api_key',
+        baseUrl: 'fangye_wechat_formatter_base_url',
+        modelId: 'fangye_wechat_formatter_model_id',
+        theme: 'fangye_wechat_formatter_theme',
+      };
+
+      const apiKeyInput = document.querySelector('#apiKey');
+      const baseUrlInput = document.querySelector('#baseUrl');
+      const modelInput = document.querySelector('#modelId');
+      const themeInput = document.querySelector('#theme');
+      const sourceInput = document.querySelector('#sourceText');
+      const preview = document.querySelector('#preview');
+      const message = document.querySelector('#message');
+      const localButton = document.querySelector('#localButton');
+      const aiButton = document.querySelector('#aiButton');
+      const copyRichButton = document.querySelector('#copyRichButton');
+      const copyHtmlButton = document.querySelector('#copyHtmlButton');
+      const clearButton = document.querySelector('#clearButton');
+
+      apiKeyInput.value = localStorage.getItem(keys.apiKey) || '';
+      baseUrlInput.value = localStorage.getItem(keys.baseUrl) || baseUrlInput.value;
+      modelInput.value = localStorage.getItem(keys.modelId) || modelInput.value;
+      themeInput.value = localStorage.getItem(keys.theme) || themeInput.value;
+
+      const themes = {
+        'clean-blue': {
+          accent: '#2563eb',
+          soft: '#eff6ff',
+          text: '#1f2937',
+          quote: '#dbeafe',
+          name: '清爽蓝',
+        },
+        warm: {
+          accent: '#b45309',
+          soft: '#fff7ed',
+          text: '#2f2a24',
+          quote: '#fed7aa',
+          name: '暖白',
+        },
+        ink: {
+          accent: '#111827',
+          soft: '#f3f4f6',
+          text: '#111827',
+          quote: '#d1d5db',
+          name: '墨色',
+        },
+        minimal: {
+          accent: '#0f766e',
+          soft: '#f8fafc',
+          text: '#172026',
+          quote: '#ccfbf1',
+          name: '极简',
+        },
+      };
+
+      function setMessage(text, type = 'info') {
+        message.textContent = text;
+        message.className = `tool-message ${type}`;
+      }
+
+      function saveConfig() {
+        localStorage.setItem(keys.apiKey, apiKeyInput.value.trim());
+        localStorage.setItem(keys.baseUrl, baseUrlInput.value.trim());
+        localStorage.setItem(keys.modelId, modelInput.value.trim());
+        localStorage.setItem(keys.theme, themeInput.value);
+      }
+
+      function escapeHtml(text) {
+        return text
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      function inlineMarkdown(text) {
+        return escapeHtml(text)
+          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+          .replace(/`(.+?)`/g, '<code style="background:#f1f5f9;padding:2px 5px;border-radius:4px;">$1</code>');
+      }
+
+      function getTheme() {
+        return themes[themeInput.value] || themes['clean-blue'];
+      }
+
+      function renderLocal(text) {
+        const theme = getTheme();
+        const lines = text.replace(/\r\n/g, '\n').split('\n');
+        const blocks = [];
+        let listItems = [];
+        let paragraph = [];
+
+        function flushParagraph() {
+          if (paragraph.length) {
+            blocks.push(`<p style="margin: 14px 0; line-height: 1.9; color: ${theme.text};">${inlineMarkdown(paragraph.join(' '))}</p>`);
+            paragraph = [];
+          }
+        }
+
+        function flushList() {
+          if (listItems.length) {
+            blocks.push(`<ul style="margin: 12px 0 18px; padding-left: 1.2em; color: ${theme.text}; line-height: 1.85;">${listItems.map((item) => `<li style="margin: 6px 0;">${inlineMarkdown(item)}</li>`).join('')}</ul>`);
+            listItems = [];
+          }
+        }
+
+        lines.forEach((rawLine) => {
+          const line = rawLine.trim();
+          if (!line) {
+            flushParagraph();
+            flushList();
+            return;
+          }
+          if (/^#\s+/.test(line)) {
+            flushParagraph();
+            flushList();
+            blocks.push(`<h1 style="margin: 0 0 22px; color: ${theme.accent}; font-size: 24px; line-height: 1.35; font-weight: 800;">${inlineMarkdown(line.replace(/^#\s+/, ''))}</h1>`);
+            return;
+          }
+          if (/^##\s+/.test(line)) {
+            flushParagraph();
+            flushList();
+            blocks.push(`<h2 style="margin: 28px 0 12px; padding-left: 12px; border-left: 4px solid ${theme.accent}; color: ${theme.text}; font-size: 18px; line-height: 1.45;">${inlineMarkdown(line.replace(/^##\s+/, ''))}</h2>`);
+            return;
+          }
+          if (/^>\s?/.test(line)) {
+            flushParagraph();
+            flushList();
+            blocks.push(`<blockquote style="margin: 16px 0; padding: 12px 14px; background: ${theme.soft}; border-left: 4px solid ${theme.quote}; color: ${theme.text}; line-height: 1.8;">${inlineMarkdown(line.replace(/^>\s?/, ''))}</blockquote>`);
+            return;
+          }
+          if (/^[-*]\s+/.test(line)) {
+            flushParagraph();
+            listItems.push(line.replace(/^[-*]\s+/, ''));
+            return;
+          }
+          paragraph.push(line);
+        });
+
+        flushParagraph();
+        flushList();
+
+        return `<section style="max-width: 680px; margin: 0 auto; padding: 8px 2px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 16px; color: ${theme.text};">${blocks.join('')}</section>`;
+      }
+
+      function formatLocal() {
+        const text = sourceInput.value.trim();
+        if (!text) {
+          setMessage('先粘贴一段文章内容。', 'error');
+          return;
+        }
+        saveConfig();
+        preview.innerHTML = renderLocal(text);
+        setMessage(`已使用「${getTheme().name}」生成本地排版。`, 'success');
+      }
+
+      async function formatWithAi() {
+        const text = sourceInput.value.trim();
+        const apiKey = apiKeyInput.value.trim();
+        const baseUrl = baseUrlInput.value.trim().replace(/\/$/, '');
+        const model = modelInput.value.trim();
+        if (!text) {
+          setMessage('先粘贴一段文章内容。', 'error');
+          return;
+        }
+        if (!apiKey || !baseUrl || !model) {
+          setMessage('AI 排版需要填写 API Key、Base URL 和 Model ID。', 'error');
+          return;
+        }
+
+        saveConfig();
+        aiButton.disabled = true;
+        aiButton.textContent = '排版中...';
+        try {
+          const response = await fetch(`${baseUrl}/chat/completions`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model,
+              temperature: 0.35,
+              messages: [
+                {
+                  role: 'system',
+                  content: '你是公众号编辑。请保留原意，优化标题层级、分段、列表和引用。只输出 Markdown 正文，不要解释。',
+                },
+                { role: 'user', content: text },
+              ],
+            }),
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data?.error?.message || data?.message || `请求失败：${response.status}`);
+          const content = data?.choices?.[0]?.message?.content?.trim();
+          if (!content) throw new Error('AI 没有返回正文内容。');
+          preview.innerHTML = renderLocal(content);
+          setMessage('AI 结构排版完成，可复制富文本到公众号编辑器。', 'success');
+        } catch (error) {
+          preview.innerHTML = renderLocal(text);
+          setMessage(`${error.message || error}。浏览器直连接口可能被 CORS 拦截，上线后可加服务端代理；已先生成本地排版。`, 'error');
+        } finally {
+          aiButton.disabled = false;
+          aiButton.textContent = 'AI 结构排版';
+        }
+      }
+
+      async function copyRich() {
+        if (!preview.innerHTML.trim()) formatLocal();
+        const html = preview.innerHTML;
+        const text = preview.innerText;
+        try {
+          if (window.ClipboardItem) {
+            await navigator.clipboard.write([
+              new ClipboardItem({
+                'text/html': new Blob([html], { type: 'text/html' }),
+                'text/plain': new Blob([text], { type: 'text/plain' }),
+              }),
+            ]);
+          } else {
+            await navigator.clipboard.writeText(text);
+          }
+          setMessage('已复制富文本。', 'success');
+        } catch {
+          setMessage('浏览器没有授予剪贴板权限，可以先复制 HTML 源码。', 'error');
+        }
+      }
+
+      async function copyHtml() {
+        if (!preview.innerHTML.trim()) formatLocal();
+        await navigator.clipboard.writeText(preview.innerHTML);
+        setMessage('已复制 HTML 源码。', 'success');
+      }
+
+      localButton.addEventListener('click', formatLocal);
+      aiButton.addEventListener('click', formatWithAi);
+      copyRichButton.addEventListener('click', copyRich);
+      copyHtmlButton.addEventListener('click', copyHtml);
+      clearButton.addEventListener('click', () => {
+        sourceInput.value = '';
+        preview.innerHTML = '';
+        setMessage('已清空。', 'info');
+      });
+      themeInput.addEventListener('change', () => {
+        saveConfig();
+        if (sourceInput.value.trim()) formatLocal();
+      });
+    </script>
+  </ToolPageLayout>
+</BaseLayout>

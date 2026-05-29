@@ -1,0 +1,130 @@
+{
+  "artifactSchema": 3,
+  "invocationContract": "codex_with_cc_workflow",
+  "workflowId": "priority-tool-split-20260528",
+  "createdAt": "2026-05-28T08:36:20.453258-08:00",
+  "updatedAt": "2026-05-28T08:38:00.676252-08:00",
+  "tasks": {
+    "implement-profile-link-web": {
+      "taskId": "implement-profile-link-web",
+      "role": "implementer",
+      "scope": [
+        "J:\\MagicTool\\个人网站\\tools\\抖音主页链接采集"
+      ],
+      "verification": [],
+      "dependsOn": [],
+      "runs": [
+        "20260528_082859_562_40da3794"
+      ],
+      "status": "completed",
+      "lastReportStatus": "DONE",
+      "lastReportFinalResult": "DONE",
+      "lastReportRole": "implementer",
+      "reviewDecision": "pending-review",
+      "reviews": {}
+    },
+    "implement-local-asr-project": {
+      "taskId": "implement-local-asr-project",
+      "role": "implementer",
+      "scope": [
+        "J:\\MagicTool\\个人网站\\tools\\抖音文案提取"
+      ],
+      "verification": [],
+      "dependsOn": [],
+      "runs": [
+        "20260528_083135_607_77cb75e8"
+      ],
+      "status": "completed",
+      "lastReportStatus": "DONE",
+      "lastReportFinalResult": "DONE",
+      "lastReportRole": "implementer",
+      "reviewDecision": "pending-review",
+      "reviews": {}
+    },
+    "implement-douyin-download-web": {
+      "taskId": "implement-douyin-download-web",
+      "role": "implementer",
+      "scope": [
+        "J:\\MagicTool\\个人网站\\tools\\抖音视频下载"
+      ],
+      "verification": [],
+      "dependsOn": [],
+      "runs": [
+        "20260528_083127_079_06ca95b2"
+      ],
+      "status": "completed",
+      "lastReportStatus": "DONE",
+      "lastReportFinalResult": "DONE",
+      "lastReportRole": "implementer",
+      "reviewDecision": "pending-review",
+      "reviews": {}
+    }
+  },
+  "runs": {
+    "20260528_082859_562_40da3794": {
+      "runId": "20260528_082859_562_40da3794",
+      "taskId": "implement-profile-link-web",
+      "role": "implementer",
+      "status": "completed",
+      "reportStatus": "DONE",
+      "reportFinalResult": "DONE",
+      "reportRole": "implementer",
+      "reportSummary": "Created a standalone web tool (Python Flask + HTML frontend) under `J:\\MagicTool\\个人网站\\tools\\抖音主页链接采集` for extracting Douyin profile video links from a profile URL and exporting them as Markdown. The tool copies/adapts minimal logic from the source `benchmark_ingestion` module (URL parsing, post list parsing, pagination) without any runtime dependency on the source project. No `crtubeget_dir`, `qjs.exe`, or `a_bogus` is needed since the post-list API does not require signature generation. All 21 tests pass and `compileall` is clean.",
+      "reviewDecision": "accepted",
+      "reviewForTaskId": null,
+      "reviewKind": null,
+      "configPath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\config_20260528_082859_562_40da3794.json",
+      "statusPath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\status_20260528_082859_562_40da3794.json",
+      "outputPath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\claude_20260528_082859_562_40da3794.md",
+      "promptPath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\prompt_20260528_082859_562_40da3794.md",
+      "rawStreamPath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\stream_20260528_082859_562_40da3794.jsonl",
+      "tracePath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\trace_20260528_082859_562_40da3794.log"
+    },
+    "20260528_083135_607_77cb75e8": {
+      "runId": "20260528_083135_607_77cb75e8",
+      "taskId": "implement-local-asr-project",
+      "role": "implementer",
+      "status": "completed",
+      "reportStatus": "DONE",
+      "reportFinalResult": "DONE",
+      "reportRole": "implementer",
+      "reportSummary": "Created a standalone local-ASR project under `J:\\MagicTool\\个人网站\\tools\\抖音文案提取` with 6 files: CLI entrypoint (`cli.py`), ASR engine (`asr_engine.py`), text cleaning rules (`rule_cleaner.py`), config/argparse/output module (`config.py`), non-inference tests (`test_local.py`), dependency file (`requirements.txt`), plus `README.md` and `.gitignore`. All logic is self-contained — zero runtime imports from the source project. `python -m compileall .` passes cleanly, all 17 non-inference tests pass, and `git status --short` on the source project confirms no files were modified by this task.",
+      "reviewDecision": "accepted",
+      "reviewForTaskId": null,
+      "reviewKind": null,
+      "configPath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\config_20260528_083135_607_77cb75e8.json",
+      "statusPath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\status_20260528_083135_607_77cb75e8.json",
+      "outputPath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\claude_20260528_083135_607_77cb75e8.md",
+      "promptPath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\prompt_20260528_083135_607_77cb75e8.md",
+      "rawStreamPath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\stream_20260528_083135_607_77cb75e8.jsonl",
+      "tracePath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\trace_20260528_083135_607_77cb75e8.log"
+    },
+    "20260528_083127_079_06ca95b2": {
+      "runId": "20260528_083127_079_06ca95b2",
+      "taskId": "implement-douyin-download-web",
+      "role": "implementer",
+      "status": "completed",
+      "reportStatus": "DONE",
+      "reportFinalResult": "DONE",
+      "reportRole": "implementer",
+      "reportSummary": "Created a self-contained Douyin video batch download web tool under J:\\MagicTool\\个人网站\\tools\\抖音视频下载 with a Python Flask backend and browser UI. The tool accepts multiple Douyin video URLs (per-line), validates and deduplicates them, downloads sequentially via yt-dlp with optional cookie support, and generates Markdown/JSON run reports. All 34 unit tests pass covering URL parsing, deduplication, report generation, and downloader option construction. The source project at J:\\MagicTool\\Standalone\\VideoCut\\video_tool was not modified.",
+      "reviewDecision": "accepted",
+      "reviewForTaskId": null,
+      "reviewKind": null,
+      "configPath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\config_20260528_083127_079_06ca95b2.json",
+      "statusPath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\status_20260528_083127_079_06ca95b2.json",
+      "outputPath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\claude_20260528_083127_079_06ca95b2.md",
+      "promptPath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\prompt_20260528_083127_079_06ca95b2.md",
+      "rawStreamPath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\stream_20260528_083127_079_06ca95b2.jsonl",
+      "tracePath": "J:\\MagicTool\\个人网站\\tools\\_拆分盘点\\.codex\\codex_with_cc\\claude-delegate\\trace_20260528_083127_079_06ca95b2.log"
+    }
+  },
+  "finalAcceptance": {
+    "status": "pending-review",
+    "pendingTasks": [
+      "implement-profile-link-web",
+      "implement-local-asr-project",
+      "implement-douyin-download-web"
+    ]
+  }
+}

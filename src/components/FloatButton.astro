@@ -1,0 +1,30 @@
+---
+/* Floating WeChat Contact Button */
+---
+<div class="float-contact" id="floatContact">
+  <button class="float-wx" id="copyWxBtn" data-clipboard-text="tyxs027">
+    <span class="wx-title" id="wxTitle">联系微信</span>
+    <span class="wx-id">tyxs027</span>
+  </button>
+</div>
+
+<script>
+  const btn = document.getElementById('copyWxBtn');
+  const title = document.getElementById('wxTitle');
+  if (btn && title) {
+    btn.addEventListener('click', () => {
+      const textToCopy = btn.getAttribute('data-clipboard-text') || 'tyxs027';
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const originalText = title.textContent;
+        title.textContent = '复制成功！';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          title.textContent = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+    });
+  }
+</script>

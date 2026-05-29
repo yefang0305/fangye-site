@@ -1,0 +1,129 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import ToolCard from '../components/ToolCard.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import { tools } from '../data/tools';
+
+const articles = (await getCollection('articles')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const featuredArticles = articles.filter((article) => article.data.featured).slice(0, 3);
+const featuredTools = tools.filter((tool) => tool.featured);
+
+const articleCategories = [
+  ['AI 工具', '工具评测、组合方式和使用经验'],
+  ['提示词', '可复用的任务说明和上下文模板'],
+  ['自动化', '把重复动作变成流程'],
+  ['效率', '让日常工作更顺手的小方法'],
+];
+
+const toolCategories = [
+  ['文本处理', '清理、改写和格式化文本'],
+  ['图片处理', '图片压缩、整理和生成辅助'],
+  ['提示词助手', '提示词沉淀和复用'],
+  ['效率工具', '小型工作流和检查表'],
+];
+---
+
+<BaseLayout>
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">AI Tools Lab</p>
+      <h1>AI 工具实验室</h1>
+      <p class="lead">记录 AI 工具、自动化工作流和效率实验，也发布一些自己做的小工具。</p>
+      <div class="button-row">
+        <a class="button-link" href="/articles/">阅读文章</a>
+        <a class="button-link secondary" href="/tools/">查看工具</a>
+      </div>
+    </div>
+    <aside class="hero-panel" aria-label="站点摘要">
+      <div class="panel-line">
+        <span class="panel-label">Focus</span>
+        <span class="panel-value">AI tools / prompts / automation</span>
+      </div>
+      <div class="panel-line">
+        <span class="panel-label">Mode</span>
+        <span class="panel-value">Writing first, tools close by</span>
+      </div>
+      <div class="panel-line">
+        <span class="panel-label">Now shipping</span>
+        <span class="panel-value">文本清理器</span>
+      </div>
+    </aside>
+  </section>
+
+  <!-- Section: Featured Tools -->
+  <section class="page-section">
+    <SectionHeader eyebrow="Tools" title="顺手的小工具" description="简单工具站内可用，大一点的项目先做展示。" />
+    <div class="tool-grid-home">
+      {featuredTools.map((tool) => (
+        <ToolCard {...tool} />
+      ))}
+    </div>
+  </section>
+
+  <!-- Section: Recent Articles -->
+  <section class="page-section">
+    <SectionHeader eyebrow="Featured Notes" title="最近在写" description="把 AI 工具使用里的可复用经验整理成文章。" />
+    <div class="article-list">
+      {featuredArticles.map((article) => (
+        <ArticleCard
+          title={article.data.title}
+          description={article.data.description}
+          pubDate={article.data.pubDate}
+          tags={article.data.tags}
+          href={`/articles/${article.slug}/`}
+        />
+      ))}
+    </div>
+  </section>
+
+  <!-- Section: Browse -->
+  <section class="page-section">
+    <SectionHeader eyebrow="Browse" title="按主题探索" description="文章和工具会围绕这些方向逐步扩展。" />
+    
+    <div class="browse-layout">
+      <!-- Article Columns Group -->
+      <div class="browse-column">
+        <h3 class="browse-title-group">
+          <svg class="browse-group-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5v-15a2.5 2.5 0 0 1 2.5-2.5H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+            <path d="M6 6h10" />
+            <path d="M6 10h10" />
+          </svg>
+          文章专栏
+        </h3>
+        <div class="browse-grid">
+          {articleCategories.map(([name, description]) => (
+            <a class="category-card" href="/articles/">
+              <span class="category-title">{name}</span>
+              <span>{description}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Tool Categories Group -->
+      <div class="browse-column">
+        <h3 class="browse-title-group">
+          <svg class="browse-group-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <path d="M21 12H3"/>
+            <path d="M12 3v18"/>
+          </svg>
+          工具分类
+        </h3>
+        <div class="browse-grid">
+          {toolCategories.map(([name, description]) => (
+            <a class="category-card" href="/tools/">
+              <span class="category-title">{name}</span>
+              <span>{description}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

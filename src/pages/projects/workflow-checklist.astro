@@ -1,0 +1,125 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectPageLayout from '../../components/ProjectPageLayout.astro';
+---
+
+<BaseLayout title="工作流检查表" description="把 AI 工作流拆成输入、步骤、验收和复盘的结构化检查表。">
+  <ProjectPageLayout
+    title="工作流检查表"
+    description="把复杂 AI 任务拆成可检查的步骤清单，让每次执行都有清晰的前置条件、验收标准和复盘记录。"
+    eyebrow="Project"
+    techStack={[
+      { label: '格式', items: ['Markdown', 'YAML Frontmatter', 'Checklist DSL'] },
+      { label: '工具', items: ['VS Code', 'Git', 'Obsidian (可选)'] },
+    ]}
+  >
+    <h2>项目定位</h2>
+    <p>
+      AI 工作流容易"跑偏"——模型输出了内容，但你是否知道该检查什么、怎么判断结果是否合格？
+      工作流检查表把每个 AI 任务拆成<strong>输入准备 → 执行步骤 → 验收标准 → 复盘记录</strong>四个阶段，
+      让 AI 协作从"凭感觉"变成"可追溯"。
+    </p>
+
+    <h2>检查表结构</h2>
+    <div class="workflow-steps">
+      <div class="workflow-step">
+        <div class="step-num">1</div>
+        <h4>输入准备</h4>
+        <p>原始材料、上下文、约束条件是否齐全</p>
+      </div>
+      <div class="workflow-step">
+        <div class="step-num">2</div>
+        <h4>执行步骤</h4>
+        <p>分步指令，每步有明确的输入和预期输出</p>
+      </div>
+      <div class="workflow-step">
+        <div class="step-num">3</div>
+        <h4>验收标准</h4>
+        <p>可检查的完成条件，不是模糊的"看起来不错"</p>
+      </div>
+      <div class="workflow-step">
+        <div class="step-num">4</div>
+        <h4>复盘记录</h4>
+        <p>实际结果 vs 预期，偏差原因，改进方向</p>
+      </div>
+    </div>
+
+    <h2>核心能力</h2>
+    <div class="capability-grid">
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <h4>可验证的验收标准</h4>
+        <p>每条标准都是二元判断——通过或不通过，消除主观评估。</p>
+      </div>
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <h4>模板库</h4>
+        <p>覆盖文案生成、代码审查、翻译、数据清洗等常见任务的预置模板。</p>
+      </div>
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        <h4>效果追踪</h4>
+        <p>记录每次执行的通过率和典型失败模式，持续优化检查表。</p>
+      </div>
+    </div>
+
+    <h2>使用场景</h2>
+    <ul>
+      <li><strong>个人提效：</strong>把重复性 AI 任务标准化，减少每次"教模型做事"的时间。</li>
+      <li><strong>团队对齐：</strong>多人使用同一套检查表，确保 AI 输出质量一致。</li>
+      <li><strong>任务交接：</strong>把 AI 工作流文档化，新成员可以直接按检查表执行。</li>
+    </ul>
+
+    <div class="project-svg">
+      <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="wf-grad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#142128"/>
+            <stop offset="100%" stop-color="#0d161b"/>
+          </linearGradient>
+        </defs>
+        <!-- Input box -->
+        <rect x="20" y="40" width="140" height="140" rx="6" fill="#0d161b" stroke="#2a4a3f" stroke-width="1.5"/>
+        <text x="40" y="70" fill="#9ff5d7" font-size="12" font-weight="bold" font-family="monospace">INPUT</text>
+        <text x="40" y="95" fill="#a9bbb6" font-size="11" font-family="monospace">• 原始素材</text>
+        <text x="40" y="115" fill="#a9bbb6" font-size="11" font-family="monospace">• 上下文</text>
+        <text x="40" y="135" fill="#a9bbb6" font-size="11" font-family="monospace">• 约束条件</text>
+        <text x="40" y="155" fill="#a9bbb6" font-size="11" font-family="monospace">• 参考样例</text>
+
+        <!-- Arrow -->
+        <line x1="165" y1="110" x2="195" y2="110" stroke="#47d6b2" stroke-width="2"/>
+        <polygon points="195,105 205,110 195,115" fill="#47d6b2"/>
+
+        <!-- Checklist -->
+        <rect x="210" y="20" width="280" height="180" rx="6" fill="url(#wf-grad)" stroke="#2a4a3f" stroke-width="1.5"/>
+        <text x="230" y="50" fill="#9ff5d7" font-size="13" font-weight="bold" font-family="monospace">CHECKLIST</text>
+        <line x1="230" y1="60" x2="470" y2="60" stroke="#2a4a3f" stroke-width="0.8"/>
+        <text x="235" y="82" fill="#a9bbb6" font-size="12" font-family="monospace">☐ 步骤 1: 解析输入格式</text>
+        <text x="235" y="104" fill="#a9bbb6" font-size="12" font-family="monospace">☐ 步骤 2: 按模板生成初稿</text>
+        <text x="235" y="126" fill="#a9bbb6" font-size="12" font-family="monospace">☐ 步骤 3: 自检格式规范</text>
+        <text x="235" y="148" fill="#a9bbb6" font-size="12" font-family="monospace">☐ 步骤 4: 对照验收标准</text>
+        <text x="235" y="170" fill="#78908c" font-size="12" font-family="monospace">☐ 步骤 5: 填写复盘记录</text>
+
+        <!-- Arrow -->
+        <line x1="495" y1="110" x2="525" y2="110" stroke="#47d6b2" stroke-width="2"/>
+        <polygon points="525,105 535,110 525,115" fill="#47d6b2"/>
+
+        <!-- Output box -->
+        <rect x="540" y="40" width="160" height="140" rx="6" fill="#0d161b" stroke="#47d6b2" stroke-width="1.5"/>
+        <text x="560" y="70" fill="#47d6b2" font-size="12" font-weight="bold" font-family="monospace">OUTPUT</text>
+        <text x="560" y="95" fill="#a9bbb6" font-size="11" font-family="monospace">• 合格产物</text>
+        <text x="560" y="115" fill="#a9bbb6" font-size="11" font-family="monospace">• 检查结果</text>
+        <text x="560" y="135" fill="#a9bbb6" font-size="11" font-family="monospace">• 偏差记录</text>
+        <text x="560" y="155" fill="#a9bbb6" font-size="11" font-family="monospace">• 改进建议</text>
+      </svg>
+    </div>
+
+    <h2>本地使用</h2>
+    <p>检查表以 Markdown 文件存储，可以用任何文本编辑器打开。推荐配合 Git 做版本管理，跟踪每次迭代的改进。</p>
+    <p>与提示词卡片库配合使用效果更好——卡片定义"怎么说"，检查表定义"怎么验收"。</p>
+
+    <div class="project-note">
+      <p><strong>提示：</strong>检查表本身也是迭代产物。前几次使用后根据实际偏差调整验收标准，让它越来越贴合你的真实场景。</p>
+    </div>
+  </ProjectPageLayout>
+</BaseLayout>

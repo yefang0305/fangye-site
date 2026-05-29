@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公众号智能排版助手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#6B7280',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        danger: '#F53F3F',
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .wechat-width {
+                max-width: 677px;
+                width: 100%;
+            }
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 6px;
+                height: 6px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 3px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #c1c1c1;
+                border-radius: 3px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: #a8a8a8;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-sm border-b border-gray-200 h-16 flex items-center px-6">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
+                <i class="fa fa-magic text-lg"></i>
+            </div>
+            <h1 class="text-xl font-bold text-gray-800">公众号智能排版助手</h1>
+        </div>
+        <div class="ml-auto text-sm text-gray-500">
+            智能排版 · 配图建议 · 可复制到公众号编辑器
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden p-4 gap-4">
+        <!-- 左侧功能区 -->
+        <div class="w-full md:w-1/2 flex flex-col gap-4 overflow-hidden">
+            <!-- API配置模块 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                <h2 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                    <i class="fa fa-key text-primary mr-2"></i>
+                    API配置
+                </h2>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">豆包 API Key</label>
+                        <div class="relative">
+                            <input type="password" id="apiKey" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" placeholder="请输入豆包 API Key">
+                            <button type="button" id="toggleApiKey" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                <i class="fa fa-eye-slash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">API Base URL</label>
+                            <input type="text" id="baseURL" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" value="https://ark.cn-beijing.volces.com/api/coding/v3">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">模型 ID</label>
+                            <input type="text" id="modelId" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" placeholder="请输入模型ID">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 风格选择模块 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                <h2 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                    <i class="fa fa-paint-brush text-primary mr-2"></i>
+                    选择排版风格
+                </h2>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="theme-card cursor-pointer border-2 border-gray-200 hover:border-primary/50 rounded-lg p-3 transition-all" data-theme="business">
+                        <div class="text-xl mb-1">📰</div>
+                        <div class="font-medium text-sm">商务简约</div>
+                        <div class="text-xs text-gray-500 mt-1">深色标题、细线分割、留白充足</div>
+                        <div class="text-xs text-gray-400 mt-1">适合：行业资讯、职场干货</div>
+                    </div>
+                    <div class="theme-card cursor-pointer border-2 border-gray-200 hover:border-primary/50 rounded-lg p-3 transition-all" data-theme="warm">
+                        <div class="text-xl mb-1">🌿</div>
+                        <div class="font-medium text-sm">温暖生活</div>
+                        <div class="text-xs text-gray-500 mt-1">圆润卡片、暖色调、亲切感</div>
+                        <div class="text-xs text-gray-400 mt-1">适合：生活方式、情感类</div>
+                    </div>
+                    <div class="theme-card cursor-pointer border-2 border-gray-200 hover:border-primary/50 rounded-lg p-3 transition-all" data-theme="knowledge">
+                        <div class="text-xl mb-1">💡</div>
+                        <div class="font-medium text-sm">知识干货</div>
+                        <div class="text-xs text-gray-500 mt-1">高亮重点句、编号结构清晰</div>
+                        <div class="text-xs text-gray-400 mt-1">适合：教程、知识科普</div>
+                    </div>
+                    <div class="theme-card cursor-pointer border-2 border-gray-200 hover:border-primary/50 rounded-lg p-3 transition-all" data-theme="magazine">
+                        <div class="text-xl mb-1">🖤</div>
+                        <div class="font-medium text-sm">高级杂志</div>
+                        <div class="text-xs text-gray-500 mt-1">大字排版、强对比、设计感强</div>
+                        <div class="text-xs text-gray-400 mt-1">适合：品牌调性、深度内容</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 内容输入模块 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex-1 flex flex-col overflow-hidden">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <i class="fa fa-file-text-o text-primary mr-2"></i>
+                        输入文章内容
+                    </h2>
+                    <div class="text-sm text-gray-500">
+                        <span id="wordCount">0</span> 字
+                    </div>
+                </div>
+                <textarea id="contentInput" class="flex-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all resize-none custom-scrollbar" placeholder="请粘贴文章内容，支持纯文本或Markdown格式..."></textarea>
+                <div class="mt-3 flex flex-col gap-3">
+                    <label class="inline-flex items-center text-sm text-gray-600 select-none">
+                        <input type="checkbox" id="imageAssist" class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary/50" checked>
+                        <span class="ml-2">生成配图建议，并在正文中插入可替换的配图卡片</span>
+                    </label>
+                    <div class="flex gap-2">
+                        <button id="formatBtn" class="flex-1 bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-lg transition-all flex items-center justify-center">
+                            <i class="fa fa-magic mr-2"></i>
+                            智能排版 + 配图
+                        </button>
+                        <button id="clearBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-all">
+                            <i class="fa fa-trash-o"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧预览区 -->
+        <div class="w-full md:w-1/2 flex flex-col gap-4 overflow-hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex-1 flex flex-col overflow-hidden">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <i class="fa fa-eye text-primary mr-2"></i>
+                        排版预览
+                    </h2>
+                    <div class="flex gap-2">
+                        <button id="copyHtmlBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium py-1.5 px-3 rounded-lg transition-all flex items-center">
+                            <i class="fa fa-code mr-1"></i>
+                            复制源码
+                        </button>
+                        <button id="copyRichBtn" class="bg-success hover:bg-success/90 text-white text-sm font-medium py-1.5 px-3 rounded-lg transition-all flex items-center">
+                            <i class="fa fa-copy mr-1"></i>
+                            复制富文本
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-auto custom-scrollbar bg-gray-50 p-4 rounded-lg">
+                    <div id="previewArea" class="wechat-width mx-auto bg-white p-6 rounded-lg shadow-sm min-h-full">
+                        <div class="text-center text-gray-400 py-12">
+                            <i class="fa fa-file-text-o text-4xl mb-3"></i>
+                            <p>输入内容后点击「智能排版」，预览将显示在这里</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading遮罩 -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 flex flex-col items-center">
+            <div class="w-12 h-12 border-4 border-gray-200 border-t-primary rounded-full animate-spin mb-4"></div>
+            <p class="text-gray-700 font-medium">正在智能编排文章与配图点，请稍候...</p>
+        </div>
+    </div>
+
+    <!-- 消息提示 -->
+    <div id="toast" class="fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full z-50 flex items-center">
+        <i id="toastIcon" class="mr-2"></i>
+        <span id="toastMessage"></span>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentTheme = 'business';
+        let formattedHtml = '';
+        let lastResult = null;
+        let toastTimer = null;
+
+        // 主题配置
+        const themes = {
+            business: {
+                heading1: 'font-size: 24px; color: #1a1a1a; font-weight: bold; margin: 32px 0 16px 0; line-height: 1.4;',
+                heading2: 'font-size: 20px; color: #2a2a2a; font-weight: 600; margin: 24px 0 12px 0; line-height: 1.4; padding-bottom: 8px; border-bottom: 2px solid #f0f0f0;',
+                paragraph: 'font-size: 16px; color: #333333; line-height: 1.8; margin: 12px 0; text-align: justify;',
+                highlight: 'font-size: 16px; color: #165DFF; font-weight: 500; line-height: 1.8; margin: 12px 0; padding: 12px; background-color: #f0f5ff; border-left: 4px solid #165DFF;',
+                quote: 'font-size: 15px; color: #666666; line-height: 1.8; margin: 16px 0; padding: 12px 16px; background-color: #f9f9f9; border-left: 4px solid #dddddd; font-style: italic;',
+                summary: 'font-size: 16px; color: #333333; line-height: 1.8; margin: 16px 0; padding: 16px; background-color: #f6f6f6; border-radius: 8px; font-weight: 500;',
+                tip: 'font-size: 15px; color: #8b572a; line-height: 1.8; margin: 16px 0; padding: 12px 16px; background-color: #fff8e6; border-left: 4px solid #ffc107;',
+                title: 'font-size: 28px; color: #1a1a1a; font-weight: bold; text-align: center; margin: 0 0 32px 0; line-height: 1.4;',
+                divider: 'text-align: center; color: #999999; font-size: 14px; letter-spacing: 8px; margin: 36px 0; font-weight: 400;',
+                dividerDefault: '· · ·',
+                list: 'margin: 16px 0; padding-left: 28px; color: #333333;',
+                listItem: 'font-size: 16px; color: #333333; line-height: 1.9; margin: 8px 0;',
+                keyword: 'color: #165DFF; font-weight: 600;'
+            },
+            warm: {
+                heading1: 'font-size: 24px; color: #8b5a2b; font-weight: bold; margin: 32px 0 16px 0; line-height: 1.4;',
+                heading2: 'font-size: 20px; color: #9c6644; font-weight: 600; margin: 24px 0 12px 0; line-height: 1.4;',
+                paragraph: 'font-size: 16px; color: #444444; line-height: 1.8; margin: 12px 0; text-align: justify;',
+                highlight: 'font-size: 16px; color: #c2561f; font-weight: 500; line-height: 1.8; margin: 12px 0; padding: 16px; background-color: #fff5e6; border-radius: 12px;',
+                quote: 'font-size: 15px; color: #666666; line-height: 1.8; margin: 16px 0; padding: 16px; background-color: #f9f3ed; border-radius: 12px; font-style: italic;',
+                summary: 'font-size: 16px; color: #444444; line-height: 1.8; margin: 16px 0; padding: 16px; background-color: #fef5e7; border-radius: 12px; font-weight: 500;',
+                tip: 'font-size: 15px; color: #7d6608; line-height: 1.8; margin: 16px 0; padding: 16px; background-color: #fff9e6; border-radius: 12px;',
+                title: 'font-size: 28px; color: #8b5a2b; font-weight: bold; text-align: center; margin: 0 0 32px 0; line-height: 1.4;',
+                divider: 'text-align: center; color: #c2561f; font-size: 14px; letter-spacing: 6px; margin: 36px 0;',
+                dividerDefault: '✿  ·  ✿',
+                list: 'margin: 16px 0; padding-left: 28px; color: #444444;',
+                listItem: 'font-size: 16px; color: #444444; line-height: 1.9; margin: 8px 0;',
+                keyword: 'color: #c2561f; font-weight: 600;'
+            },
+            knowledge: {
+                heading1: 'font-size: 24px; color: #2c3e50; font-weight: bold; margin: 32px 0 16px 0; line-height: 1.4;',
+                heading2: 'font-size: 20px; color: #34495e; font-weight: 600; margin: 24px 0 12px 0; line-height: 1.4; padding-left: 12px; border-left: 4px solid #3498db;',
+                paragraph: 'font-size: 16px; color: #2c3e50; line-height: 1.8; margin: 12px 0; text-align: justify;',
+                highlight: 'font-size: 16px; color: #27ae60; font-weight: 600; line-height: 1.8; margin: 12px 0; padding: 12px; background-color: #e8f5e9; border-radius: 6px;',
+                quote: 'font-size: 15px; color: #7f8c8d; line-height: 1.8; margin: 16px 0; padding: 12px 16px; background-color: #f8f9fa; border-left: 4px solid #95a5a6; font-style: italic;',
+                summary: 'font-size: 16px; color: #2c3e50; line-height: 1.8; margin: 16px 0; padding: 16px; background-color: #eaf2f8; border-radius: 8px; font-weight: 500; border: 1px solid #3498db;',
+                tip: 'font-size: 15px; color: #c0392b; line-height: 1.8; margin: 16px 0; padding: 12px 16px; background-color: #fdedec; border-left: 4px solid #e74c3c;',
+                title: 'font-size: 28px; color: #2c3e50; font-weight: bold; text-align: center; margin: 0 0 32px 0; line-height: 1.4;',
+                divider: 'text-align: center; color: #3498db; font-size: 14px; letter-spacing: 4px; margin: 36px 0; font-weight: 600;',
+                dividerDefault: '○  ○  ○',
+                list: 'margin: 16px 0; padding-left: 28px; color: #2c3e50;',
+                listItem: 'font-size: 16px; color: #2c3e50; line-height: 1.9; margin: 8px 0;',
+                keyword: 'color: #27ae60; font-weight: 700; border-bottom: 2px solid #27ae60; padding: 0 2px;'
+            },
+            magazine: {
+                heading1: 'font-size: 32px; color: #000000; font-weight: 900; margin: 40px 0 20px 0; line-height: 1.3; letter-spacing: -0.5px;',
+                heading2: 'font-size: 24px; color: #1a1a1a; font-weight: 700; margin: 32px 0 16px 0; line-height: 1.3; letter-spacing: -0.3px;',
+                paragraph: 'font-size: 17px; color: #222222; line-height: 1.9; margin: 16px 0; text-align: justify; letter-spacing: 0.2px;',
+                highlight: 'font-size: 18px; color: #000000; font-weight: 700; line-height: 1.8; margin: 20px 0; padding: 20px; background-color: #f8f8f8; border-top: 3px solid #000; border-bottom: 3px solid #000;',
+                quote: 'font-size: 18px; color: #444444; line-height: 1.8; margin: 24px 0; padding: 0 24px; border-left: 4px solid #000; font-style: italic; font-weight: 300;',
+                summary: 'font-size: 17px; color: #111111; line-height: 1.8; margin: 24px 0; padding: 24px; background-color: #f0f0f0; border-radius: 0; font-weight: 500;',
+                tip: 'font-size: 16px; color: #d35400; line-height: 1.8; margin: 20px 0; padding: 16px; border: 2px solid #d35400; font-weight: 600;',
+                title: 'font-size: 36px; color: #000000; font-weight: 900; text-align: center; margin: 0 0 40px 0; line-height: 1.2; letter-spacing: -1px;',
+                divider: 'text-align: center; color: #000000; font-size: 18px; letter-spacing: 4px; margin: 48px 0; font-weight: 900;',
+                dividerDefault: '———',
+                list: 'margin: 20px 0; padding-left: 28px; color: #222222;',
+                listItem: 'font-size: 17px; color: #222222; line-height: 1.9; margin: 10px 0; letter-spacing: 0.2px;',
+                keyword: 'color: #d35400; font-weight: 900;'
+            }
+        };
+
+        // System Prompt
+        const SYSTEM_PROMPT = `你是一位资深公众号主编、视觉编辑和排版设计师。你的任务不是把文章简单拆成段落，而是像真实编辑一样完成三件事：梳理阅读节奏、安排版面层次、在合适位置给出配图方案。
+
+【编辑目标】
+1. 保留原文事实、语气和信息，不编造、不删掉关键内容。
+2. 把长段拆成更适合手机阅读的短段，每个 paragraph 最多 2 句话；情绪文可更短。
+3. 小标题要像编辑拟出来的标题，不要机械复述原句。
+4. 重点突出要克制：highlight 只给真正值得单独停顿的金句或核心观点。
+5. 关键词标记要少而准：每个 paragraph 最多 1-2 处 **关键词**，不要整句乱加粗。
+6. 文章需要有呼吸感：长文每 4-7 个文字段落插入一次 divider、quote、list、tip、highlight 或 image，避免纯文字堆叠。
+
+【配图原则】
+- 根据文章主题、情绪和段落语义，在自然停顿处插入 image 类型。
+- 800 字以内建议 1-2 张图；800-1800 字建议 2-4 张图；更长文章可 4-6 张图。
+- 每张图都要说明：用途、图注、可用于 AI 生图的中文提示词。
+- 图片提示词要具体到画面主体、构图、光线、色彩、风格、比例，避免空泛词。
+- 公众号正文配图优先建议 16:9 或 4:3；封面图建议 2.35:1 或 16:9。
+- 如果文章是诗词、节气、传统文化，优先国风摄影/水墨/细腻插画；如果是商业、职场、科技，优先干净的信息图/编辑插画/场景摄影。
+
+【section 类型】
+- heading1：一级标题（核心章节）
+- heading2：二级小标题（子章节）
+- paragraph：正文段落（最多 2 句话，长段必须拆分）
+- highlight：金句/整段级重点突出（不要滥用）
+- quote：引用、诗句、文献或适合引用感展示的原文
+- summary：全文总结段（通常文末）
+- tip：小贴士、注意事项、行动建议
+- divider：装饰分隔符，content 可为空字符串或简短装饰文字
+- list：列表，数据形如 { "type": "list", "style": "ordered" | "unordered", "items": ["...", "..."] }
+- image：配图建议，数据形如 { "type": "image", "purpose": "承接开头/解释概念/情绪转场/案例场景/结尾余韵", "caption": "图注", "alt": "图片替代文本", "prompt": "AI 生图提示词", "ratio": "16:9" }
+
+【输出格式】严格 JSON，不要任何前后说明文字，不要代码块包裹：
+{
+  "title": "文章主标题",
+  "subtitle": "可选副标题，没有就留空字符串",
+  "cover_image": {
+    "purpose": "封面图",
+    "caption": "封面图建议",
+    "alt": "封面图替代文本",
+    "prompt": "AI 生图提示词",
+    "ratio": "16:9"
+  },
+  "sections": [
+    { "type": "paragraph", "content": "..." },
+    { "type": "image", "purpose": "...", "caption": "...", "alt": "...", "prompt": "...", "ratio": "16:9" }
+  ]
+}
+
+【铁律】
+- 只返回 JSON，禁止任何额外文字或代码块包裹。
+- 保持原文完整性和准确性，不要替作者补充事实。
+- 不要把所有句子都改成鸡汤式表达。
+- image 是配图建议卡片，不是真实图片链接；不要生成 URL。
+- 如果原文已有 Markdown 标题，可以沿用但要优化层级。
+- 结尾要保留作者原本的收束意思，可以适当整理为 summary。`;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 加载本地存储的配置
+            loadConfig();
+
+            // 绑定事件
+            bindEvents();
+
+            // 默认选中第一个主题
+            selectTheme('business');
+        });
+
+        // 加载配置
+        function loadConfig() {
+            const apiKey = localStorage.getItem('wechat_editor_apiKey');
+            const baseURL = localStorage.getItem('wechat_editor_baseURL');
+            const modelId = localStorage.getItem('wechat_editor_modelId');
+            const savedTheme = localStorage.getItem('wechat_editor_theme');
+
+            if (apiKey) document.getElementById('apiKey').value = apiKey;
+            if (baseURL) document.getElementById('baseURL').value = baseURL;
+            if (modelId) document.getElementById('modelId').value = modelId;
+            if (savedTheme) selectTheme(savedTheme);
+        }
+
+        // 保存配置
+        function saveConfig() {
+            const apiKey = document.getElementById('apiKey').value;
+            const baseURL = document.getElementById('baseURL').value;
+            const modelId = document.getElementById('modelId').value;
+
+            if (apiKey) localStorage.setItem('wechat_editor_apiKey', apiKey);
+            if (baseURL) localStorage.setItem('wechat_editor_baseURL', baseURL);
+            if (modelId) localStorage.setItem('wechat_editor_modelId', modelId);
+            localStorage.setItem('wechat_editor_theme', currentTheme);
+        }
+
+        // 绑定事件
+        function bindEvents() {
+            // API Key显示切换
+            document.getElementById('toggleApiKey').addEventListener('click', toggleApiKeyVisibility);
+
+            // 主题选择
+            document.querySelectorAll('.theme-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const theme = card.dataset.theme;
+                    selectTheme(theme);
+                });
+            });
+
+            // 字数统计
+            document.getElementById('contentInput').addEventListener('input', updateWordCount);
+
+            // 排版按钮
+            document.getElementById('formatBtn').addEventListener('click', formatContent);
+
+            // 清空按钮
+            document.getElementById('clearBtn').addEventListener('click', clearContent);
+
+            // 复制富文本
+            document.getElementById('copyRichBtn').addEventListener('click', copyRichText);
+
+            // 复制源码
+            document.getElementById('copyHtmlBtn').addEventListener('click', copyHtmlSource);
+        }
+
+        // 切换API Key可见性
+        function toggleApiKeyVisibility() {
+            const input = document.getElementById('apiKey');
+            const icon = document.getElementById('toggleApiKey').querySelector('i');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            }
+        }
+
+        // 选择主题
+        function selectTheme(theme) {
+            currentTheme = theme;
+
+            // 更新UI状态
+            document.querySelectorAll('.theme-card').forEach(card => {
+                if (card.dataset.theme === theme) {
+                    card.classList.add('border-primary', 'bg-primary/5');
+                    card.classList.remove('border-gray-200');
+                } else {
+                    card.classList.remove('border-primary', 'bg-primary/5');
+                    card.classList.add('border-gray-200');
+                }
+            });
+
+            // 保存配置
+            saveConfig();
+
+            // 如果已有排版结果，重新生成并渲染
+            if (lastResult) {
+                generateHtml(lastResult);
+                renderPreview();
+            }
+        }
+
+        // 更新字数统计
+        function updateWordCount() {
+            const content = document.getElementById('contentInput').value;
+            const count = content.length;
+            document.getElementById('wordCount').textContent = count;
+        }
+
+        // 清空内容
+        function clearContent() {
+            document.getElementById('contentInput').value = '';
+            updateWordCount();
+            document.getElementById('previewArea').innerHTML = `
+                <div class="text-center text-gray-400 py-12">
+                    <i class="fa fa-file-text-o text-4xl mb-3"></i>
+                    <p>输入内容后点击「智能排版」，预览将显示在这里</p>
+                </div>
+            `;
+            formattedHtml = '';
+            lastResult = null;
+        }
+
+        // 智能排版
+        async function formatContent() {
+            const content = document.getElementById('contentInput').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const baseURL = document.getElementById('baseURL').value.trim();
+            const modelId = document.getElementById('modelId').value.trim();
+            const imageAssist = document.getElementById('imageAssist')?.checked !== false;
+
+            // 验证输入
+            if (!content) {
+                showToast('请先输入文章内容', 'warning');
+                return;
+            }
+
+            if (!apiKey) {
+                showToast('请输入豆包 API Key', 'warning');
+                return;
+            }
+
+            if (!modelId) {
+                showToast('请输入模型 ID', 'warning');
+                return;
+            }
+
+            // 保存配置
+            saveConfig();
+
+            // 显示加载
+            showLoading(true);
+
+            try {
+                // 通过本地 Python 代理转发,避免浏览器 CORS 拦截,API Key 不经过第三方
+                const response = await fetch('/api/format', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        baseURL: baseURL,
+                        apiKey: apiKey,
+                        model: modelId,
+                        messages: [
+                            { role: 'system', content: SYSTEM_PROMPT },
+                            { role: 'user', content: buildUserPrompt(content, imageAssist) }
+                        ],
+                        temperature: getRequestTemperature(baseURL, modelId),
+                        response_format: { type: 'json_object' }
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || `API请求失败，状态码：${response.status}`);
+                }
+
+                const data = await response.json();
+                const rawContent = data.choices[0].message.content;
+                // 兼容模型返回 ```json ... ``` 代码块的情况
+                const jsonText = rawContent.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+                const result = JSON.parse(jsonText);
+                lastResult = result;
+
+                // 生成HTML
+                generateHtml(result);
+
+                // 渲染预览
+                renderPreview();
+
+                showToast('排版完成', 'success');
+            } catch (error) {
+                console.error('排版失败:', error);
+                let errorMessage = error.message;
+                if (errorMessage.includes('Failed to fetch')) {
+                    errorMessage = '无法连接到本地服务,请确认已通过「启动.bat」运行 server.py';
+                }
+                showToast(`排版失败：${errorMessage}`, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function getRequestTemperature(baseURL, modelId) {
+            const target = `${baseURL || ''} ${modelId || ''}`.toLowerCase();
+            if (target.includes('moonshot') || target.includes('kimi')) return 1;
+            return 0.25;
+        }
+        function buildUserPrompt(content, imageAssist) {
+            const imageInstruction = imageAssist
+                ? '请生成 cover_image，并在 sections 中插入合适数量的 image 配图建议。'
+                : '不要输出 cover_image，也不要在 sections 中插入 image 类型。';
+            return `【配图开关】${imageInstruction}\n\n【原文】\n${content}`;
+        }
+
+        function imageValue(image, keys, fallback = '') {
+            for (const key of keys) {
+                if (image && image[key] != null && String(image[key]).trim()) return String(image[key]).trim();
+            }
+            return fallback;
+        }
+
+        function renderImageBlock(image, theme, isCover = false) {
+            const purpose = imageValue(image, ['purpose'], isCover ? '封面图' : '正文配图');
+            const caption = imageValue(image, ['caption', 'content', 'title'], isCover ? '封面图建议' : '配图建议');
+            const alt = imageValue(image, ['alt', 'description'], caption);
+            const ratio = imageValue(image, ['ratio', 'aspect_ratio'], isCover ? '16:9' : '16:9');
+            const prompt = imageValue(image, ['prompt', 'image_prompt', 'text'], '请根据上下文生成贴合文章情绪的公众号配图。');
+            const badge = isCover ? '封面图' : '配图点';
+            return `
+                <section style="margin: 24px 0; padding: 16px; border: 1px dashed #c9d6f2; background-color: #f7faff; border-radius: 10px; color: #2f3a4a; line-height: 1.7;">
+                    <div style="font-size: 13px; color: #165DFF; font-weight: 700; margin-bottom: 8px;">${badge} · ${formatInline(purpose, theme)} · ${escapeHtml(ratio)}</div>
+                    <div style="font-size: 15px; color: #333333; font-weight: 600; margin-bottom: 8px;">${formatInline(caption, theme)}</div>
+                    <div style="font-size: 13px; color: #6b7280; margin-bottom: 8px;">替代文本：${formatInline(alt, theme)}</div>
+                    <div style="font-size: 13px; color: #4b5563; background-color: #ffffff; border-radius: 8px; padding: 10px 12px;">生图提示词：${formatInline(prompt, theme)}</div>
+                </section>`;
+        }
+        // 段落内富文本处理:转义 + **关键词** + 换行
+        function formatInline(text, theme) {
+            if (text == null) return '';
+            const normalizedText = String(text)
+                .replace(/<\s*br\s*\/?\s*>/gi, '\n')
+                .replace(/&lt;\s*br\s*\/?\s*&gt;/gi, '\n');
+            let html = escapeHtml(normalizedText);
+            // **关键词** → 高亮 span(非贪婪,不跨行)
+            html = html.replace(/\*\*([^*\n]+?)\*\*/g, `<span style="${theme.keyword}">$1</span>`);
+            html = html.replace(/\r?\n/g, '<br>');
+            return html;
+        }
+
+        // 生成HTML
+        function generateHtml(data) {
+            const theme = themes[currentTheme];
+            let html = '';
+
+            if (data.title) {
+                html += `<h1 style="${theme.title}">${formatInline(data.title, theme)}</h1>`;
+            }
+
+            if (data.subtitle) {
+                html += `<p style="font-size: 15px; color: #6b7280; text-align: center; line-height: 1.8; margin: -20px 0 28px 0;">${formatInline(data.subtitle, theme)}</p>`;
+            }
+
+            if (data.cover_image) {
+                html += renderImageBlock(data.cover_image, theme, true);
+            }
+
+            if (data.sections && Array.isArray(data.sections)) {
+                data.sections.forEach(section => {
+                    const type = section.type;
+
+                    // 分隔符:空 content 时用主题默认装饰
+                    if (type === 'divider') {
+                        const raw = (section.content || '').trim();
+                        const label = raw ? formatInline(raw, theme) : theme.dividerDefault;
+                        html += `<section style="${theme.divider}">${label}</section>`;
+                        return;
+                    }
+
+                    // 配图建议
+                    if (type === 'image') {
+                        html += renderImageBlock(section, theme, false);
+                        return;
+                    }
+
+                    // 列表
+                    if (type === 'list') {
+                        const tag = section.style === 'ordered' ? 'ol' : 'ul';
+                        const items = (section.items || []).map(item =>
+                            `<li style="${theme.listItem}">${formatInline(item, theme)}</li>`
+                        ).join('');
+                        html += `<${tag} style="${theme.list}">${items}</${tag}>`;
+                        return;
+                    }
+
+                    // 文本类型统一走 formatInline
+                    const content = formatInline(section.content, theme);
+
+                    switch (type) {
+                        case 'heading1':
+                            html += `<h2 style="${theme.heading1}">${content}</h2>`;
+                            break;
+                        case 'heading2':
+                            html += `<h3 style="${theme.heading2}">${content}</h3>`;
+                            break;
+                        case 'highlight':
+                            html += `<section style="${theme.highlight}">${content}</section>`;
+                            break;
+                        case 'quote':
+                            html += `<section style="${theme.quote}">${content}</section>`;
+                            break;
+                        case 'summary':
+                            html += `<section style="${theme.summary}">${content}</section>`;
+                            break;
+                        case 'tip':
+                            html += `<section style="${theme.tip}">${content}</section>`;
+                            break;
+                        case 'paragraph':
+                        default:
+                            html += `<p style="${theme.paragraph}">${content}</p>`;
+                            break;
+                    }
+                });
+            }
+
+            formattedHtml = html;
+        }
+
+        // 渲染预览
+        function renderPreview() {
+            document.getElementById('previewArea').innerHTML = formattedHtml;
+        }
+
+        // 复制富文本
+        async function copyRichText() {
+            if (!formattedHtml) {
+                showToast('没有可复制的内容，请先进行排版', 'warning');
+                return;
+            }
+
+            try {
+                const plainText = document.getElementById('previewArea').innerText || '';
+                const htmlBlob = new Blob([formattedHtml], { type: 'text/html' });
+                const textBlob = new Blob([plainText], { type: 'text/plain' });
+                const clipboardItem = new ClipboardItem({
+                    'text/html': htmlBlob,
+                    'text/plain': textBlob
+                });
+                await navigator.clipboard.write([clipboardItem]);
+
+                showToast('富文本已复制到剪贴板', 'success');
+
+                // 按钮反馈
+                const btn = document.getElementById('copyRichBtn');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fa fa-check mr-1"></i> 已复制';
+                btn.classList.add('bg-green-600');
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('bg-green-600');
+                }, 2000);
+            } catch (error) {
+                console.error('复制失败:', error);
+                showToast('复制失败，请重试', 'error');
+            }
+        }
+
+        // 复制HTML源码
+        async function copyHtmlSource() {
+            if (!formattedHtml) {
+                showToast('没有可复制的内容，请先进行排版', 'warning');
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(formattedHtml);
+                showToast('HTML源码已复制到剪贴板', 'success');
+
+                // 按钮反馈
+                const btn = document.getElementById('copyHtmlBtn');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fa fa-check mr-1"></i> 已复制';
+                btn.classList.add('bg-green-600');
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('bg-green-600');
+                }, 2000);
+            } catch (error) {
+                console.error('复制失败:', error);
+                showToast('复制失败，请重试', 'error');
+            }
+        }
+
+        // HTML转义
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 显示/隐藏加载
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            const formatBtn = document.getElementById('formatBtn');
+            if (show) {
+                overlay.classList.remove('hidden');
+                formatBtn.disabled = true;
+                formatBtn.classList.add('opacity-60', 'cursor-not-allowed');
+            } else {
+                overlay.classList.add('hidden');
+                formatBtn.disabled = false;
+                formatBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+            }
+        }
+
+        // 显示提示
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const messageEl = document.getElementById('toastMessage');
+
+            // 设置类型样式
+            switch (type) {
+                case 'success':
+                    toast.className = 'fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg transform transition-all duration-300 translate-x-0 z-50 flex items-center bg-success text-white';
+                    icon.className = 'fa fa-check-circle mr-2';
+                    break;
+                case 'error':
+                    toast.className = 'fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg transform transition-all duration-300 translate-x-0 z-50 flex items-center bg-danger text-white';
+                    icon.className = 'fa fa-exclamation-circle mr-2';
+                    break;
+                case 'warning':
+                    toast.className = 'fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg transform transition-all duration-300 translate-x-0 z-50 flex items-center bg-warning text-white';
+                    icon.className = 'fa fa-exclamation-triangle mr-2';
+                    break;
+                default:
+                    toast.className = 'fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg transform transition-all duration-300 translate-x-0 z-50 flex items-center bg-primary text-white';
+                    icon.className = 'fa fa-info-circle mr-2';
+                    break;
+            }
+
+            messageEl.textContent = message;
+
+            // 清理上一个定时器，避免互相干扰
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                toastTimer = null;
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+
+
+
+

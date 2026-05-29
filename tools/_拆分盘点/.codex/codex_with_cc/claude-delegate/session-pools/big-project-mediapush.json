@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "sessionKey": "big-project-mediapush",
+  "createdAt": "2026-05-29T02:29:55.989759-08:00",
+  "updatedAt": "2026-05-29T02:38:22.036970-08:00",
+  "primary": {
+    "sessionId": null,
+    "status": "available",
+    "leaseRunId": null,
+    "leasePid": null,
+    "leasedAt": null,
+    "lastUsedAt": null,
+    "lastRunId": null,
+    "lastResetAt": null,
+    "lastResetReason": null,
+    "lastResetFromSessionId": null,
+    "lastResetFromRunId": null
+  },
+  "parallelPool": [
+    {
+      "sessionId": "10f753d2-468d-4f74-8085-7fd2755b1ffa",
+      "status": "available",
+      "leaseRunId": null,
+      "leasePid": null,
+      "leasedAt": null,
+      "lastUsedAt": "2026-05-29T02:38:22.036799-08:00",
+      "lastRunId": "20260529_022955_966_c5433306",
+      "lastTaskFingerprint": "57682f6789081a775b67a4ae62f2e55fc4d6a4a3116baca459c7bf4d384c5412",
+      "lastResetAt": null,
+      "lastResetReason": null,
+      "lastResetFromSessionId": null,
+      "lastResetFromRunId": null
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectPageLayout from '../../components/ProjectPageLayout.astro';
+---
+
+<BaseLayout title="抖音批量视频生成" description="文案到成片全自动流水线：TTS 合成、智能分段、素材混剪、字幕生成、封面渲染。Python 桌面工作台加 CLI。">
+  <ProjectPageLayout
+    title="抖音批量视频生成"
+    description="从文案到成片的端到端自动化流水线——TTS 语音合成、LLM 文案重写、智能分段、素材混剪、字幕叠加、封面渲染，支持批量任务队列。"
+    eyebrow="Project"
+    techStack={[
+      { label: '运行时', items: ['Python 3.10+', 'FFmpeg', 'PyQt5'] },
+      { label: 'AI 服务', items: ['火山引擎 TTS', '豆包大模型', 'OpenAI'] },
+      { label: '核心库', items: ['pydub', 'Pillow', 'websockets', 'requests'] },
+      { label: '平台', items: ['Windows (桌面)', '跨平台 (CLI)'] },
+    ]}
+  >
+    <h2>项目定位</h2>
+    <p>
+      面向短视频创作者的<strong>文案到成片全自动生产流水线</strong>。输入文案文本，输出带字幕、
+      BGM 和封面的成品视频。提供 PyQt5 桌面工作台（可视化操作）和 CLI 引擎（脚本集成）两种使用方式。
+    </p>
+
+    <h2>核心流水线</h2>
+    <div class="project-svg">
+      <svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="bv-step" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#142128"/>
+            <stop offset="100%" stop-color="#0d161b"/>
+          </linearGradient>
+        </defs>
+        <!-- Step 1: Script -->
+        <rect x="15" y="20" width="105" height="90" rx="6" fill="url(#bv-step)" stroke="#2a4a3f" stroke-width="1.5"/>
+        <text x="67" y="52" fill="#9ff5d7" font-size="11" font-weight="bold" text-anchor="middle" font-family="monospace">📝 文案</text>
+        <text x="67" y="72" fill="#a9bbb6" font-size="10" text-anchor="middle" font-family="monospace">TXT/JSON</text>
+        <text x="67" y="90" fill="#78908c" font-size="9" text-anchor="middle" font-family="monospace">LLM 重写</text>
+
+        <line x1="120" y1="65" x2="140" y2="65" stroke="#47d6b2" stroke-width="1.5"/>
+        <polygon points="140,61 148,65 140,69" fill="#47d6b2"/>
+
+        <!-- Step 2: TTS -->
+        <rect x="150" y="20" width="105" height="90" rx="6" fill="url(#bv-step)" stroke="#2a4a3f" stroke-width="1.5"/>
+        <text x="202" y="52" fill="#9ff5d7" font-size="11" font-weight="bold" text-anchor="middle" font-family="monospace">🔊 TTS</text>
+        <text x="202" y="72" fill="#a9bbb6" font-size="10" text-anchor="middle" font-family="monospace">火山引擎</text>
+        <text x="202" y="90" fill="#78908c" font-size="9" text-anchor="middle" font-family="monospace">WebSocket</text>
+
+        <line x1="255" y1="65" x2="275" y2="65" stroke="#47d6b2" stroke-width="1.5"/>
+        <polygon points="275,61 283,65 275,69" fill="#47d6b2"/>
+
+        <!-- Step 3: Segment -->
+        <rect x="285" y="20" width="105" height="90" rx="6" fill="url(#bv-step)" stroke="#2a4a3f" stroke-width="1.5"/>
+        <text x="337" y="52" fill="#9ff5d7" font-size="11" font-weight="bold" text-anchor="middle" font-family="monospace">✂️ 分段</text>
+        <text x="337" y="72" fill="#a9bbb6" font-size="10" text-anchor="middle" font-family="monospace">智能切分</text>
+        <text x="337" y="90" fill="#78908c" font-size="9" text-anchor="middle" font-family="monospace">按语义</text>
+
+        <line x1="390" y1="65" x2="410" y2="65" stroke="#47d6b2" stroke-width="1.5"/>
+        <polygon points="410,61 418,65 410,69" fill="#47d6b2"/>
+
+        <!-- Step 4: Mix -->
+        <rect x="420" y="20" width="105" height="90" rx="6" fill="url(#bv-step)" stroke="#2a4a3f" stroke-width="1.5"/>
+        <text x="472" y="52" fill="#9ff5d7" font-size="11" font-weight="bold" text-anchor="middle" font-family="monospace">🎬 混剪</text>
+        <text x="472" y="72" fill="#a9bbb6" font-size="10" text-anchor="middle" font-family="monospace">素材 + BGM</text>
+        <text x="472" y="90" fill="#78908c" font-size="9" text-anchor="middle" font-family="monospace">pydub</text>
+
+        <line x1="525" y1="65" x2="545" y2="65" stroke="#47d6b2" stroke-width="1.5"/>
+        <polygon points="545,61 553,65 545,69" fill="#47d6b2"/>
+
+        <!-- Step 5: Subtitle -->
+        <rect x="555" y="20" width="105" height="90" rx="6" fill="url(#bv-step)" stroke="#2a4a3f" stroke-width="1.5"/>
+        <text x="607" y="52" fill="#9ff5d7" font-size="11" font-weight="bold" text-anchor="middle" font-family="monospace">💬 字幕</text>
+        <text x="607" y="72" fill="#a9bbb6" font-size="10" text-anchor="middle" font-family="monospace">时间轴对齐</text>
+        <text x="607" y="90" fill="#78908c" font-size="9" text-anchor="middle" font-family="monospace">叠加渲染</text>
+
+        <!-- Output arrow -->
+        <line x1="660" y1="65" x2="685" y2="65" stroke="#47d6b2" stroke-width="1.5"/>
+        <polygon points="685,61 695,65 685,69" fill="#47d6b2"/>
+
+        <!-- Final Output -->
+        <rect x="698" y="20" width="10" height="90" rx="3" fill="#47d6b2" opacity="0.3"/>
+
+        <!-- Bottom row: Desktop UI -->
+        <rect x="15" y="135" width="695" height="130" rx="6" fill="url(#bv-step)" stroke="#2a4a3f" stroke-width="1.5"/>
+        <text x="362" y="160" fill="#9ff5d7" font-size="13" font-weight="bold" text-anchor="middle" font-family="monospace">PyQt5 桌面工作台</text>
+        <line x1="35" y1="170" x2="690" y2="170" stroke="#2a4a3f" stroke-width="0.8"/>
+
+        <!-- UI mock elements -->
+        <rect x="35" y="180" width="200" height="30" rx="4" fill="#0a1014" stroke="#2a4a3f" stroke-width="0.8"/>
+        <text x="135" y="200" fill="#78908c" font-size="10" text-anchor="middle" font-family="monospace">文案输入 / 批量导入</text>
+
+        <rect x="250" y="180" width="130" height="30" rx="4" fill="#0a1014" stroke="#2a4a3f" stroke-width="0.8"/>
+        <text x="315" y="200" fill="#78908c" font-size="10" text-anchor="middle" font-family="monospace">素材 / BGM 目录</text>
+
+        <rect x="395" y="180" width="100" height="30" rx="4" fill="#0a1014" stroke="#2a4a3f" stroke-width="0.8"/>
+        <text x="445" y="200" fill="#78908c" font-size="10" text-anchor="middle" font-family="monospace">参数配置</text>
+
+        <rect x="510" y="180" width="100" height="30" rx="4" fill="#47d6b2"/>
+        <text x="560" y="200" fill="#06100d" font-size="10" font-weight="bold" text-anchor="middle" font-family="monospace">▶ 开始生成</text>
+
+        <rect x="625" y="180" width="70" height="30" rx="4" fill="#0a1014" stroke="#2a4a3f" stroke-width="0.8"/>
+        <text x="660" y="200" fill="#78908c" font-size="10" text-anchor="middle" font-family="monospace">任务队列</text>
+
+        <!-- Progress bar -->
+        <rect x="35" y="222" width="660" height="8" rx="4" fill="#0a1014"/>
+        <rect x="35" y="222" width="280" height="8" rx="4" fill="#47d6b2" opacity="0.6"/>
+        <text x="35" y="248" fill="#78908c" font-size="9" font-family="monospace">生成中... 3/8 完成  |  ETA: 2min</text>
+      </svg>
+    </div>
+
+    <h2>核心能力</h2>
+    <div class="capability-grid">
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+        <h4>TTS 语音合成</h4>
+        <p>火山引擎 TTS WebSocket 实时合成，支持多音色和语速调节。</p>
+      </div>
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+        <h4>LLM 文案重写</h4>
+        <p>豆包大模型自动优化文案结构，适配短视频口播节奏。</p>
+      </div>
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <h4>封面自动渲染</h4>
+        <p>从视频帧或自定义模板自动生成封面图，Pillow 渲染。</p>
+      </div>
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <h4>批量任务队列</h4>
+        <p>支持多文案批量处理，实时进度显示，失败自动重试。</p>
+      </div>
+    </div>
+
+    <h2>本地运行</h2>
+    <ol>
+      <li>安装 Python 3.10+ 和 FFmpeg</li>
+      <li>安装依赖：<code>pip install pyqt5 pydub pillow websockets openai requests</code></li>
+      <li>配置 API Key：火山引擎 TTS + 豆包大模型（或 OpenAI）</li>
+      <li>桌面模式：<code>python main_desktop.py</code></li>
+      <li>CLI 模式：<code>python main.py --input script.txt</code></li>
+    </ol>
+
+    <h2>依赖与限制</h2>
+    <ul>
+      <li><strong>API 成本：</strong>依赖火山引擎 TTS（按字符计费）和豆包大模型（按 token 计费），需要付费 API Key。</li>
+      <li><strong>FFmpeg 依赖：</strong>视频处理核心依赖 FFmpeg，需单独安装并配置 PATH。</li>
+      <li><strong>字幕字体：</strong>依赖系统字体，不同系统可能需要调整字体路径。</li>
+      <li><strong>素材准备：</strong>需要自行准备素材视频和 BGM 文件夹，工具不提供素材库。</li>
+      <li><strong>桌面模式：</strong>PyQt5 桌面 UI 主要在 Windows 上测试，其他平台可能需要额外配置。</li>
+    </ul>
+
+    <div class="project-note">
+      <p><strong>注意：</strong>本工具是本地视频生产工具，不涉及内容分发或平台发布。生成的视频内容版权归用户所有，请确保使用的素材和 BGM 有合法授权。</p>
+    </div>
+  </ProjectPageLayout>
+</BaseLayout>

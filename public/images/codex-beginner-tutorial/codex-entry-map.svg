@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <rect width="1200" height="720" fill="#f7f7f4"/>
+  <text x="600" y="78" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="40" font-weight="700" fill="#202124">Codex 的 4 个入口</text>
+  <text x="600" y="124" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" fill="#5f6368">新手优先从客户端开始，熟悉后再用 CLI 和 IDE 插件</text>
+  <g font-family="Microsoft YaHei, Arial, sans-serif">
+    <rect x="88" y="198" width="240" height="260" rx="18" fill="#ffffff" stroke="#202124" stroke-width="3"/>
+    <circle cx="208" cy="262" r="42" fill="#d8f0e2"/>
+    <text x="208" y="273" text-anchor="middle" font-size="36" font-weight="700" fill="#14703d">App</text>
+    <text x="208" y="344" text-anchor="middle" font-size="28" font-weight="700" fill="#202124">桌面客户端</text>
+    <text x="208" y="392" text-anchor="middle" font-size="20" fill="#5f6368">适合新手</text>
+    <text x="208" y="424" text-anchor="middle" font-size="20" fill="#5f6368">看项目、改文件、查结果</text>
+
+    <rect x="360" y="198" width="240" height="260" rx="18" fill="#ffffff" stroke="#202124" stroke-width="3"/>
+    <circle cx="480" cy="262" r="42" fill="#e8def8"/>
+    <text x="480" y="273" text-anchor="middle" font-size="34" font-weight="700" fill="#5e35b1">CLI</text>
+    <text x="480" y="344" text-anchor="middle" font-size="28" font-weight="700" fill="#202124">命令行</text>
+    <text x="480" y="392" text-anchor="middle" font-size="20" fill="#5f6368">适合进阶用户</text>
+    <text x="480" y="424" text-anchor="middle" font-size="20" fill="#5f6368">在当前文件夹直接干活</text>
+
+    <rect x="632" y="198" width="240" height="260" rx="18" fill="#ffffff" stroke="#202124" stroke-width="3"/>
+    <circle cx="752" cy="262" r="42" fill="#d8e8ff"/>
+    <text x="752" y="273" text-anchor="middle" font-size="34" font-weight="700" fill="#1a5fb4">IDE</text>
+    <text x="752" y="344" text-anchor="middle" font-size="28" font-weight="700" fill="#202124">编辑器插件</text>
+    <text x="752" y="392" text-anchor="middle" font-size="20" fill="#5f6368">适合开发者</text>
+    <text x="752" y="424" text-anchor="middle" font-size="20" fill="#5f6368">在 VS Code 等工具里协作</text>
+
+    <rect x="904" y="198" width="240" height="260" rx="18" fill="#ffffff" stroke="#202124" stroke-width="3"/>
+    <circle cx="1024" cy="262" r="42" fill="#ffe0c2"/>
+    <text x="1024" y="273" text-anchor="middle" font-size="30" font-weight="700" fill="#b45309">Web</text>
+    <text x="1024" y="344" text-anchor="middle" font-size="28" font-weight="700" fill="#202124">云端任务</text>
+    <text x="1024" y="392" text-anchor="middle" font-size="20" fill="#5f6368">适合 GitHub 项目</text>
+    <text x="1024" y="424" text-anchor="middle" font-size="20" fill="#5f6368">把任务交给云端跑</text>
+  </g>
+  <path d="M208 510 C208 575, 480 575, 480 510" fill="none" stroke="#202124" stroke-width="3" stroke-dasharray="8 8"/>
+  <path d="M752 510 C752 575, 1024 575, 1024 510" fill="none" stroke="#202124" stroke-width="3" stroke-dasharray="8 8"/>
+  <text x="344" y="612" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="700" fill="#202124">本篇重点：客户端 + CLI</text>
+  <text x="888" y="612" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" fill="#5f6368">IDE 和 Web 作为延伸入口</text>
+</svg>

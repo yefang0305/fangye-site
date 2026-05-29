@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <rect width="1200" height="720" fill="#fbfaf7"/>
+  <text x="600" y="72" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="38" font-weight="700" fill="#202124">新手怎么选：客户端还是 CLI？</text>
+  <g font-family="Microsoft YaHei, Arial, sans-serif">
+    <rect x="90" y="130" width="480" height="470" rx="18" fill="#ffffff" stroke="#1f2937" stroke-width="3"/>
+    <text x="330" y="190" text-anchor="middle" font-size="34" font-weight="700" fill="#14703d">Codex 客户端</text>
+    <line x1="150" y1="225" x2="510" y2="225" stroke="#d1d5db" stroke-width="2"/>
+    <text x="150" y="280" font-size="25" fill="#202124">适合谁：</text>
+    <text x="250" y="280" font-size="25" fill="#5f6368">第一次使用 Codex 的人</text>
+    <text x="150" y="340" font-size="25" fill="#202124">优点：</text>
+    <text x="220" y="340" font-size="25" fill="#5f6368">有界面、能看改动、上手轻</text>
+    <text x="150" y="400" font-size="25" fill="#202124">典型场景：</text>
+    <text x="270" y="400" font-size="25" fill="#5f6368">整理项目、写文档、修小问题</text>
+    <rect x="150" y="460" width="360" height="74" rx="12" fill="#d8f0e2"/>
+    <text x="330" y="507" text-anchor="middle" font-size="26" font-weight="700" fill="#14703d">建议新手先从这里开始</text>
+
+    <rect x="630" y="130" width="480" height="470" rx="18" fill="#ffffff" stroke="#1f2937" stroke-width="3"/>
+    <text x="870" y="190" text-anchor="middle" font-size="34" font-weight="700" fill="#5e35b1">Codex CLI</text>
+    <line x1="690" y1="225" x2="1050" y2="225" stroke="#d1d5db" stroke-width="2"/>
+    <text x="690" y="280" font-size="25" fill="#202124">适合谁：</text>
+    <text x="790" y="280" font-size="25" fill="#5f6368">熟悉命令行和项目目录的人</text>
+    <text x="690" y="340" font-size="25" fill="#202124">优点：</text>
+    <text x="760" y="340" font-size="25" fill="#5f6368">轻量、直接、和终端流程贴近</text>
+    <text x="690" y="400" font-size="25" fill="#202124">典型场景：</text>
+    <text x="810" y="400" font-size="25" fill="#5f6368">当前目录修 bug、跑检查</text>
+    <rect x="690" y="460" width="360" height="74" rx="12" fill="#e8def8"/>
+    <text x="870" y="507" text-anchor="middle" font-size="26" font-weight="700" fill="#5e35b1">熟悉后再切到 CLI</text>
+  </g>
+  <text x="600" y="660" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" fill="#5f6368">一句话：想稳就用客户端，想快就用 CLI。</text>
+</svg>

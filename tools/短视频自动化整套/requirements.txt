@@ -1,0 +1,14 @@
+# Core pipeline dependencies
+yt-dlp>=2024.0
+faster-whisper>=1.0
+requests>=2.31
+
+# Optional: LLM-based cleaning and adaptation review
+# Uses OpenAI-compatible API (doubao-seed-2.0-pro via 火山引擎 by default)
+
+# Optional: faster-whisper acceleration
+# ctranslate2>=4.0  (included via faster-whisper)
+# cuDNN / CUDA toolkit (system-level, not pip)
+
+# Dev / test dependencies
+# pytest>=8.0

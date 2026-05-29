@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <!-- Background Space Gradient -->
+    <radialGradient id="spaceBg" cx="50%" cy="50%" r="75%">
+      <stop offset="0%" stop-color="#0f0c1b"/>
+      <stop offset="50%" stop-color="#090612"/>
+      <stop offset="100%" stop-color="#030206"/>
+    </radialGradient>
+
+    <!-- Node Glow Filters -->
+    <filter id="glowGold" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="glowGreen" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="glowRed" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="glowBlue" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="glowPurple" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Gradients for connections -->
+    <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#bc8cff" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#58a6ff" stop-opacity="0.2"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Cosmic Background -->
+  <rect width="800" height="450" fill="url(#spaceBg)"/>
+
+  <!-- Starry Sky Effect (Decorative tiny stars) -->
+  <g opacity="0.3">
+    <circle cx="100" cy="80" r="1" fill="#ffffff" />
+    <circle cx="250" cy="50" r="1.5" fill="#ffffff" />
+    <circle cx="150" cy="300" r="1" fill="#ffffff" />
+    <circle cx="320" cy="380" r="1" fill="#ffffff" />
+    <circle cx="700" cy="120" r="1.5" fill="#ffffff" />
+    <circle cx="620" cy="320" r="1" fill="#ffffff" />
+    <circle cx="500" cy="40" r="1" fill="#ffffff" />
+    <circle cx="480" cy="400" r="1.5" fill="#ffffff" />
+    <circle cx="750" cy="280" r="1" fill="#ffffff" />
+    <!-- Constellation lines in background (faint) -->
+    <path d="M 100,80 L 250,50 L 300,120 M 620,320 L 700,120 L 750,280" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-dasharray="3 3"/>
+  </g>
+
+  <!-- TITLE -->
+  <text x="400" y="35" font-family="'Segoe UI', sans-serif" font-size="18" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="1">赛博命理库：Obsidian 双链关系网</text>
+  <text x="400" y="55" font-family="'Segoe UI', sans-serif" font-size="11" fill="#8b949e" text-anchor="middle">以《三命通会》整理为例，概念与案例网状相连</text>
+
+  <!-- RELATIONSHIP PATHS (LINES) -->
+  <g stroke="#ffffff" stroke-opacity="0.25" stroke-width="1.5">
+    <!-- Links from Central Case (张知府命造) -->
+    <line x1="400" y1="225" x2="400" y2="100" stroke="#79c0ff" stroke-width="2"/> <!-- to 甲木 -->
+    <line x1="400" y1="225" x2="240" y2="180" stroke="#56d364"/> <!-- to 寅月 -->
+    <line x1="400" y1="225" x2="560" y2="180" stroke="#ff7b72"/> <!-- to 丙火 -->
+    <line x1="400" y1="225" x2="290" y2="330" stroke="#79c0ff"/> <!-- to 甲子 -->
+    <line x1="400" y1="225" x2="520" y2="320" stroke="#d2a8ff"/> <!-- to 木火通明 / 伤官格 -->
+    
+    <!-- Cross links between concepts -->
+    <line x1="400" y1="100" x2="240" y2="180" stroke-dasharray="3 3"/> <!-- 甲木 to 寅月 (临官之地) -->
+    <line x1="400" y1="100" x2="560" y2="180" stroke-dasharray="3 3"/> <!-- 甲木 to 丙火 (食神/伤官) -->
+    <line x1="560" y1="180" x2="520" y2="320" stroke-dasharray="3 3"/> <!-- 丙火 to 伤官格 -->
+    <line x1="240" y1="180" x2="520" y2="320" stroke-dasharray="3 3"/> <!-- 寅月 to 伤官格 -->
+    <line x1="290" y1="330" x2="400" y2="100" stroke-dasharray="3 3"/> <!-- 甲子 to 甲木 -->
+  </g>
+
+  <!-- LABELS ON PATHS -->
+  <g font-family="'Segoe UI', sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">
+    <rect x="382" y="145" width="36" height="15" rx="3" fill="#0f0c1b"/>
+    <text x="400" y="156" fill="#79c0ff">日元</text>
+
+    <rect x="290" y="193" width="36" height="15" rx="3" fill="#0f0c1b"/>
+    <text x="308" y="204" fill="#56d364">月令</text>
+
+    <rect x="475" y="193" width="36" height="15" rx="3" fill="#0f0c1b"/>
+    <text x="493" y="204" fill="#ff7b72">透出</text>
+
+    <rect x="325" y="275" width="36" height="15" rx="3" fill="#0f0c1b"/>
+    <text x="343" y="286" fill="#79c0ff">带支</text>
+
+    <rect x="450" y="270" width="36" height="15" rx="3" fill="#0f0c1b"/>
+    <text x="468" y="281" fill="#d2a8ff">成格</text>
+  </g>
+
+  <!-- NODES -->
+
+  <!-- 1. Central Node: 张知府命造 (Obsidian Note) -->
+  <g transform="translate(400, 225)">
+    <circle r="42" fill="#201535" stroke="#bc8cff" stroke-width="2.5" filter="url(#glowPurple)"/>
+    <text y="-8" font-family="'Segoe UI', sans-serif" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">张知府命造.md</text>
+    <text y="12" font-family="'Segoe UI', sans-serif" font-size="9" fill="#bc8cff" text-anchor="middle">「案例笔记」</text>
+    <text y="24" font-family="'Segoe UI', sans-serif" font-size="8" fill="#8b949e" text-anchor="middle">双链中心</text>
+  </g>
+
+  <!-- 2. Concept Node: 甲木 (Wood Element - Green Theme) -->
+  <g transform="translate(400, 100)">
+    <circle r="30" fill="#14261d" stroke="#56d364" stroke-width="1.5" filter="url(#glowGreen)"/>
+    <text y="4" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="bold" fill="#56d364" text-anchor="middle">甲木.md</text>
+    <text y="18" font-family="'Segoe UI', sans-serif" font-size="8" fill="#8b949e" text-anchor="middle">十天干</text>
+  </g>
+
+  <!-- 3. Concept Node: 寅月 (Month - Greenish/Brown Theme) -->
+  <g transform="translate(240, 180)">
+    <circle r="30" fill="#1c2416" stroke="#8dd356" stroke-width="1.5" filter="url(#glowGreen)"/>
+    <text y="4" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="bold" fill="#8dd356" text-anchor="middle">寅月.md</text>
+    <text y="18" font-family="'Segoe UI', sans-serif" font-size="8" fill="#8b949e" text-anchor="middle">月令提纲</text>
+  </g>
+
+  <!-- 4. Concept Node: 丙火 (Fire Element - Red Theme) -->
+  <g transform="translate(560, 180)">
+    <circle r="30" fill="#2d1a18" stroke="#ff7b72" stroke-width="1.5" filter="url(#glowRed)"/>
+    <text y="4" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="bold" fill="#ff7b72" text-anchor="middle">丙火.md</text>
+    <text y="18" font-family="'Segoe UI', sans-serif" font-size="8" fill="#8b949e" text-anchor="middle">食神泄秀</text>
+  </g>
+
+  <!-- 5. Concept Node: 甲子 (Year/Day Pillar - Blue/Water Theme) -->
+  <g transform="translate(290, 330)">
+    <circle r="30" fill="#141c2d" stroke="#58a6ff" stroke-width="1.5" filter="url(#glowBlue)"/>
+    <text y="4" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="bold" fill="#58a6ff" text-anchor="middle">甲子.md</text>
+    <text y="18" font-family="'Segoe UI', sans-serif" font-size="8" fill="#8b949e" text-anchor="middle">干支六十甲子</text>
+  </g>
+
+  <!-- 6. Concept Node: 伤官格 / 木火通明 (Pattern - Gold Theme) -->
+  <g transform="translate(520, 320)">
+    <circle r="32" fill="#2d2218" stroke="#d4a356" stroke-width="1.5" filter="url(#glowGold)"/>
+    <text y="4" font-family="'Segoe UI', sans-serif" font-size="11" font-weight="bold" fill="#d4a356" text-anchor="middle">木火伤官格.md</text>
+    <text y="18" font-family="'Segoe UI', sans-serif" font-size="8" fill="#8b949e" text-anchor="middle">格局卡片</text>
+  </g>
+
+  <!-- Explanatory note in bottom left -->
+  <rect x="25" y="380" width="180" height="45" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1" opacity="0.8"/>
+  <text x="35" y="398" font-family="'Segoe UI', sans-serif" font-size="10" fill="#c9d1d9">💡 Obsidian 双链图谱原理：</text>
+  <text x="35" y="415" font-family="'Segoe UI', sans-serif" font-size="9" fill="#8b949e">通过 [[链接]] 建立星状网路，知识活化</text>
+</svg>

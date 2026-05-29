@@ -1,0 +1,207 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient (White/Light) -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    
+    <!-- Card Backgrounds (Light) -->
+    <linearGradient id="card-grad-left" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#fff5f5"/>
+    </linearGradient>
+    <linearGradient id="card-grad-right" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f0fdf4"/>
+    </linearGradient>
+
+    <!-- Shadows -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#0f172a" flood-opacity="0.06"/>
+    </filter>
+  </defs>
+
+  <!-- Base Styles -->
+  <style>
+    .title { font-family: system-ui, -apple-system, 'PingFang SC', sans-serif; font-weight: 700; fill: #0f172a; font-size: 22px; text-anchor: middle; }
+    .subtitle { font-family: system-ui, -apple-system, 'PingFang SC', sans-serif; fill: #475569; font-size: 14px; text-anchor: middle; }
+    
+    .card-header-title { font-family: system-ui, -apple-system, 'PingFang SC', sans-serif; font-weight: 700; font-size: 18px; }
+    .card-header-desc { font-family: system-ui, -apple-system, 'PingFang SC', sans-serif; font-size: 12px; fill: #64748b; }
+    
+    .node-num { font-family: 'Impact', sans-serif; font-size: 18px; font-weight: bold; }
+    .node-title { font-family: system-ui, -apple-system, 'PingFang SC', sans-serif; font-weight: 700; font-size: 13px; fill: #1e293b; }
+    .node-text { font-family: system-ui, -apple-system, 'PingFang SC', sans-serif; font-size: 11px; fill: #475569; }
+    .node-text-bold { font-family: system-ui, -apple-system, 'PingFang SC', sans-serif; font-size: 11px; font-weight: 700; }
+    
+    .chat-bubble-txt { font-family: system-ui, sans-serif; font-size: 11px; fill: #0f172a; font-weight: 500; }
+    .vs-text { font-family: 'Impact', 'Arial Black', sans-serif; font-style: italic; fill: #0284c7; font-size: 28px; text-anchor: middle; }
+  </style>
+
+  <!-- Background -->
+  <rect width="800" height="560" fill="url(#bg-grad)" rx="16"/>
+
+  <!-- Header -->
+  <text x="400" y="45" class="title">装修公司的隐喻：盲目拆墙施工 vs. 沟通出图规划</text>
+  <text x="400" y="70" class="subtitle">如果做错的成本极高，千万别省略在动手前的“Brainstorming”环节</text>
+
+  <!-- ==================== LEFT CARD: BLIND CONSTRUCTION ==================== -->
+  <g filter="url(#shadow)">
+    <!-- Card Border & Background -->
+    <rect x="40" y="100" width="340" height="420" rx="12" fill="url(#card-grad-left)" stroke="#f87171" stroke-opacity="0.6" stroke-width="1.5" />
+    
+    <!-- Card Header -->
+    <rect x="55" y="115" width="80" height="20" rx="4" fill="#ef4444" />
+    <text x="95" y="125" font-family="system-ui" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle" dominant-baseline="central">盲目开工型</text>
+    <text x="145" y="125" class="card-header-title" fill="#dc2626" dominant-baseline="central">“直接开干”装修公司</text>
+    <text x="55" y="148" class="card-header-desc" dominant-baseline="central">特点：图快、不做详细调研、上来就砸墙</text>
+
+    <!-- Dividers -->
+    <line x1="55" y1="162" x2="365" y2="162" stroke="#fee2e2" stroke-width="1" />
+
+    <!-- Timeline Dotted Lines -->
+    <line x1="75" y1="180" x2="75" y2="475" stroke="#fca5a5" stroke-width="2" stroke-dasharray="4,4" />
+
+    <!-- STEP 1: 提出模糊想法 -->
+    <g transform="translate(65, 180)">
+      <!-- Number Pin -->
+      <circle cx="10" cy="15" r="10" fill="#fca5a5" />
+      <text x="10" y="15" font-family="Impact" font-size="11" fill="#7f1d1d" text-anchor="middle" dominant-baseline="central">1</text>
+      
+      <text x="30" y="15" class="node-title" dominant-baseline="central">业主提出模糊需求</text>
+      
+      <!-- Chat Bubble Graphic -->
+      <rect x="30" y="32" width="160" height="28" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+      <polygon points="35,32 30,26 42,32" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+      <rect x="32" y="32" width="12" height="4" fill="#f1f5f9" /> <!-- Mask connection -->
+      <text x="42" y="46" class="chat-bubble-txt" dominant-baseline="central">“老板，我要个现代风厨房！”</text>
+    </g>
+
+    <!-- STEP 2: 盲目拆墙 -->
+    <g transform="translate(65, 270)">
+      <!-- Number Pin -->
+      <circle cx="10" cy="15" r="10" fill="#ef4444" />
+      <text x="10" y="15" font-family="Impact" font-size="11" fill="#ffffff" text-anchor="middle" dominant-baseline="central">2</text>
+      
+      <text x="30" y="15" class="node-title" fill="#b91c1c" dominant-baseline="central">施工队不问细节，直接砸墙！</text>
+      
+      <!-- Hammer smashing visual -->
+      <g transform="translate(30, 28)">
+        <!-- Wall/Brick path -->
+        <rect x="0" y="2" width="40" height="25" rx="3" fill="#cbd5e1" stroke="#94a3b8" />
+        <line x1="20" y1="2" x2="20" y2="27" stroke="#94a3b8"/>
+        <!-- Cracks -->
+        <path d="M10,8 L18,16 L12,22" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Hammer -->
+        <g transform="translate(38, -5) rotate(15)">
+          <path d="M15,10 L5,25 L2,23 L12,8 Z" fill="#78350f" />
+          <rect x="12" y="3" width="10" height="8" rx="2" fill="#475569" />
+        </g>
+        <text x="65" y="15" class="node-text-bold" fill="#ef4444" dominant-baseline="central">啪！哐！</text>
+        <text x="105" y="15" class="node-text" dominant-baseline="central">砸断水管、砸塌承重墙...</text>
+      </g>
+    </g>
+
+    <!-- STEP 3: 灾难返工 -->
+    <g transform="translate(65, 360)">
+      <!-- Number Pin -->
+      <circle cx="10" cy="15" r="10" fill="#b91c1c" />
+      <text x="10" y="15" font-family="Impact" font-size="11" fill="#ffffff" text-anchor="middle" dominant-baseline="central">3</text>
+      
+      <text x="30" y="15" class="node-title" fill="#7f1d1d" dominant-baseline="central">交付时痛点爆发，灾难级返工！</text>
+      
+      <g transform="translate(30, 28)">
+        <text x="0" y="5" class="node-text-bold" fill="#b91c1c" dominant-baseline="central">❌ 细节冲突：</text>
+        <text x="75" y="5" class="node-text" dominant-baseline="central">“怎么是开放式？油烟太大了！”</text>
+        
+        <text x="0" y="22" class="node-text-bold" fill="#b91c1c" dominant-baseline="central">❌ 成本高昂：</text>
+        <text x="75" y="22" class="node-text" dominant-baseline="central">没有提前沟通，必须推倒重建！</text>
+
+        <text x="0" y="39" class="node-text-bold" fill="#b91c1c" dominant-baseline="central">❌ 惨痛结果：</text>
+        <text x="75" y="39" class="node-text-bold" fill="#b91c1c" dominant-baseline="central">工期延误，预算超支 300%</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== RIGHT CARD: BLUEPRINT PLANNING (BRAINSTORMING) ==================== -->
+  <g filter="url(#shadow)">
+    <!-- Card Border & Background -->
+    <rect x="420" y="100" width="340" height="420" rx="12" fill="url(#card-grad-right)" stroke="#34d399" stroke-opacity="0.6" stroke-width="1.5" />
+    
+    <!-- Card Header -->
+    <rect x="435" y="115" width="80" height="20" rx="4" fill="#10b981" />
+    <text x="475" y="125" font-family="system-ui" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle" dominant-baseline="central">蓝图设计型</text>
+    <text x="525" y="125" class="card-header-title" fill="#047857" dominant-baseline="central">“专业设计”装修公司</text>
+    <text x="435" y="148" class="card-header-desc" dominant-baseline="central">特点：强制先沟通、绘制设计图、确认后施工</text>
+
+    <!-- Dividers -->
+    <line x1="435" y1="162" x2="745" y2="162" stroke="#d1fae5" stroke-width="1" />
+
+    <!-- Timeline Dotted Lines -->
+    <line x1="455" y1="180" x2="455" y2="475" stroke="#6ee7b7" stroke-width="2" stroke-dasharray="4,4" />
+
+    <!-- STEP 1: 提出模糊想法 -->
+    <g transform="translate(445, 180)">
+      <!-- Number Pin -->
+      <circle cx="10" cy="15" r="10" fill="#a7f3d0" />
+      <text x="10" y="15" font-family="Impact" font-size="11" fill="#064e3b" text-anchor="middle" dominant-baseline="central">1</text>
+      
+      <text x="30" y="15" class="node-title" dominant-baseline="central">业主提出模糊需求</text>
+      
+      <!-- Chat Bubble Graphic -->
+      <rect x="30" y="32" width="160" height="28" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+      <polygon points="35,32 30,26 42,32" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+      <rect x="32" y="32" width="12" height="4" fill="#f1f5f9" /> <!-- Mask connection -->
+      <text x="42" y="46" class="chat-bubble-txt" dominant-baseline="central">“老板，我要个现代风厨房！”</text>
+    </g>
+
+    <!-- STEP 2: 沟通设计图 (Brainstorming) -->
+    <g transform="translate(445, 270)">
+      <!-- Number Pin -->
+      <circle cx="10" cy="15" r="10" fill="#10b981" />
+      <text x="10" y="15" font-family="Impact" font-size="11" fill="#ffffff" text-anchor="middle" dominant-baseline="central">2</text>
+      
+      <text x="30" y="15" class="node-title" fill="#047857" dominant-baseline="central">设计师坐下来，逐个厘清细节</text>
+      
+      <!-- Blueprint Form visual -->
+      <g transform="translate(30, 26)">
+        <rect x="0" y="0" width="210" height="54" rx="4" fill="#f8fafc" stroke="#6ee7b7" stroke-width="1" />
+        <text x="10" y="12" class="node-text-bold" fill="#047857" dominant-baseline="central">📋 设计问卷 ＆ 确认</text>
+        <text x="10" y="27" class="node-text" font-size="10" dominant-baseline="central">💬 几人做饭？➔ 2人</text>
+        <text x="10" y="41" class="node-text" font-size="10" dominant-baseline="central">💬 开放还是封闭？➔ 封闭式</text>
+        
+        <!-- Green Checkmark on blueprint shifted right -->
+        <circle cx="185" cy="22" r="8" fill="#10b981" />
+        <path d="M182,22 L184,24 L188,20" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
+        <text x="185" y="38" font-size="8" fill="#047857" font-weight="bold" text-anchor="middle" dominant-baseline="central">图纸确认</text>
+      </g>
+    </g>
+
+    <!-- STEP 3: 精准施工 一次交付 -->
+    <g transform="translate(445, 360)">
+      <!-- Number Pin -->
+      <circle cx="10" cy="15" r="10" fill="#047857" />
+      <text x="10" y="15" font-family="Impact" font-size="11" fill="#ffffff" text-anchor="middle" dominant-baseline="central">3</text>
+      
+      <text x="30" y="15" class="node-title" fill="#064e3b" dominant-baseline="central">按确认好的图纸施工，顺利交付！</text>
+      
+      <g transform="translate(30, 28)">
+        <text x="0" y="5" class="node-text-bold" fill="#047857" dominant-baseline="central">✓ 零沟通偏差：</text>
+        <text x="85" y="5" class="node-text" dominant-baseline="central">按图纸施工，完全符合心意</text>
+        
+        <text x="0" y="22" class="node-text-bold" fill="#047857" dominant-baseline="central">✓ 预算全掌控：</text>
+        <text x="85" y="22" class="node-text" dominant-baseline="central">提前避开承重墙，无额外增项</text>
+
+        <text x="0" y="39" class="node-text-bold" fill="#047857" dominant-baseline="central">✓ 高质高满意：</text>
+        <text x="85" y="39" class="node-text-bold" fill="#047857" dominant-baseline="central">一次成型，完美交付，业主省心</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- VS in the middle (Moved to bottom of SVG to render on top of Left/Right cards) -->
+  <g filter="url(#shadow)">
+    <circle cx="400" cy="300" r="24" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+    <text x="400" y="300" class="vs-text" dominant-baseline="central">VS</text>
+  </g>
+</svg>

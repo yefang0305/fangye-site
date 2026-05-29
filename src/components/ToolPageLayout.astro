@@ -1,0 +1,40 @@
+---
+// ToolPageLayout.astro – Reusable dark-lab tool page wrapper.
+// Wraps the page-hero header (title, description, trust badges) and
+// the main tool-panel slot so every usable tool page shares one structure.
+
+interface Badge {
+  label: string;
+  variant?: 'local' | 'api-key' | 'no-upload' | 'default';
+}
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow?: string;
+  badges?: Badge[];
+}
+
+const { title, description, eyebrow = 'Tool', badges = [] } = Astro.props;
+---
+
+<section class="page-hero">
+  <p class="eyebrow">{eyebrow}</p>
+  <h1>{title}</h1>
+  <p class="lead">{description}</p>
+  {
+    badges.length > 0 && (
+      <div class="tool-badges" aria-label="工具属性">
+        {badges.map((badge) => (
+          <span class={`badge badge-${badge.variant || 'default'}`}>{badge.label}</span>
+        ))}
+      </div>
+    )
+  }
+</section>
+
+<section class="page-section">
+  <div class="tool-panel">
+    <slot />
+  </div>
+</section>

@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+
+const articles = (await getCollection('articles')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<BaseLayout title="文章" description="AI 工具、提示词、自动化和效率实验文章。">
+  <section class="page-hero">
+    <p class="eyebrow">Articles</p>
+    <h1>文章</h1>
+    <p class="lead">记录 AI 工具、提示词、自动化工作流和效率实验。</p>
+  </section>
+  <section class="page-section">
+    <div class="article-list">
+      {articles.map((article) => (
+        <ArticleCard
+          title={article.data.title}
+          description={article.data.description}
+          pubDate={article.data.pubDate}
+          tags={article.data.tags}
+          href={`/articles/${article.slug}/`}
+        />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

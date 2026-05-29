@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "sessionKey": "big-project-automation-suite",
+  "createdAt": "2026-05-29T02:30:15.126012-08:00",
+  "updatedAt": "2026-05-29T02:53:34.988518-08:00",
+  "primary": {
+    "sessionId": null,
+    "status": "available",
+    "leaseRunId": null,
+    "leasePid": null,
+    "leasedAt": null,
+    "lastUsedAt": null,
+    "lastRunId": null,
+    "lastResetAt": null,
+    "lastResetReason": null,
+    "lastResetFromSessionId": null,
+    "lastResetFromRunId": null
+  },
+  "parallelPool": [
+    {
+      "sessionId": "894e4dae-6512-4178-99fe-923990080108",
+      "status": "available",
+      "leaseRunId": null,
+      "leasePid": null,
+      "leasedAt": null,
+      "lastUsedAt": "2026-05-29T02:53:34.988356-08:00",
+      "lastRunId": "20260529_023015_106_56138c33",
+      "lastTaskFingerprint": "12bf98a7bdc8ea59b0da8831fdcfb815e97a548f098c6c276c6a5c22c719149d",
+      "lastResetAt": null,
+      "lastResetReason": null,
+      "lastResetFromSessionId": null,
+      "lastResetFromRunId": null
+    }
+  ]
+}

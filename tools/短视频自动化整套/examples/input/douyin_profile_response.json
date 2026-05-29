@@ -1,0 +1,45 @@
+{
+  "aweme_list": [
+    {
+      "aweme_id": "7000000000000000101",
+      "desc": "为什么努力了运势还是迟迟打不开？",
+      "duration": 45200,
+      "video": {
+        "play_addr": {
+          "url_list": ["https://example.com/playwm/video101.mp4"]
+        },
+        "cover": {
+          "url_list": ["https://example.com/cover/101.webp"]
+        }
+      }
+    },
+    {
+      "aweme_id": "7000000000000000102",
+      "desc": "五月运势指南，这三个生肖要注意",
+      "duration": 38100,
+      "video": {
+        "play_addr": {
+          "url_list": ["https://example.com/playwm/video102.mp4"]
+        },
+        "cover": {
+          "url_list": ["https://example.com/cover/102.webp"]
+        }
+      }
+    },
+    {
+      "aweme_id": "7000000000000000103",
+      "desc": "修行人常犯的三个错误",
+      "duration": 52300,
+      "video": {
+        "play_addr": {
+          "url_list": ["https://example.com/playwm/video103.mp4"]
+        },
+        "cover": {
+          "url_list": ["https://example.com/cover/103.webp"]
+        }
+      }
+    }
+  ],
+  "has_more": 0,
+  "max_cursor": 0
+}

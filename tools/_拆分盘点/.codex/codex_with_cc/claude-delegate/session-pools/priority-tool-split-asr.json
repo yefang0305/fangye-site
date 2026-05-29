@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "sessionKey": "priority-tool-split-asr",
+  "createdAt": "2026-05-28T08:31:35.634334-08:00",
+  "updatedAt": "2026-05-28T08:36:54.618031-08:00",
+  "primary": {
+    "sessionId": null,
+    "status": "available",
+    "leaseRunId": null,
+    "leasePid": null,
+    "leasedAt": null,
+    "lastUsedAt": null,
+    "lastRunId": null,
+    "lastResetAt": null,
+    "lastResetReason": null,
+    "lastResetFromSessionId": null,
+    "lastResetFromRunId": null
+  },
+  "parallelPool": [
+    {
+      "sessionId": "312b7ddb-ab7f-44fa-bced-b048fd7862cc",
+      "status": "available",
+      "leaseRunId": null,
+      "leasePid": null,
+      "leasedAt": null,
+      "lastUsedAt": "2026-05-28T08:36:54.617875-08:00",
+      "lastRunId": "20260528_083135_607_77cb75e8",
+      "lastTaskFingerprint": "ad6e7e79d13e228ed7886f8fcfc20ccdfc52125bf3155811378724e57bdcc5dc",
+      "lastResetAt": null,
+      "lastResetReason": null,
+      "lastResetFromSessionId": null,
+      "lastResetFromRunId": null
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolPageLayout from '../../components/ToolPageLayout.astro';
+---
+
+<BaseLayout title="文本清理器" description="清理多余空行、首尾空格和重复空白的站内小工具。">
+  <ToolPageLayout
+    title="文本清理器"
+    description="把从网页、文档或聊天记录里复制来的文本整理成更干净的格式。所有处理都在浏览器本地完成。"
+    eyebrow="Text Tool"
+    badges={[
+      { label: '浏览器本地', variant: 'local' },
+      { label: '无需上传', variant: 'no-upload' },
+    ]}
+  >
+    <div class="tool-grid">
+      <label>
+        输入文本
+        <textarea id="inputText" placeholder="把需要清理的文本粘贴到这里"></textarea>
+      </label>
+      <label>
+        清理结果
+        <textarea id="outputText" readonly placeholder="清理后的文本会出现在这里"></textarea>
+      </label>
+    </div>
+
+    <div class="checkbox-row" aria-label="清理选项">
+      <label><input id="trimLines" type="checkbox" checked /> 去除每行首尾空格</label>
+      <label><input id="removeBlankLines" type="checkbox" checked /> 移除多余空行</label>
+      <label><input id="collapseSpaces" type="checkbox" checked /> 合并重复空格</label>
+    </div>
+
+    <div class="button-row">
+      <button id="cleanButton" type="button">清理文本</button>
+      <button id="copyButton" class="secondary" type="button">复制结果</button>
+      <button id="clearButton" class="secondary" type="button">清空</button>
+    </div>
+    <p id="toolMessage" class="tool-message" aria-live="polite"></p>
+  </ToolPageLayout>
+
+  <script>
+    const input = document.querySelector('#inputText');
+    const output = document.querySelector('#outputText');
+    const trimLines = document.querySelector('#trimLines');
+    const removeBlankLines = document.querySelector('#removeBlankLines');
+    const collapseSpaces = document.querySelector('#collapseSpaces');
+    const message = document.querySelector('#toolMessage');
+
+    function cleanText() {
+      let lines = input.value.replace(/\r\n/g, '\n').split('\n');
+
+      if (trimLines.checked) {
+        lines = lines.map((line) => line.trim());
+      }
+
+      let text = lines.join('\n');
+
+      if (collapseSpaces.checked) {
+        text = text.replace(/[ \t]+/g, ' ');
+      }
+
+      if (removeBlankLines.checked) {
+        text = text
+          .split('\n')
+          .filter((line) => line.trim().length > 0)
+          .join('\n');
+      }
+
+      output.value = text;
+      message.textContent = '已清理完成。';
+    }
+
+    document.querySelector('#cleanButton').addEventListener('click', cleanText);
+
+    document.querySelector('#copyButton').addEventListener('click', async () => {
+      if (!output.value) {
+        message.textContent = '还没有可复制的结果。';
+        return;
+      }
+      await navigator.clipboard.writeText(output.value);
+      message.textContent = '结果已复制。';
+    });
+
+    document.querySelector('#clearButton').addEventListener('click', () => {
+      input.value = '';
+      output.value = '';
+      message.textContent = '已清空。';
+      input.focus();
+    });
+  </script>
+</BaseLayout>

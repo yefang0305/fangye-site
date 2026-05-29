@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>抖音主页链接采集</title>
+<style>
+  :root {
+    --bg: #f5f5f5;
+    --card-bg: #fff;
+    --text: #333;
+    --muted: #888;
+    --border: #ddd;
+    --primary: #fe2c55;
+    --primary-hover: #e0264a;
+    --success: #20c933;
+    --radius: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 24px;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 24px; margin-bottom: 8px; }
+  .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card h2 { font-size: 16px; margin-bottom: 12px; }
+
+  .form-group { margin-bottom: 14px; }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #555;
+  }
+  .form-group input, .form-group textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-row { display: flex; gap: 12px; }
+  .form-row .form-group { flex: 1; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  .status { margin-top: 12px; font-size: 14px; }
+  .status.error { color: #e0264a; }
+  .status.success { color: var(--success); }
+
+  .result { margin-top: 16px; }
+  .result .stats { font-size: 14px; margin-bottom: 8px; }
+  .result .stats span { font-weight: 600; }
+
+  .link-list {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+    background: #fafafa;
+    font-size: 13px;
+  }
+  .link-list a { color: #1a73e8; word-break: break-all; }
+  .link-list a:visited { color: #681da8; }
+
+  .spinner {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 2px solid #fff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin .6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>抖音主页链接采集</h1>
+  <p class="subtitle">输入抖音个人主页链接，提取所有公开作品链接并导出为 Markdown 文件</p>
+
+  <div class="card">
+    <h2>提取设置</h2>
+    <div class="form-group">
+      <label for="profile_url">抖音主页链接 *</label>
+      <input id="profile_url" type="text" placeholder="例如: https://www.douyin.com/user/MS4wLjABAAAAxxx" />
+    </div>
+    <div class="form-group">
+      <label for="cookie_text">Cookie 文本 (Netscape 格式,可选)</label>
+      <textarea id="cookie_text" placeholder="粘贴 Netscape 格式 cookie,每行一条&#10;或留空使用无登录提取"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="cookie_file">Cookie 文件路径 (Netscape 格式,可选)</label>
+      <input id="cookie_file" type="text" placeholder="例如: J:\cookies.txt" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="max_pages">最大翻页数</label>
+        <input id="max_pages" type="number" value="200" min="1" max="500" />
+      </div>
+      <div class="form-group">
+        <label for="page_size">每页数量</label>
+        <input id="page_size" type="number" value="35" min="1" max="50" />
+      </div>
+      <div class="form-group">
+        <label for="timeout">超时 (秒)</label>
+        <input id="timeout" type="number" value="30" min="5" max="120" />
+      </div>
+    </div>
+    <button id="extract_btn" class="btn btn-primary" onclick="doExtract()">开始提取</button>
+    <div id="status" class="status"></div>
+  </div>
+
+  <div id="result_section" class="card" style="display:none">
+    <h2>提取结果</h2>
+    <div id="result_stats" class="stats"></div>
+    <div id="result_links" class="link-list"></div>
+  </div>
+</div>
+
+<script>
+async function doExtract() {
+  const btn = document.getElementById("extract_btn");
+  const status = document.getElementById("status");
+  const resultSection = document.getElementById("result_section");
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>提取中...';
+  status.textContent = "";
+  status.className = "status";
+  resultSection.style.display = "none";
+
+  const body = {
+    profile_url: document.getElementById("profile_url").value.trim(),
+    cookie_text: document.getElementById("cookie_text").value.trim(),
+    cookie_file: document.getElementById("cookie_file").value.trim(),
+    max_pages: parseInt(document.getElementById("max_pages").value) || 200,
+    page_size: parseInt(document.getElementById("page_size").value) || 35,
+    timeout: parseInt(document.getElementById("timeout").value) || 30,
+  };
+
+  try {
+    const resp = await fetch("/api/extract", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await resp.json();
+
+    if (!data.ok) {
+      status.textContent = "错误: " + (data.error || "未知错误");
+      status.className = "status error";
+    } else {
+      status.textContent = `提取完成! 共 ${data.total} 个作品, Markdown 已保存到 ${data.md_file}`;
+      status.className = "status success";
+
+      document.getElementById("result_stats").innerHTML =
+        `<p>主页: <code>${esc(data.profile_url)}</code></p>` +
+        `<p>sec_uid: <code>${esc(data.sec_uid)}</code></p>` +
+        `<p><span>作品数量: ${data.total}</span></p>`;
+
+      const linksDiv = document.getElementById("result_links");
+      linksDiv.innerHTML = data.links.map((l, i) =>
+        `<div>${i + 1}. <a href="${esc(l)}" target="_blank">${esc(l)}</a></div>`
+      ).join("");
+
+      resultSection.style.display = "block";
+    }
+  } catch (err) {
+    status.textContent = "请求失败: " + err.message;
+    status.className = "status error";
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = "开始提取";
+  }
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+</script>
+</body>
+</html>

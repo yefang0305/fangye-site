@@ -1,0 +1,54 @@
+---
+import '../styles/global.css';
+import FloatButton from '../components/FloatButton.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'fangye.cc - AI 工具实验室',
+  description = '记录 AI 工具、自动化工作流和效率实验，也发布一些自己做的小工具。',
+} = Astro.props;
+
+const pageTitle = title.includes('fangye.cc') ? title : `${title} | fangye.cc`;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0b1116" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title="fangye.cc RSS" href="/rss.xml" />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="fangye.cc 首页">
+        <span class="brand-mark">F</span>
+        <span>fangye.cc</span>
+      </a>
+      <nav class="site-nav" aria-label="主导航">
+        <a href="/articles/">文章</a>
+        <a href="/tools/">工具</a>
+        <a href="/about/">关于</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <span>fangye.cc</span>
+      <span>AI 工具、自动化工作流与效率实验。</span>
+    </footer>
+    <FloatButton />
+  </body>
+</html>
+
