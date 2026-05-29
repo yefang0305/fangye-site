@@ -22,92 +22,103 @@ const { title, description, eyebrow = 'Project', techStack = [], githubCta = tru
   <p class="eyebrow">{eyebrow}</p>
   <h1>{title}</h1>
   <p class="lead">{description}</p>
-</section>
+</section><section class="page-section">
+  <div class="project-layout-grid">
+    <!-- Main content column -->
+    <div class="project-main">
+      <slot />
+    </div>
 
-<section class="page-section">
-  <div class="project-content">
-    <slot />
-  </div>
-
-  {
-    techStack.length > 0 && (
-      <div class="project-tech-stack">
-        <h3>技术栈</h3>
-        <div class="tech-grid">
-          {techStack.map((group) => (
-            <div class="tech-group">
-              <span class="tech-label">{group.label}</span>
-              <div class="tech-tags">
-                {group.items.map((item) => (
-                  <span class="tag">{item}</span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  {
-    githubCta && (
-      <div class="project-cta">
-        <div class="cta-panel">
-          <div class="cta-left">
-            <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
-            </svg>
-            <div>
-              <p class="cta-title">GitHub 仓库</p>
-              <p class="cta-desc">仓库整理中，稍后会在这里放上链接。</p>
+    <!-- Sidebar column -->
+    <aside class="project-sidebar">
+      {
+        techStack.length > 0 && (
+          <div class="project-tech-stack">
+            <h3>技术栈</h3>
+            <div class="tech-list">
+              {techStack.map((group) => (
+                <div class="tech-group">
+                  <span class="tech-label">{group.label}</span>
+                  <div class="tech-tags">
+                    {group.items.map((item) => (
+                      <span class="tag">{item}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-          <span class="cta-badge">仓库整理中</span>
-        </div>
-      </div>
-    )
-  }
+        )
+      }
+
+      {
+        githubCta && (
+          <div class="project-cta">
+            <div class="cta-panel">
+              <div class="cta-header">
+                <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+                </svg>
+                <span class="cta-title">GitHub 仓库</span>
+              </div>
+              <p class="cta-desc">仓库整理中，稍后会在这里放上链接。</p>
+              <div class="cta-footer">
+                <span class="cta-badge">仓库整理中</span>
+              </div>
+            </div>
+          </div>
+        )
+      }
+    </aside>
+  </div>
 </section>
 
 <style>
-  .project-content {
-    max-width: 820px;
+  .project-layout-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
+    gap: 40px;
+    align-items: start;
   }
 
-  .project-content h2 {
+  .project-main {
+    max-width: 100%;
+  }
+
+  .project-main h2 {
     margin-top: 34px;
     font-size: 28px;
   }
 
-  .project-content h3 {
+  .project-main h3 {
     margin-top: 24px;
   }
 
-  .project-content p,
-  .project-content li {
+  .project-main p,
+  .project-main li {
     color: #c7d8d2;
     font-size: 17px;
     line-height: 1.82;
   }
 
-  .project-content a {
+  .project-main a {
     color: var(--accent);
     text-decoration: underline;
     text-underline-offset: 4px;
   }
 
-  .project-content code {
+  .project-main code {
     border-radius: 5px;
     padding: 2px 5px;
     background: rgba(159, 245, 215, 0.1);
   }
 
-  .project-content ul,
-  .project-content ol {
+  .project-main ul,
+  .project-main ol {
     padding-left: 20px;
   }
 
-  .project-content li {
+  .project-main li {
     margin-bottom: 8px;
   }
 
@@ -118,18 +129,23 @@ const { title, description, eyebrow = 'Project', techStack = [], githubCta = tru
     border-radius: var(--radius);
     background: rgba(20, 33, 40, 0.5);
     padding: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     overflow-x: auto;
   }
 
   .project-svg svg {
     width: 100%;
+    max-width: 580px;
     height: auto;
+    display: block;
   }
 
   /* Capability cards grid */
   .capability-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 16px;
     margin: 20px 0;
   }
@@ -166,37 +182,47 @@ const { title, description, eyebrow = 'Project', techStack = [], githubCta = tru
     margin-bottom: 10px;
   }
 
-  /* Tech stack */
+  /* Sidebar */
+  .project-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: sticky;
+    top: 24px;
+  }
+
   .project-tech-stack {
-    margin-top: 44px;
-    padding-top: 32px;
-    border-top: 1px solid var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(20, 33, 40, 0.4);
+    padding: 24px;
   }
 
   .project-tech-stack h3 {
+    margin-top: 0;
     margin-bottom: 16px;
-    font-size: 22px;
+    font-size: 18px;
+    color: var(--accent);
   }
 
-  .tech-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  .tech-list {
+    display: flex;
+    flex-direction: column;
     gap: 16px;
   }
 
   .tech-group {
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    background: rgba(20, 33, 40, 0.4);
-    padding: 16px;
+    border: none;
+    background: transparent;
+    padding: 0;
   }
 
   .tech-label {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     color: var(--subtle);
-    font-size: 12px;
-    font-weight: 650;
+    font-size: 11px;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -207,63 +233,67 @@ const { title, description, eyebrow = 'Project', techStack = [], githubCta = tru
     gap: 6px;
   }
 
-  /* CTA */
+  /* CTA Panel inside Sidebar */
   .project-cta {
-    margin-top: 44px;
-    padding-top: 32px;
-    border-top: 1px solid var(--line);
+    border: none;
+    padding-top: 0;
   }
 
   .cta-panel {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
+    flex-direction: column;
+    gap: 12px;
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background: linear-gradient(135deg, rgba(20, 33, 40, 0.7) 0%, rgba(13, 22, 27, 0.8) 100%);
-    padding: 22px 24px;
+    padding: 24px;
   }
 
-  .cta-left {
+  .cta-header {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
   }
 
   .cta-icon {
-    width: 36px;
-    height: 36px;
-    color: var(--muted);
+    width: 24px;
+    height: 24px;
+    color: var(--accent);
     flex-shrink: 0;
   }
 
   .cta-title {
     margin: 0;
     color: var(--text);
-    font-weight: 680;
+    font-weight: 700;
     font-size: 16px;
   }
 
   .cta-desc {
-    margin: 4px 0 0;
-    color: var(--subtle);
-    font-size: 14px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+
+  .cta-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 4px;
   }
 
   .cta-badge {
     display: inline-flex;
     align-items: center;
-    min-height: 28px;
-    padding: 4px 12px;
+    min-height: 24px;
+    padding: 2px 10px;
     border: 1px solid var(--line-strong);
     border-radius: 999px;
-    color: var(--muted);
-    background: rgba(255, 255, 255, 0.04);
-    font-size: 13px;
+    color: var(--subtle);
+    background: rgba(255, 255, 255, 0.03);
+    font-size: 11px;
     font-weight: 600;
     white-space: nowrap;
-    flex-shrink: 0;
   }
 
   /* Note / Warning boxes */
@@ -330,15 +360,18 @@ const { title, description, eyebrow = 'Project', techStack = [], githubCta = tru
   }
 
   @media (max-width: 860px) {
-    .capability-grid,
-    .tech-grid,
-    .workflow-steps {
+    .project-layout-grid {
       grid-template-columns: 1fr;
+      gap: 32px;
     }
 
-    .cta-panel {
-      flex-direction: column;
-      align-items: flex-start;
+    .project-sidebar {
+      position: static;
+    }
+
+    .capability-grid,
+    .workflow-steps {
+      grid-template-columns: 1fr;
     }
   }
 </style>

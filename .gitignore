@@ -8,3 +8,8 @@ dist/
 
 .codex/
 astro-dev.*.log
+
+# 开发素材，不发布到公开仓库
+/docs/
+/homepage-layout-preview.html
+/visual-style-preview.html
