@@ -13,9 +13,10 @@ interface Props {
   eyebrow?: string;
   techStack?: TechItem[];
   githubCta?: boolean;
+  githubUrl?: string;
 }
 
-const { title, description, eyebrow = 'Project', techStack = [], githubCta = true } = Astro.props;
+const { title, description, eyebrow = 'Project', techStack = [], githubCta = true, githubUrl } = Astro.props;
 ---
 
 <section class="page-hero">
@@ -61,10 +62,25 @@ const { title, description, eyebrow = 'Project', techStack = [], githubCta = tru
                 </svg>
                 <span class="cta-title">GitHub 仓库</span>
               </div>
-              <p class="cta-desc">仓库整理中，稍后会在这里放上链接。</p>
-              <div class="cta-footer">
-                <span class="cta-badge">仓库整理中</span>
-              </div>
+              {githubUrl ? (
+                <>
+                  <p class="cta-desc" style="margin-bottom: 12px;">该项目已在 GitHub 开源，欢迎提交 Issue 或 Pull Request 协同开发。</p>
+                  <a class="button-link cta-btn" href={githubUrl} target="_blank" rel="noopener noreferrer" style="width: 100%; font-size: 13.5px; padding: 6px 14px; min-height: 34px; color: #06100d; background: var(--accent); font-weight: 700; border-radius: var(--radius); display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: background .2s;">
+                    <span>访问 GitHub 仓库</span>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                      <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                  </a>
+                </>
+              ) : (
+                <>
+                  <p class="cta-desc">仓库整理中，稍后会在这里放上链接。</p>
+                  <div class="cta-footer">
+                    <span class="cta-badge">仓库整理中</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )

@@ -142,4 +142,14 @@ export const tools: ToolItem[] = [
     featured: true,
     hasPage: true,
   },
+  {
+    name: '短视频自动化整套',
+    slug: 'shortvideo-automation-suite',
+    description: '端到端短视频自动化工具集，覆盖对标账号采集、文案提取、脚本库管理、批量生产调度、发布分发全链路。',
+    category: '效率工具',
+    status: 'showcase',
+    href: '/projects/shortvideo-automation-suite/',
+    featured: false,
+    hasPage: true,
+  },
 ];

@@ -1,0 +1,158 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectPageLayout from '../../components/ProjectPageLayout.astro';
+---
+
+<BaseLayout title="短视频自动化整套" description="端到端短视频自动化工具集，覆盖对标账号采集、文案提取、脚本库管理、批量生产调度、发布分发全链路。">
+  <ProjectPageLayout
+    title="短视频自动化整套"
+    description="端到端短视频自动化工具集，由一组高度解耦的 Python 模块构成，覆盖对标账号采集、文案提取、脚本库管理、批量生产调度与发布分发全链路。"
+    eyebrow="Automation Suite"
+    githubUrl="https://github.com/yefang0305/shortvideo-automation-suite"
+    techStack={[
+      { label: '核心工具', items: ['Python 3.10+', 'yt-dlp', 'FFmpeg', 'pytest'] },
+      { label: 'AI 与 ASR', items: ['faster-whisper', 'CUDA / GPU', '豆包 / OpenAI API'] },
+      { label: '集成支持', items: ['CR TubeGet (下载)', 'MediaPush (自动上传分发)'] },
+    ]}
+  >
+    <h2>项目定位</h2>
+    <p>
+      短视频自动化整套（Short Video Automation Suite）是一个<strong>面向内容运营者与技术团队的端到端自动化内容生产链路</strong>。
+      它不依赖复杂的 GUI 界面，通过独立、可扩展的 Python 模块，实现从发现对标账号、抓取分析视频、提取清洗口播文案、按既定人设审核过滤，到最后对接自动化剪辑与多账号分发的全自动流水线。
+    </p>
+
+    <h2>架构流向</h2>
+    <p>
+      流水线采用解耦设计，各个子模块（对标采集、文案清洗、审核分发）之间通过状态持久化 JSON 索引进行松耦合通信。
+    </p>
+    <div class="project-svg">
+      <pre style="font-family: monospace; font-size: 11.5px; color: var(--accent); line-height: 1.45; overflow-x: auto; margin: 0; background: transparent; border: none; padding: 0;">
+┌──────────────────────────────────────────────────────────────┐
+│                    对标账号采集 (benchmark_ingestion)          │
+│                                                              │
+│  Markdown链接源  ──→  链接路由识别  ──→  账号主页展开           │
+│       │                    │                │                │
+│       ▼                    ▼                ▼                │
+│  单视频链接           账号主页链接       作品列表链接            │
+│       │                    │                │                │
+│       └────────────────────┴────────────────┘                │
+│                           │                                  │
+│                           ▼                                  │
+│                    视频下载 (yt-dlp + CR TubeGet)             │
+│                           │                                  │
+│                           ▼                                  │
+│                    ASR 语音转文字                              │
+│               (faster-whisper 本地 / 外部脚本)                 │
+│                           │                                  │
+│                           ▼                                  │
+│                    文本清洗 (规则 + LLM)                       │
+│                           │                                  │
+│                           ▼                                  │
+│                    适配审查 (LLM 人设过滤)                     │
+│                    keep / rewrite / reject                    │
+│                           │                                  │
+│                           ▼                                  │
+│                    脚本库存储 (JSON 索引 + TXT 文件)           │
+└──────────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+┌──────────────────────────────────────────────────────────────┐
+│              批量生产调度 (auto_batch_from_txt)                │
+│                                                              │
+│  脚本库 TXT  ──→  批量导入  ──→  VideoCut 批量自动化处理       │
+│                          ──→  视频生成                        │
+└──────────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+┌──────────────────────────────────────────────────────────────┐
+│             发布分发 (mediapush_dispatcher)                    │
+│                                                              │
+│  生成视频  ──→  写入 inbox 批次目录  ──→  MediaPush 自动拾取    │
+│                          ──→  多平台发布                      │
+└──────────────────────────────────────────────────────────────┘</pre>
+    </div>
+
+    <h2>核心功能模块</h2>
+    <div class="capability-grid">
+      <div class="capability-card">
+        <h4>1. 链接路由识别</h4>
+        <p>自动识别主流内容平台链接类型（如抖音、B站、YouTube、小红书、快手），支持识别单视频、账号空间、合集或播放列表。</p>
+      </div>
+      <div class="capability-card">
+        <h4>2. 主页展开拉取</h4>
+        <p>输入创作者个人主页 URL，利用下载通道自动翻页分页解析其全部公开视频链接，支持定制分页大小和最大翻页深度上限。</p>
+      </div>
+      <div class="capability-card">
+        <h4>3. 智能视频下载</h4>
+        <p>集成多端下载器。以 yt-dlp 作为基础通道，当检测到解析抖音接口 Cookie 过期时，自动回退到 CR TubeGet 本地客户端直链接析。</p>
+      </div>
+      <div class="capability-card">
+        <h4>4. ASR 语音识别引擎</h4>
+        <p>内置 <code>faster-whisper</code> 并开启 CUDA/GPU 加速，实现本地离线的高速高精度音频转文字，同时支持调度外部批处理脚本。</p>
+      </div>
+      <div class="capability-card">
+        <h4>5. 双级文本清洗过滤</h4>
+        <p>支持基于同音字纠错与口癖词过滤的规则清洗（Rule Cleaner），以及结合豆包/OpenAI 大语言模型上下文理解的语义级文本校对（LLM Cleaner）。</p>
+      </div>
+      <div class="capability-card">
+        <h4>6. LLM 人设适配审查</h4>
+        <p>内置适配过滤器（Adaptation Reviewer），基于设定的人设（如男道士/命理师）检测文案：识别时效错位、身份代入错位并输出 Keep / Rewrite / Reject 审查结果。</p>
+      </div>
+      <div class="capability-card">
+        <h4>7. 脚本库索引管理</h4>
+        <p>清洗审核后的脚本存为独立 TXT 文件，元数据及 URL 处理记录统一保存在 JSON 索引中，追踪 readiness 并支持断点续跑防重。</p>
+      </div>
+      <div class="capability-card">
+        <h4>8. 批分发至 MediaPush</h4>
+        <p>通过 <code>mediapush_dispatcher</code> 模块将本地自动化剪辑出的成片打包为含有 <code>manifest.json</code> 批次清单的发布目录，对接 MediaPush 实现无人值守自动拾取并定时上传。</p>
+      </div>
+    </div>
+
+    <h2>快速运行示例</h2>
+    <p>以下展示了通过 Python 脚本调用该工具包完成对标账号翻页拉取、视频摄入与文案解析的编排示例：</p>
+    <pre style="background: rgba(20, 33, 40, 0.6); padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); overflow-x: auto; color: var(--accent); font-family: monospace; font-size: 13.5px; line-height: 1.6; margin: 20px 0;">{`from automation_suite.benchmark_ingestion.orchestrator import BenchmarkAgentOrchestrator
+from automation_suite.benchmark_ingestion.douyin_profile import DouyinProfileExpander
+from automation_suite.benchmark_ingestion.downloader import YtDlpVideoDownloader
+from automation_suite.benchmark_ingestion.local_asr_engine import LocalWhisperASREngine
+from automation_suite.benchmark_ingestion.script_library import ScriptLibrary
+from automation_suite.benchmark_ingestion.state_store import IngestionStateStore
+
+# 1. 初始化各子模块
+profile_expander = DouyinProfileExpander(
+    crtubeget_dir="J:/MagicTool/crtubeget",
+    cookie_file="douyin_cookies.txt"
+)
+downloader = YtDlpVideoDownloader(crtubeget_dir="J:/MagicTool/crtubeget")
+asr_engine = LocalWhisperASREngine(model_name="large-v3", device="cuda")
+script_library = ScriptLibrary("./data/library.json")
+state_store = IngestionStateStore("./data/ingestion_state.json")
+
+# 2. 载入核心编排器
+orchestrator = BenchmarkAgentOrchestrator(
+    profile_expander=profile_expander,
+    downloader=downloader,
+    asr_engine=asr_engine,
+    script_library=script_library,
+    video_library_dir="./data/videos",
+    state_store=state_store
+)
+
+# 3. 抓取并提取对标账号前 10 个视频的口播文案
+result = orchestrator.run_profile(
+    "https://www.douyin.com/user/MS4wLjABAAAA...",
+    limit=10
+)
+print(f"摄入成功: {result['completed']} 篇 | 人设拒绝: {result['rejected']} 篇")`}</pre>
+
+    <h2>环境依赖说明</h2>
+    <ul>
+      <li><strong>必需运行库</strong>：安装并配置好 <code>FFmpeg</code> 并注入系统 PATH，Whisper 运行必须。</li>
+      <li><strong>本地 ASR 性能建议</strong>：建议配置 NVIDIA GPU 并安装 CUDA Toolkit，以大幅提升 <code>faster-whisper</code> 的语音转文字速率（可回退到 CPU 推理）。</li>
+      <li><strong>大模型连接器</strong>：文案清洗和适配审查需要提供兼容 OpenAI 接口协议的大模型 API Key（默认采用火山引擎豆包 Seed 系列模型）。</li>
+    </ul>
+
+    <div class="project-note">
+      <p><strong>注：</strong>本项目为 Python 离线脚本工具集，专注于底层逻辑链的实现，不提供常驻后台的 UI 窗口。如需拖拽编排的可视化环境，请参考 <strong><a href="/projects/video-node-canvas/" style="color: var(--amber); text-decoration: underline;">短视频节点工作流画布</a></strong>，其完美集成了本自动化套件的全部算子节点。</p>
+    </div>
+  </ProjectPageLayout>
+</BaseLayout>
