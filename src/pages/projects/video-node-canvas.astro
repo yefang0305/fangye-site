@@ -1,0 +1,679 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectPageLayout from '../../components/ProjectPageLayout.astro';
+---
+
+<BaseLayout title="短视频节点画布工作台" description="一个本地内容生产 Agent 工作流画布：Coze 的身体，Codex / Claude 的脑子。PyQt 无限画布负责可视化编排，外部 Agent 经 MCP 控制面负责理解目标、编排节点、处理外部动作。">
+  <ProjectPageLayout
+    title="短视频节点画布工作台"
+    description="一个本地内容生产 Agent 工作流画布：Coze 的身体，Codex / Claude 的脑子。PyQt 无限画布负责可视化编排，外部 Agent 经 MCP 控制面负责理解目标、编排节点、处理外部动作。"
+    eyebrow="Project"
+    techStack={[
+      { label: '大脑 / 控制面', items: ['Codex / Claude', 'FastMCP', 'stdio MCP'] },
+      { label: '界面 / 运行时', items: ['Python', 'PyQt5', 'WorkflowRunner'] },
+      { label: '协议 / 存储', items: ['active.json (rev)', 'Manifest 协议', 'Schema 校验'] },
+    ]}
+  >
+    <h2>项目定位</h2>
+    <p>
+      短视频节点画布工作台是一个<strong>面向内容团队与自动化工具作者的 Agent 协同环境</strong>。
+      传统的自动化脚本难于调试且状态黑盒，而本工作台在无限画布上把各项内容生产能力抽象为可拖拽、连线、独立调试运行的节点，
+      将可视化前端与后台 Agent 决策大脑通过 stdio MCP 协议实现无缝的双向同步。
+    </p>
+
+    <h2>交互演示</h2>
+    <p>
+      以下展示了外部 Agent（如 Codex / Claude Code）通过 stdio MCP 发送控制指令时，工作台理解、调度并自动在前端 PyQt 画布中实时重绘、自动连线并回填执行结果的完整闭环。
+    </p>
+    
+    <div class="hero-demo" aria-label="Codex 到工作台的自动化演示">
+      <!-- Scene 1: Codex Chat Terminal -->
+      <div class="demo-stage demo-codex">
+        <div class="demo-window">
+          <div class="demo-titlebar">
+            <div class="demo-dots"><span></span><span></span><span></span></div>
+            <span class="mono">Codex Client</span>
+          </div>
+          <div class="demo-body">
+            <div class="chat-row">
+              <div class="avatar">C</div>
+              <div class="prompt-card">
+                <div class="prompt-label">user command</div>
+                <div class="prompt-line">帮我把"J:\MagicTool\赛博术士\Claude Code 最佳实践.md"这篇文章配好图，做好封面，推送到公众号草稿箱<span class="cursor"></span></div>
+              </div>
+            </div>
+            <div class="codex-status">
+              <span>[Agent] 解析输入参数，定位文章物理路径与生成目标...</span>
+              <span>[Agent] 选择节点：文章读取、配图方案、封面设计、文生图、草稿上传...</span>
+              <span>[Agent] 通过 video-workbench MCP 服务写入工作流定义...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scene 2: PyQt Workbench Canvas -->
+      <div class="demo-stage demo-workbench">
+        <div class="demo-window">
+          <div class="demo-titlebar">
+            <div class="demo-dots"><span></span><span></span><span></span></div>
+            <span class="mono">短视频节点画布工作台</span>
+          </div>
+          <div class="workbench-ui">
+            <aside class="demo-sidebar">
+              <div class="demo-small-title">节点库</div>
+              <div class="library-node">文章读取</div>
+              <div class="library-node">配图方案</div>
+              <div class="library-node">封面设计</div>
+              <div class="library-node">文生图</div>
+              <div class="library-node">草稿上传</div>
+            </aside>
+            <div class="demo-canvas">
+              <div class="flow-line l1" style="--angle:17deg"></div>
+              <div class="flow-line l2" style="--angle:-16deg"></div>
+              <div class="flow-line l3" style="--angle:18deg"></div>
+              <div class="flow-line l4" style="--angle:-18deg"></div>
+              <div class="canvas-node n1 done"><div class="nt">文章读取</div><div class="ns">done</div></div>
+              <div class="canvas-node n2 done"><div class="nt">配图方案</div><div class="ns">done</div></div>
+              <div class="canvas-node n3 done"><div class="nt">封面设计</div><div class="ns">done</div></div>
+              <div class="canvas-node n4 done"><div class="nt">文生图</div><div class="ns">done</div></div>
+              <div class="canvas-node n5 done"><div class="nt">草稿上传</div><div class="ns">done</div></div>
+              <div class="result-card">
+                <div>封面已生成</div>
+                <div>配图已生成</div>
+                <div>草稿箱已推送</div>
+              </div>
+            </div>
+            <aside class="demo-panel">
+              <div class="demo-small-title">运行状态</div>
+              <div class="run-item">创建节点</div>
+              <div class="run-item">自动连线</div>
+              <div class="run-item">执行链路</div>
+              <div class="run-item">回填产物</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2>系统架构</h2>
+    <p>
+      画布的状态以 <code>workflows/active.json</code> (附带 <code>rev</code> 版本戳) 为单一真相源。
+      GUI 前端通过文件监听器（QFileSystemWatcher）防抖重载画布；后台 MCP 服务负责暴露出调度工具。
+    </p>
+
+    <div class="architecture" aria-label="系统架构链路">
+      <div class="arch-node arch-agent">
+        <span class="arch-kicker">External Brain</span>
+        <strong>Codex / Claude</strong>
+        <small>理解任务目标、连线编排节点、接收并处理外部动作回填</small>
+      </div>
+      <div class="arch-edge">stdio MCP</div>
+      <div class="arch-node">
+        <span class="arch-kicker">Control Plane</span>
+        <strong>app/mcp/server.py</strong>
+        <small>FastMCP 工具入口，暴露 15+ 调度 API</small>
+      </div>
+      <div class="arch-edge">store + run</div>
+      <div class="arch-node">
+        <span class="arch-kicker">Runtime</span>
+        <strong>Runner + ToolExecutor</strong>
+        <small>节点图排序调度、多线程子进程执行、产物归档</small>
+      </div>
+      <div class="arch-edge">active.json + rev</div>
+      <div class="arch-node arch-canvas">
+        <span class="arch-kicker">Visible Body</span>
+        <strong>PyQt5 Canvas</strong>
+        <small>无限画布、参数控制面板、节点连接器、运行日志</small>
+      </div>
+    </div>
+
+    <h2>核心能力</h2>
+    <div class="capability-grid">
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+        <h4>短视频生产链路</h4>
+        <p>采集 → 下载 → ASR 音频转文字 → 脚本改写 → 批量剪辑 → 自动发布，全流程可视跑通。</p>
+      </div>
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15a2.5 2.5 0 0 1 2.5-2.5H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path><path d="M6 6h10"></path><path d="M6 10h10"></path></svg>
+        <h4>图文生产编排</h4>
+        <p>支持公众号上传、小红书配图、封面渲染设计、Markdown 格式重整等多账号矩阵式流水线。</p>
+      </div>
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+        <h4>严格 Schema 端口校验</h4>
+        <p>节点按严格定义的数据格式输出/输入，连线不兼容时拒绝连线并抛出契约级错误原因。</p>
+      </div>
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <h4>双模式执行与沙箱</h4>
+        <p>支持模拟执行（Dry Run）与真实执行。高风险行为（如发布或大批量扣费操作）触发二次确认。</p>
+      </div>
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+        <h4>外部 Agent 直接调度</h4>
+        <p>提供 stdio MCP 协议入口。无需图形界面即可在终端中被 AI 控制、读取产物和编写节点。</p>
+      </div>
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+        <h4>自定义 Skill 节点拓展</h4>
+        <p>直接存入 Manifest 描述即可快速注册。支持 LLM 推理节点、生图节点以及自定义 Bun / Python 脚本节点。</p>
+      </div>
+    </div>
+
+    <h2>使用工作流</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <div>
+          <div class="sname">拖拽节点到画布</div>
+          <div class="sdesc">从左侧节点库双击或拖拽节点进入画布，所有自定义 Skill 节点将自动在左侧注册。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <div>
+          <div class="sname">配置节点参数</div>
+          <div class="sdesc">点击节点，右侧会自动根据参数类型生成下拉框、文件输入框、数字滑块等可视化操作控件。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <div>
+          <div class="sname">连接数据链路</div>
+          <div class="sdesc">拖动输出端口与下游输入端口。系统会自动校验格式签名（如 <code>text_list</code> 到 <code>text_item</code> 等）。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">4</div>
+        <div>
+          <div class="sname">执行调试与模拟</div>
+          <div class="sdesc">默认在模拟模式下运行，实时打印管道传输日志；无误后可勾选“真实执行”触发子进程任务。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">5</div>
+        <div>
+          <div class="sname">产物回填与输出</div>
+          <div class="sdesc">流程执行完后，中间产物和最终输出都会显示在画布上，可右键复制或导出归档文件。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="agent-note">
+      💡 <strong>Agent 画布操控：</strong> 外部大脑（如 Claude Code）可以通过 stdio 通信调用 15 个专有工具：<code>add_node</code>（加节点）、<code>connect</code>（连线）、<code>run_chain</code>（运行链路）等，对画布状态的读写实时反映到 <code>workflows/active.json</code>，实现图形前端与 AI 交互控制同步。
+    </div>
+
+    <h2>开发对象</h2>
+    <div class="capability-grid">
+      <div class="capability-card">
+        <h4>高级开发者</h4>
+        <p>探索 stdio MCP 协议多通道通讯、本地流程编排引擎架构、厚 Manifest 自描述协议和凭证安全的优秀参考范例。</p>
+      </div>
+      <div class="capability-card">
+        <h4>小工具/脚本作者</h4>
+        <p>无需手写 GUI 代码。编写简单的能力描述文件（YAML/JSON），工具脚本即刻化身为画布上的可视化算子节点。</p>
+      </div>
+      <div class="capability-card">
+        <h4>内容生产团队</h4>
+        <p>在画布上集中管理多平台的视频、图文生产链条，运行状态、排错日志、最终成片全部直观可视。</p>
+      </div>
+    </div>
+
+    <h2>安全设计保障</h2>
+    <div class="capability-grid">
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <h4>stdio MCP 独享</h4>
+        <p>控制面仅暴露于本机标准输入输出，不开启网络监听端口，防范远程指令注入。</p>
+      </div>
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <h4>安全确认闸门</h4>
+        <p>高风险真实节点（如外部发布、付费 API 调用）执行前会强制弹框阻断，需用户显式批准。</p>
+      </div>
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><rect x="9" y="9" width="6" height="6"></rect></svg>
+        <h4>凭证零泄露</h4>
+        <p>配置的敏感密钥仅在本地脚本子进程临时注入，绝不回传给 MCP 外部客户端或写入日志。</p>
+      </div>
+    </div>
+  </ProjectPageLayout>
+</BaseLayout>
+
+<style>
+  /* ---- dynamic hero demo ---- */
+  .hero-demo {
+    position: relative;
+    min-height: 430px;
+    margin: 28px 0;
+    overflow: hidden;
+    background:
+      linear-gradient(135deg, rgba(94, 234, 212, .08), transparent 34%),
+      linear-gradient(160deg, #111821, #0d1118 70%);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 24px 80px rgba(0,0,0,.34), inset 0 0 0 1px rgba(255,255,255,.025);
+  }
+  .demo-stage {
+    position: absolute;
+    inset: 0;
+    padding: 18px;
+  }
+  .demo-codex {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1);
+  }
+  .demo-workbench {
+    opacity: 0;
+    transform: translateX(18px);
+    pointer-events: none;
+    transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1);
+  }
+  .hero-demo.show-workbench .demo-codex {
+    opacity: 0;
+    transform: translateX(-18px);
+    pointer-events: none;
+  }
+  .hero-demo.show-workbench .demo-workbench {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+  .demo-window {
+    height: 100%;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 8px;
+    background: rgba(9,12,17,.72);
+    overflow: hidden;
+  }
+  .demo-titlebar {
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.035);
+    color: var(--subtle);
+    font-size: 11px;
+  }
+  .demo-dots {
+    display: flex;
+    gap: 6px;
+  }
+  .demo-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--line);
+  }
+  .demo-dots span:nth-child(1) { background: #f0779b; }
+  .demo-dots span:nth-child(2) { background: #f3b15a; }
+  .demo-dots span:nth-child(3) { background: #5eead4; }
+  .demo-body {
+    padding: 16px;
+  }
+  .chat-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    background: rgba(94,234,212,.12);
+    border: 1px solid rgba(94,234,212,.25);
+    color: var(--accent);
+    font-weight: 700;
+    flex: 0 0 auto;
+    font-family: monospace;
+  }
+  .prompt-card {
+    flex: 1;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg-soft);
+    padding: 12px;
+    min-width: 0;
+  }
+  .prompt-label {
+    color: var(--subtle);
+    font-size: 11px;
+    margin-bottom: 8px;
+    font-family: monospace;
+  }
+  .prompt-line {
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.65;
+    word-break: break-all;
+    overflow: hidden;
+    max-height: 92px;
+  }
+  .cursor {
+    display: inline-block;
+    width: 7px;
+    height: 15px;
+    transform: translateY(2px);
+    background: var(--accent);
+    margin-left: 3px;
+    animation: cursorBlink .8s steps(2, end) infinite;
+  }
+  @keyframes cursorBlink { 50% { opacity: 0; } }
+  .codex-status {
+    display: grid;
+    gap: 8px;
+    margin-top: 18px;
+    color: var(--muted);
+    font-size: 12px;
+    font-family: monospace;
+  }
+  .codex-status span {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 9px 10px;
+    background: rgba(255,255,255,.025);
+    opacity: 0;
+  }
+  .hero-demo.show-workbench .codex-status span {
+    opacity: 0;
+  }
+  .hero-demo:not(.show-workbench) .codex-status span {
+    animation: statusIn 6.5s infinite;
+  }
+  .hero-demo:not(.show-workbench) .codex-status span:nth-child(1) { animation-delay: 1.2s; }
+  .hero-demo:not(.show-workbench) .codex-status span:nth-child(2) { animation-delay: 2.4s; }
+  .hero-demo:not(.show-workbench) .codex-status span:nth-child(3) { animation-delay: 3.6s; }
+  @keyframes statusIn {
+    0%, 10% { opacity: 0; transform: translateY(6px); }
+    14%, 85% { opacity: 1; transform: none; }
+    90%, 100% { opacity: 0; transform: translateY(-4px); }
+  }
+  
+  .workbench-ui {
+    height: calc(100% - 34px);
+    display: grid;
+    grid-template-columns: 116px 1fr 116px;
+  }
+  .demo-sidebar, .demo-panel {
+    padding: 12px;
+    background: rgba(255,255,255,.025);
+    border-right: 1px solid rgba(255,255,255,.08);
+  }
+  .demo-panel {
+    border-right: 0;
+    border-left: 1px solid rgba(255,255,255,.08);
+  }
+  .demo-small-title {
+    color: var(--subtle);
+    font-size: 11px;
+    margin-bottom: 10px;
+    font-family: monospace;
+  }
+  .library-node, .run-item {
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 8px;
+    margin-bottom: 8px;
+    background: var(--bg-panel);
+    color: var(--muted);
+    font-size: 11px;
+  }
+  .demo-canvas {
+    position: relative;
+    min-height: 100%;
+    overflow: hidden;
+    background-image: radial-gradient(circle at 1px 1px, rgba(159,245,215,.09) 1px, transparent 0);
+    background-size: 22px 22px;
+  }
+  
+  /* Animations on Canvas Nodes & lines when workbench is shown */
+  .hero-demo.show-workbench .flow-line {
+    animation: lineDraw 6.5s infinite;
+  }
+  .flow-line {
+    position: absolute;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--amber));
+    transform-origin: left center;
+    opacity: 0;
+  }
+  .flow-line.l1 { width: 82px; left: 90px; top: 82px; transform: rotate(17deg) scaleX(0); --angle: 17deg; }
+  .flow-line.l2 { width: 86px; left: 188px; top: 111px; transform: rotate(-16deg) scaleX(0); animation-delay: .35s; --angle: -16deg; }
+  .flow-line.l3 { width: 88px; left: 286px; top: 82px; transform: rotate(18deg) scaleX(0); animation-delay: .7s; --angle: 18deg; }
+  .flow-line.l4 { width: 88px; left: 386px; top: 113px; transform: rotate(-18deg) scaleX(0); animation-delay: 1.05s; --angle: -18deg; }
+  @keyframes lineDraw {
+    0%, 20% { opacity: 0; transform: rotate(var(--angle, 0deg)) scaleX(0); }
+    30%, 85% { opacity: 1; transform: rotate(var(--angle, 0deg)) scaleX(1); }
+    90%, 100% { opacity: 0; }
+  }
+
+  .hero-demo.show-workbench .canvas-node {
+    animation: nodeDrop 6.5s infinite;
+  }
+  .canvas-node {
+    position: absolute;
+    width: 96px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(20,33,40,.96);
+    padding: 9px;
+    box-shadow: 0 12px 24px rgba(0,0,0,.24);
+    opacity: 0;
+  }
+  .canvas-node .nt { color: var(--text); font-size: 12px; font-weight: 600; }
+  .canvas-node .ns { margin-top: 5px; color: var(--subtle); font-size: 10px; }
+  .canvas-node.done { border-color: rgba(159,245,215,.55); }
+  .n1 { left: 28px; top: 52px; animation-delay: 0s; }
+  .n2 { left: 140px; top: 84px; animation-delay: .35s; }
+  .n3 { left: 250px; top: 52px; animation-delay: .7s; }
+  .n4 { left: 360px; top: 84px; animation-delay: 1.05s; }
+  .n5 { left: 470px; top: 52px; animation-delay: 1.4s; }
+  @keyframes nodeDrop {
+    0%, 15% { opacity: 0; transform: translate(-36px, -18px) scale(.94); }
+    25%, 85% { opacity: 1; transform: none; }
+    90%, 100% { opacity: 0; }
+  }
+
+  .hero-demo.show-workbench .result-card {
+    animation: resultIn 6.5s infinite;
+  }
+  .result-card {
+    position: absolute;
+    left: 32px;
+    right: 32px;
+    bottom: 24px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    opacity: 0;
+  }
+  .result-card div {
+    border: 1px solid rgba(159,245,215,.32);
+    border-radius: 8px;
+    padding: 10px;
+    background: rgba(159,245,215,.08);
+    color: var(--accent);
+    font-size: 11px;
+    text-align: center;
+  }
+  @keyframes resultIn {
+    0%, 45% { opacity: 0; transform: translateY(12px); }
+    55%, 85% { opacity: 1; transform: none; }
+    90%, 100% { opacity: 0; }
+  }
+  .run-item {
+    position: relative;
+    overflow: hidden;
+  }
+  .run-item::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .hero-demo.show-workbench .run-item::after {
+    animation: runProgress 6.5s infinite;
+  }
+  @keyframes runProgress {
+    0%, 25% { transform: scaleX(0); }
+    55%, 85% { transform: scaleX(1); }
+    90%, 100% { transform: scaleX(0); }
+  }
+
+  /* ---- architecture chain ---- */
+  .architecture {
+    margin: 28px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    flex-wrap: wrap;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 28px 22px;
+    overflow-x: auto;
+  }
+  .arch-node {
+    flex: 1 1 160px;
+    min-width: 140px;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 15px;
+    text-align: center;
+    transition: border-color .25s;
+  }
+  .arch-node:hover { border-color: var(--accent-strong); }
+  .arch-node.arch-agent { border-color: var(--accent-strong); box-shadow: 0 0 0 1px rgba(159,245,215,.14); }
+  .arch-node.arch-canvas { border-color: var(--amber); box-shadow: 0 0 0 1px rgba(255,198,109,.14); }
+  .arch-kicker {
+    font-family: monospace;
+    font-size: 10.5px;
+    color: var(--subtle);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .arch-node strong { display: block; font-size: 14px; font-weight: 600; margin-bottom: 4px; color: var(--text); }
+  .arch-node small { display: block; font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+  .arch-edge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 56px;
+    padding: 0 8px;
+    flex-shrink: 0;
+    font-family: monospace;
+    font-size: 10.5px;
+    color: var(--accent);
+    white-space: nowrap;
+    align-self: center;
+  }
+  .arch-edge::before { content: "→"; margin-right: 4px; font-size: 14px; }
+
+  /* ---- usage steps ---- */
+  .steps {
+    margin: 28px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .step {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 16px;
+    align-items: start;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent-strong);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+  .step .num {
+    font-family: monospace;
+    font-size: 18px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .step .sname {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+  }
+  .step .sdesc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  .agent-note {
+    margin: 20px 0;
+    font-family: monospace;
+    font-size: 12.5px;
+    color: var(--muted);
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    line-height: 1.6;
+  }
+  .agent-note b { color: var(--amber); }
+
+  /* ---- mechanisms list ---- */
+  .mechanisms {
+    margin: 24px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .mech {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+  .mech .mh { font-weight: 600; font-size: 14px; color: var(--text); }
+  .mech .md { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+  @media (max-width: 860px) {
+    .hero-demo { min-height: 500px; }
+    .architecture { flex-direction: column; align-items: stretch; }
+    .arch-edge { min-height: 32px; justify-content: center; padding: 8px 0; }
+    .arch-edge::before { content: "↓"; }
+  }
+  @media (max-width: 620px) {
+    .workbench-ui { grid-template-columns: 86px 1fr; }
+    .demo-panel { display: none; }
+    .canvas-node { width: 82px; padding: 7px; }
+    .n1 { left: 12px; top: 48px; }
+    .n2 { left: 112px; top: 84px; }
+    .n3 { left: 212px; top: 48px; }
+    .n4 { left: 62px; top: 170px; }
+    .n5 { left: 162px; top: 206px; }
+    .flow-line { display: none; }
+    .result-card { left: 14px; right: 14px; grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  const heroDemo = document.querySelector('.hero-demo');
+  if (heroDemo && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    setInterval(() => {
+      heroDemo.classList.toggle('show-workbench');
+    }, 6500);
+  }
+</script>

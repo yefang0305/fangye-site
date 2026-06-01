@@ -33,6 +33,16 @@ export const tools: ToolItem[] = [
     hasPage: true,
   },
   {
+    name: '数学可视化网页生成器',
+    slug: 'math-explainer',
+    description: '输入一个数学/物理概念，用 DeepSeek 生成可拖参数的交互式讲解网页（KaTeX 公式 + canvas），内置质量自检，即时预览并下载。',
+    category: '教育工具',
+    status: 'usable',
+    href: '/tools/math-explainer/',
+    featured: true,
+    hasPage: true,
+  },
+  {
     name: 'MiniMax TTS 字幕',
     slug: 'minimax-tts',
     description: '使用 MiniMax TTS API 将文本转为语音并生成带时间戳的字幕，支持语速和音调调节。',
@@ -59,7 +69,7 @@ export const tools: ToolItem[] = [
     category: '提示词助手',
     status: 'showcase',
     href: '/projects/prompt-cards/',
-    featured: true,
+    featured: false,
     hasPage: true,
   },
   {
@@ -120,6 +130,16 @@ export const tools: ToolItem[] = [
     status: 'showcase',
     href: '/projects/floating-snippets/',
     featured: false,
+    hasPage: true,
+  },
+  {
+    name: '节点工作流画布',
+    slug: 'video-node-canvas',
+    description: '本地内容生产 Agent 工作流画布，支持 PyQt 可视化拖拽编排与 stdio MCP 外部控制。',
+    category: '视频工具',
+    status: 'showcase',
+    href: '/projects/video-node-canvas/',
+    featured: true,
     hasPage: true,
   },
 ];

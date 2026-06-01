@@ -1,0 +1,464 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolPageLayout from '../../components/ToolPageLayout.astro';
+---
+
+<BaseLayout
+  title="数学可视化网页生成器"
+  description="输入一个数学/物理概念，用 DeepSeek 生成一个自包含的交互式讲解网页（KaTeX 公式 + canvas 滑块），即时预览、自动质检、可下载。"
+>
+  <ToolPageLayout
+    title="数学可视化网页生成器"
+    description="把一个数学/物理概念变成可以拖参数、即时看变化的交互网页。浏览器直接调用 DeepSeek，生成自包含 HTML，内置无视觉质量自检（公式 / 滑块 / canvas / 布局），即时预览并下载。"
+    eyebrow="Math Explainer"
+    badges={[
+      { label: '需要 API Key', variant: 'api-key' },
+      { label: '浏览器调用', variant: 'default' },
+      { label: '不上传服务器', variant: 'no-upload' },
+    ]}
+  >
+    <div class="tool-form-grid two">
+      <label class="tool-control">
+        DeepSeek API Key
+        <input id="apiKey" type="password" autocomplete="off" placeholder="sk-... 只保存在当前浏览器" />
+      </label>
+      <label class="tool-control">
+        Base URL（OpenAI 兼容）
+        <input id="baseUrl" type="text" value="https://api.deepseek.com" />
+      </label>
+      <label class="tool-control">
+        模型
+        <input id="model" type="text" value="deepseek-chat" placeholder="如 deepseek-chat / deepseek-reasoner" />
+      </label>
+      <label class="tool-control">
+        受众
+        <select id="audience">
+          <option value="小学">小学</option>
+          <option value="初高中" selected>初高中</option>
+          <option value="大学">大学</option>
+          <option value="科普大众">科普大众</option>
+        </select>
+      </label>
+      <label class="tool-control">
+        配色风格
+        <select id="style">
+          <option value="深色" selected>深色（高对比，推荐）</option>
+          <option value="浅色">浅色</option>
+        </select>
+      </label>
+      <label class="tool-control">
+        语言
+        <select id="lang">
+          <option value="中文" selected>中文</option>
+          <option value="English">English</option>
+        </select>
+      </label>
+    </div>
+
+    <label class="tool-control">
+      要讲解的概念 / 主题
+      <textarea
+        id="topic"
+        placeholder="具体到一个概念、定理或题目，例如：&#10;· 一次函数 y = ax + b 里斜率和截距的作用&#10;· 勾股定理的面积证明&#10;· 正态分布随均值和方差怎么变&#10;· 简谐运动 x = A·sin(ωt + φ)"
+      ></textarea>
+    </label>
+
+    <div class="button-row">
+      <button id="generateButton" type="button">生成交互网页</button>
+      <button id="downloadButton" class="secondary" type="button" disabled>下载 HTML</button>
+      <button id="copyButton" class="secondary" type="button" disabled>复制源码</button>
+      <button id="openButton" class="secondary" type="button" disabled>新标签页打开</button>
+    </div>
+
+    <div class="tool-result-stack">
+      <div class="tool-result-card">
+        <strong>实时预览</strong>
+        <iframe
+          id="preview"
+          title="生成的交互网页预览"
+          sandbox="allow-scripts allow-popups"
+          referrerpolicy="no-referrer"
+        ></iframe>
+      </div>
+
+      <div class="tool-result-card">
+        <strong>质量自检（移植自原项目 check_web）</strong>
+        <div class="check-report" id="checkReport">生成后自动检查：公式配对、KaTeX、id 引用、canvas 链路、滑块事件、布局规范。</div>
+      </div>
+
+      <div class="tool-log" id="statusLog" aria-live="polite">填入 API Key 和主题，点「生成交互网页」。生成内容只在你的浏览器里，不经过本站服务器。</div>
+    </div>
+  </ToolPageLayout>
+</BaseLayout>
+
+<style>
+  #preview {
+    width: 100%;
+    height: 540px;
+    border: 1px solid #222b36;
+    border-radius: 10px;
+    background: #0f1419;
+    margin-top: 8px;
+  }
+  .check-report {
+    margin-top: 8px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .check-report .ok {
+    color: #43c47a;
+  }
+  .check-report .warn {
+    color: #e6b450;
+  }
+  .check-report .fail {
+    color: #ff6b6b;
+  }
+  .check-report .head {
+    font-weight: 700;
+  }
+</style>
+
+<script>
+  const storageKeys = {
+    apiKey: 'fangye_deepseek_api_key',
+    baseUrl: 'fangye_deepseek_base_url',
+    model: 'fangye_mathexp_model',
+  };
+
+  const apiKeyInput = document.querySelector('#apiKey');
+  const baseUrlInput = document.querySelector('#baseUrl');
+  const modelInput = document.querySelector('#model');
+  const audienceInput = document.querySelector('#audience');
+  const styleInput = document.querySelector('#style');
+  const langInput = document.querySelector('#lang');
+  const topicInput = document.querySelector('#topic');
+  const generateButton = document.querySelector('#generateButton');
+  const downloadButton = document.querySelector('#downloadButton');
+  const copyButton = document.querySelector('#copyButton');
+  const openButton = document.querySelector('#openButton');
+  const preview = document.querySelector('#preview');
+  const checkReport = document.querySelector('#checkReport');
+  const statusLog = document.querySelector('#statusLog');
+
+  let generatedHtml = '';
+
+  apiKeyInput.value = localStorage.getItem(storageKeys.apiKey) || '';
+  baseUrlInput.value = localStorage.getItem(storageKeys.baseUrl) || baseUrlInput.value;
+  modelInput.value = localStorage.getItem(storageKeys.model) || modelInput.value;
+
+  function log(message) {
+    const time = new Date().toLocaleTimeString();
+    statusLog.textContent = `[${time}] ${message}\n${statusLog.textContent}`.trim();
+  }
+
+  function saveConfig() {
+    localStorage.setItem(storageKeys.apiKey, apiKeyInput.value.trim());
+    localStorage.setItem(storageKeys.baseUrl, baseUrlInput.value.trim());
+    localStorage.setItem(storageKeys.model, modelInput.value);
+  }
+
+  function setBusy(isBusy) {
+    generateButton.disabled = isBusy;
+    generateButton.textContent = isBusy ? '生成中…' : '生成交互网页';
+  }
+
+  // ---------- system prompt：蒸馏自 math-explainer skill 的网页生成规则 ----------
+  const SYSTEM_PROMPT = `你是一个数学可视化网页生成器。根据用户给出的数学/物理概念，输出**一个自包含的单文件 HTML**，是一个可以拖参数、即时看变化的交互式讲解网页。
+
+【绝对输出要求】
+- 只输出 HTML 源码本身，从 <!doctype html> 开始、到 </html> 结束。
+- 不要任何解释文字，不要 markdown 代码块（不要 \`\`\`），不要前后多余字符。
+
+【硬性技术规范（务必全部满足，否则网页会静默失效）】
+1. 公式用 KaTeX 渲染，head 里必须同时引入这三行 CDN：
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css">
+   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"><\/script>
+   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/contrib/auto-render.min.js"><\/script>
+   正文公式用 $...$（行内）和 $$...$$（块级），$ 必须成对。页面 load 后调用 renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})。
+2. 图形用 <canvas id="c"> + 原生 JS 手绘（坐标系 + 图形）。定义 function draw(){...}：读参数→清屏→画坐标轴→画图形；并在 load / resize / 控件变化时调用 draw()。用 getContext('2d')。监听 window resize 重绘并做 devicePixelRatio 高清适配。
+3. 至少 1 个真正影响图形的 <input type="range"> 滑块；每个滑块都 addEventListener('input', ...) 里更新参数并调用 draw()，旁边实时显示数值。所有 getElementById/querySelector 引用的 id/class 必须真实存在（不要拼错）。极端参数要保护（除零、超界）。
+4. 布局规范：单列居中，外层 <div class="wrap">（max-width≈760px，margin:0 auto）。DOM 顺序必须是 header → <section class="stage">（交互区，含 canvas+滑块，max-width≈420px 居中、尺寸偏小）→ <hr> → <section class="explain">（讲解文字+公式）。即「先交互、后讲解」，不要左右两栏。
+5. 内联 JS 语法必须正确无误。
+
+【内容质量】
+- 讲「为什么」：讲解区要说清这个概念为什么成立 / 参数为什么这样影响图形，而不是只摆结论。
+- 交互参数就是这个概念里可变的量（斜率、样本量、角度、ω、n…），范围步长合理。
+- 把关键机制标注画在 canvas 上（如交点、切点、特征值），强化直观理解。
+
+【默认风格】深色主题、高对比：背景 #0f1419、文字 #e6e6e6、主色 #5b9cff、强调 #ffd166、次要文字 #9aa4b2（若用户要求浅色则相应调整）。`;
+
+  function buildUserPrompt() {
+    const topic = topicInput.value.trim();
+    return [
+      `概念/主题：${topic}`,
+      `受众：${audienceInput.value}`,
+      `配色风格：${styleInput.value}`,
+      `语言：${langInput.value}（讲解文字与界面用此语言；公式记号通用）`,
+      '',
+      '请据此生成一个自包含交互式讲解网页，严格遵守系统规范。只输出 HTML 源码。',
+    ].join('\n');
+  }
+
+  // 防御性提取：去掉模型可能多包的 markdown 代码块或前后说明
+  function extractHtml(raw) {
+    let text = (raw || '').trim();
+    const fence = text.match(/```(?:html)?\s*([\s\S]*?)```/i);
+    if (fence) text = fence[1].trim();
+    const start = text.search(/<!doctype html>/i);
+    if (start > 0) text = text.slice(start);
+    return text.trim();
+  }
+
+  // ---------- 无视觉质量自检：移植自原项目 check_web.py ----------
+  function stripBlocks(html) {
+    return html
+      .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
+      .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ');
+  }
+  function inlineScripts(html) {
+    const out = [];
+    const re = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
+    let m;
+    while ((m = re.exec(html))) {
+      if (!/src=/i.test(m[1])) out.push(m[2]);
+    }
+    return out.join('\n');
+  }
+  function countOccurrences(str, sub) {
+    return str.split(sub).length - 1;
+  }
+
+  function checkWeb(html) {
+    const visible = stripBlocks(html);
+    const js = inlineScripts(html);
+    const fails = [];
+    const warns = [];
+    const oks = [];
+
+    // 公式（KaTeX）
+    const dd = countOccurrences(visible, '$$');
+    const single = countOccurrences(visible.split('$$').join(''), '$');
+    const usesMath = dd > 0 || single > 0;
+    if (usesMath) {
+      let formulaFail = false;
+      if (dd % 2 !== 0) {
+        fails.push(`$$ 块级公式不配对（${dd} 个 $$，应为偶数）→ 公式不渲染`);
+        formulaFail = true;
+      }
+      if (single % 2 !== 0) {
+        fails.push(`$ 行内公式不配对（去掉 $$ 后还有 ${single} 个 $）→ 检查漏写`);
+        formulaFail = true;
+      }
+      if (!html.includes('katex.min.css')) {
+        fails.push('用了公式但未引入 katex.min.css → 公式不渲染');
+        formulaFail = true;
+      }
+      if (!html.includes('katex.min.js')) {
+        fails.push('用了公式但未引入 katex.min.js → 公式不渲染');
+        formulaFail = true;
+      }
+      if (!html.includes('auto-render')) {
+        fails.push('用了公式但未引入 KaTeX auto-render');
+        formulaFail = true;
+      }
+      if (!html.includes('renderMathInElement')) {
+        fails.push('引入 KaTeX 但未调用 renderMathInElement(...) → 公式不渲染');
+        formulaFail = true;
+      }
+      if (!formulaFail) oks.push('KaTeX 公式：配对正常、CDN 齐全、已调用渲染');
+    }
+
+    // id 引用一致性
+    const ids = new Set();
+    let idm;
+    const idRe = /\bid\s*=\s*["']([^"']+)["']/g;
+    while ((idm = idRe.exec(html))) ids.add(idm[1]);
+    const refs = new Set();
+    let rm;
+    const getRe = /getElementById\(\s*["']([^"']+)["']\s*\)/g;
+    while ((rm = getRe.exec(js))) refs.add(rm[1]);
+    const qsRe = /querySelector(?:All)?\(\s*["']#([\w-]+)/g;
+    while ((rm = qsRe.exec(js))) refs.add(rm[1]);
+    const missing = [...refs].filter((r) => !ids.has(r)).sort();
+    if (missing.length) {
+      fails.push(`JS 引用了不存在的 id：${missing.join(', ')} → 会得到 null 报错`);
+    } else if (refs.size) {
+      oks.push(`id 引用一致（${refs.size} 个引用都有对应元素）`);
+    }
+
+    // canvas + draw
+    const hasCanvas = /<canvas\b/i.test(html);
+    const usesCtx = js.includes('getContext(');
+    if (usesCtx && !hasCanvas) fails.push('JS 调用 getContext 但没有 <canvas> 元素');
+    if (hasCanvas) {
+      const drawDefined = /function\s+draw\b/.test(js) || /\bdraw\s*=\s*(function|\()/.test(js);
+      const drawCalled = /\bdraw\s*\(\s*\)/.test(js);
+      if (!drawDefined) warns.push('没找到 draw() 定义（若用了别的绘制函数名可忽略）');
+      if (drawDefined && !drawCalled) warns.push('draw() 似乎从未被调用');
+      if (!usesCtx) warns.push('有 <canvas> 但 JS 未 getContext，画布可能是空的');
+      if (drawDefined && drawCalled && usesCtx) oks.push('canvas 绘制链路完整（getContext + 定义并调用 draw）');
+      if (!/addEventListener\(\s*['"]resize['"]/.test(js)) warns.push('未监听 resize：缩放后画布可能模糊');
+    } else {
+      warns.push('没有 <canvas>：交互演示通常需要画布来展示图形');
+    }
+
+    // 控件交互
+    const nRange = (html.match(/type\s*=\s*["']range["']/g) || []).length;
+    const nButtons = (html.match(/<button\b/gi) || []).length;
+    const hasInput = /addEventListener\(\s*['"]input['"]/.test(js);
+    const hasClick = /addEventListener\(\s*['"]click['"]/.test(js);
+    if (nRange > 0 && !hasInput) fails.push(`有 ${nRange} 个滑块但没有任何 input 事件监听 → 拖动无反应`);
+    if (nButtons > 0 && !hasClick) warns.push(`有 ${nButtons} 个按钮但没有 click 监听（仅装饰可忽略）`);
+    if (nRange + nButtons === 0) warns.push('没有任何滑块/按钮 —— 交互网页至少要 1 个影响图形的控件');
+    else if ((nRange && hasInput) || (nButtons && hasClick)) oks.push(`交互控件已绑定事件（range=${nRange}, button=${nButtons}）`);
+
+    // 布局规范
+    const bodyMatch = html.match(/<body\b[^>]*>([\s\S]*)<\/body>/i);
+    const bodyTxt = bodyMatch ? bodyMatch[1] : html;
+    const hasWrap = /class\s*=\s*["'][^"']*\bwrap\b/.test(bodyTxt);
+    const posStage = bodyTxt.search(/class\s*=\s*["'][^"']*\bstage\b/);
+    const posExplain = bodyTxt.search(/class\s*=\s*["'][^"']*\bexplain\b/);
+    if (!hasWrap) warns.push('没找到 .wrap 居中容器（布局规范：单列居中）');
+    if (posStage >= 0 && posExplain >= 0 && posStage > posExplain)
+      warns.push('交互区 .stage 在讲解 .explain 之后 → 不是「先交互后讲解」');
+    if (/\.stage\b[^{]*\{[^}]*max-width/.test(html) || /canvas\b[^{]*\{[^}]*max-width/.test(html))
+      oks.push('交互区有 max-width 限宽（尺寸适中）');
+    else warns.push('交互区 .stage/canvas 未设 max-width，可能铺满整页');
+
+    return { fails, warns, oks };
+  }
+
+  function renderReport({ fails, warns, oks }) {
+    const lines = [];
+    oks.forEach((o) => lines.push(`<span class="ok">[ ok ] ${escapeHtml(o)}</span>`));
+    warns.forEach((w) => lines.push(`<span class="warn">[warn] ${escapeHtml(w)}</span>`));
+    fails.forEach((f) => lines.push(`<span class="fail">[FAIL] ${escapeHtml(f)}</span>`));
+    lines.push('');
+    if (fails.length) {
+      lines.push(`<span class="fail head">[FAIL] 共 ${fails.length} 个会导致功能失效的问题，建议重新生成或手动修。</span>`);
+    } else {
+      const tail = warns.length ? `（${warns.length} 条建议可酌情优化）` : '。';
+      lines.push(`<span class="ok head">[PASS] 无致命问题${tail}</span>`);
+    }
+    checkReport.innerHTML = lines.join('\n');
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+  }
+
+  function showResult(html) {
+    generatedHtml = html;
+    preview.srcdoc = html;
+    downloadButton.disabled = false;
+    copyButton.disabled = false;
+    openButton.disabled = false;
+    renderReport(checkWeb(html));
+  }
+
+  async function generate() {
+    const topic = topicInput.value.trim();
+    const apiKey = apiKeyInput.value.trim();
+    const baseUrl = baseUrlInput.value.trim().replace(/\/$/, '');
+    const model = modelInput.value.trim();
+    if (!topic) {
+      log('请先填写要讲解的概念 / 主题。');
+      return;
+    }
+    if (!apiKey || !baseUrl || !model) {
+      log('请填写 DeepSeek API Key、Base URL 和模型名。');
+      return;
+    }
+    saveConfig();
+    setBusy(true);
+    log(`正在用 ${model} 生成「${topic}」的交互网页…`);
+    try {
+      const response = await fetch(`${baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model,
+          temperature: 0.4,
+          max_tokens: 8192,
+          messages: [
+            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'user', content: buildUserPrompt() },
+          ],
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data?.error?.message || data?.message || `请求失败：${response.status}`);
+      }
+      const choice = data?.choices?.[0];
+      const raw = choice?.message?.content || '';
+      const finish = choice?.finish_reason || '未知';
+      if (!raw.trim()) {
+        throw new Error(
+          `模型返回内容为空（finish_reason=${finish}）。可能接口返回了空 choices 或被网关拦截；换个模型名或稍后重试。`
+        );
+      }
+      const html = extractHtml(raw);
+      const looksHtml = /<!doctype/i.test(html) || /<html[\s>]/i.test(html) || /<(body|canvas|section)\b/i.test(html);
+      if (!looksHtml) {
+        // 把模型实际返回的开头暴露出来，方便定位（多半是它在前面加了说明文字）
+        showResult(html);
+        throw new Error(
+          `返回的不像 HTML（finish_reason=${finish}，长度 ${html.length}）。已把原始返回放到预览区，开头是：「${html.slice(0, 120).replace(/\s+/g, ' ')}」。常见原因：模型加了说明文字。可重试或换模型。`
+        );
+      }
+      showResult(html);
+      const note = finish === 'length' ? '（注意：finish_reason=length，可能被 max_tokens 截断，HTML 可能不完整）' : '';
+      log(`生成完成${note}。已即时预览并自检，可下载或新标签页打开。`);
+    } catch (error) {
+      log(
+        `${error.message || error}。若是跨域(CORS)或网络问题，可稍后重试；确认 Base URL 与 Key 正确。`
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function download() {
+    if (!generatedHtml) return;
+    const slug = (topicInput.value.trim().slice(0, 24) || 'math-explainer').replace(/[\\/:*?"<>|\s]+/g, '-');
+    const blob = new Blob([generatedHtml], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${slug}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+    log('已下载 HTML，可双击直接在浏览器打开。');
+  }
+
+  async function copySource() {
+    if (!generatedHtml) return;
+    try {
+      await navigator.clipboard.writeText(generatedHtml);
+      log('已复制 HTML 源码。');
+    } catch {
+      log('浏览器未授予剪贴板权限，可改用「下载 HTML」。');
+    }
+  }
+
+  function openInTab() {
+    if (!generatedHtml) return;
+    const blob = new Blob([generatedHtml], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank', 'noopener');
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+
+  generateButton.addEventListener('click', generate);
+  downloadButton.addEventListener('click', download);
+  copyButton.addEventListener('click', copySource);
+  openButton.addEventListener('click', openInTab);
+</script>
