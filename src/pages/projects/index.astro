@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolCard from '../../components/ToolCard.astro';
+import SectionHeader from '../../components/SectionHeader.astro';
+import { tools } from '../../data/tools';
+
+const showcaseTools = tools.filter((tool) => tool.status === 'showcase');
+---
+
+<BaseLayout title="项目专栏" description="记录和展示独立开发项目与自动化工作流。">
+  <section class="page-hero">
+    <p class="eyebrow">Projects</p>
+    <h1>项目专栏</h1>
+    <p class="lead">记录和展示还在整理、设计或部署中的独立开发项目、自动化工作流及提效工具。</p>
+  </section>
+  
+  <section class="page-section">
+    <SectionHeader eyebrow="Showcase" title="项目展示" description="各种自动化工作流、桌面应用与效率工具。" />
+    <div class="tool-list">
+      {showcaseTools.map((tool) => <ToolCard {...tool} />)}
+    </div>
+  </section>
+</BaseLayout>

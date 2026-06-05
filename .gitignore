@@ -16,3 +16,11 @@ astro-dev.*.log
 
 # 内嵌的独立仓库/工具源码，不纳入站点仓库
 /tools/
+
+# 敏感/非网站文件，禁止进入公开仓库
+/叶芳-AI产品经理简历.md
+/MiniMax*.md
+/文章/
+/bun.lock
+/.agents/
+/.claude/launch.json
