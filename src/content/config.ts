@@ -11,4 +11,9 @@ const articles = defineCollection({
   }),
 });
 
-export const collections = { articles };
+const courses = defineCollection({
+  type: 'content',
+});
+
+export const collections = { articles, courses };
+
