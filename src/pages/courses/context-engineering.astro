@@ -1,0 +1,2005 @@
+---
+import { getCollection, render } from 'astro:content';
+import { LEVELS, CONTEXT_DEFECTS } from '../../data/contextCourseData';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const courseDocs = await getCollection('courses');
+---
+
+<BaseLayout title="Context Engineering 互动通关课">
+  <div class="course-workspace">
+    
+    <!-- 左侧侧边栏：关卡进度与导航 -->
+    <aside class="workspace-sidebar">
+      <div class="sidebar-header">
+        <a href="/courses/" class="back-home">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          返回大堂
+        </a>
+        <div class="course-brand">
+          <div class="course-logo c-logo">C</div>
+          <div>
+            <h3>Context Eng</h3>
+            <span class="sub-text">上下文工程专题课</span>
+          </div>
+        </div>
+        
+        <div class="progress-pill-wrap">
+          <div class="progress-info">
+            <span>通关进度</span>
+            <span id="progressPercent">0%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressBarFill" style="width: 0%;"></div>
+          </div>
+          <span class="progress-text-small" id="progressCount">0/8 关已通关</span>
+        </div>
+      </div>
+      
+      <nav class="levels-nav" id="levelsNav">
+        {LEVELS.map((lvl, index) => (
+          <button class="level-btn" data-lvl={lvl.id} data-index={index} id={`btn-${lvl.id}`}>
+            <div class="btn-left">
+              <span class="level-code">{lvl.id}</span>
+              <span class="level-title">{lvl.icon} {lvl.title}</span>
+            </div>
+            <div class="btn-right">
+              <span class="status-icon">🔒</span>
+            </div>
+          </button>
+        ))}
+      </nav>
+      
+      <div class="reset-zone">
+        <button id="resetAllBtn" class="reset-btn">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+          </svg>
+          重置所有通关进度
+        </button>
+      </div>
+    </aside>
+
+    <!-- 中间主内容区域（支持切换关卡显隐） -->
+    <div class="workspace-content-flow">
+      {await Promise.all(LEVELS.map(async (lvl, lvlIdx) => {
+        // 在 collection 中寻找文件名前缀和 lvl.id 匹配的文档
+        const doc = courseDocs.find(d => d.id === lvl.id || d.id.startsWith(lvl.id + '-'));
+        let renderResult = null;
+        if (doc) {
+          renderResult = await render(doc);
+        }
+        const Content = renderResult ? renderResult.Content : null;
+        
+        return (
+          <div class="level-workspace-node" id={`node-${lvl.id}`} style="display: none;">
+            <!-- 中栏：主要内容 -->
+            <main class="workspace-main">
+              <div class="level-header">
+                <div class="meta-row">
+                  <span class="code-tag">{lvl.id}</span>
+                  <span class="defect-tag">{lvl.defectLabel}</span>
+                </div>
+                <h2>{lvl.icon} {lvl.title}</h2>
+                <p class="hook-text">{lvl.hook}</p>
+              </div>
+
+              <!-- Tab 控制 -->
+              <div class="tab-container">
+                <div class="tab-headers">
+                  <button class="tab-btn active" data-lvl={lvl.id} data-tab="theory">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    理论教程
+                  </button>
+                  <button class="tab-btn" data-lvl={lvl.id} data-tab="quiz">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    互动自测
+                  </button>
+                </div>
+                
+                <!-- Tab 1: 理论正文 -->
+                <div class="tab-content active" id={`tab-theory-${lvl.id}`}>
+                  <article class="prose theory-content">
+                    {Content ? <Content /> : <p>教程课文加载中...</p>}
+                  </article>
+                  <div class="theory-footer">
+                    <button class="btn btn-primary go-to-quiz-btn" data-lvl={lvl.id}>
+                      我已读完，进入自检闯关 
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px; display: inline-block; vertical-align: middle;">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Tab 2: 答题自检 -->
+                <div class="tab-content" id={`tab-quiz-${lvl.id}`}>
+                  <div class="lesson-card">
+                    <div class="takeaway">
+                      <div class="label">💡 一句话带走</div>
+                      <p>{lvl.takeaway}</p>
+                    </div>
+
+                    {!lvl.isCapstone && (
+                      <>
+                        <div class="section-title">核心概念（点击查看生活比喻）</div>
+                        <div class="concept-grid">
+                          {lvl.concepts.map((c, idx) => (
+                            <div class="concept-card" data-idx={idx}>
+                              <div class="concept-card-front">
+                                <div class="term">{c.term}</div>
+                                <div class="def">{c.def}</div>
+                                <div class="flip-hint">点击查看比喻 ➔</div>
+                              </div>
+                              <div class="concept-card-back">
+                                <div class="analogy-title">生活比喻</div>
+                                <div class="analogy-text">{c.analogy}</div>
+                                <div class="flip-back-hint">⬅ 点击返回定义</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
+
+                    <div class="quiz-box">
+                      <div class="quiz-head">
+                        <h3>{lvl.isCapstone ? '🎓 毕业考' : '🎯 自检自测'}</h3>
+                        <span class="progress-text" id={`quizProgress-${lvl.id}`}>0 / {lvl.quiz.length} 已答对</span>
+                      </div>
+                      
+                      <div class="quiz-container">
+                        {lvl.quiz.map((q, qIdx) => {
+                          let body = null;
+                          if (q.type === 'tf' || q.type === 'choice') {
+                            body = (
+                              <div class="q-options">
+                                {q.options?.map((opt, optIdx) => (
+                                  <button class="q-option" data-lvl={lvl.id} data-q={qIdx} data-opt={optIdx}>
+                                    <span class="marker">{String.fromCharCode(65 + optIdx)}</span>
+                                    <span class="opt-txt">{opt}</span>
+                                  </button>
+                                ))}
+                              </div>
+                            );
+                          } else if (q.type === 'match') {
+                            const defects = q.defects || [];
+                            const chips = q.chips || [];
+                            const shuffled = [...chips]
+                              .map((c, i) => ({ text: c, originalIdx: i }))
+                              .sort(() => (lvlIdx % 2 === 0 ? 0.5 - Math.random() : Math.random() - 0.5));
+                            
+                            body = (
+                              <div class="match-box">
+                                <div class="drag-pool" data-lvl={lvl.id} data-q={qIdx} data-pool="1">
+                                  {shuffled.map((c) => (
+                                    <div class="drag-chip" draggable="true" data-lvl={lvl.id} data-q={qIdx} data-chip={c.originalIdx}>
+                                      {c.text}
+                                    </div>
+                                  ))}
+                                </div>
+                                <div class="drop-grid">
+                                  {defects.map((d) => (
+                                    <div class="drop-row">
+                                      <div class="drop-label">
+                                        <span class="label-num">{d.label.split(' ')[0]}</span>
+                                        {d.label.replace(/^[^ ]+\s*/, '')}
+                                      </div>
+                                      <div class="drop-target" data-lvl={lvl.id} data-q={qIdx} data-target={d.label} data-empty="1">
+                                        拖一个选项到这里
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <div class="q-block" id={`q-${lvl.id}-${qIdx}`} data-qtype={q.type}>
+                              <div class="q-num">第 {qIdx + 1} 题 · {{tf: '判断', choice: '单选', match: '拖拽配对'}[q.type]}</div>
+                              <div class="q-text">{q.q}</div>
+                              {body}
+                              <div class="q-feedback" id={`fb-${lvl.id}-${qIdx}`}></div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div class="quiz-actions">
+                        <span class="quiz-status" id={`quizStatus-${lvl.id}`}></span>
+                        <div class="action-buttons">
+                          <button class="btn btn-secondary reset-quiz-btn" data-lvl={lvl.id}>重做本关</button>
+                          <button class="btn btn-primary next-lvl-btn" data-lvl={lvl.id} disabled>
+                            {lvl.id === 'CE' ? '通关全部 🎉' : '通关下一关 ➔'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </main>
+
+            <!-- 右栏：上下文四把刀与地形追踪看板 -->
+            <aside class="workspace-right">
+              <div class="panel">
+                <h4>上下文六大组件</h4>
+                <p class="panel-intro-text">学习对应关卡时自动激活和打磨对应模块：</p>
+                <ul class="defect-list">
+                  {CONTEXT_DEFECTS.map((d) => {
+                    const currentLvlIdx = LEVELS.findIndex(l => l.id === lvl.id);
+                    const covered = LEVELS.slice(0, currentLvlIdx + 1).some(l => l.fixes.includes(d.id));
+                    return (
+                      <li class={covered ? 'covered' : ''}>
+                        <span class="num">{d.id}</span>
+                        <div>
+                          <strong class="def-name">{d.name}</strong>
+                          <span class="desc">{d.desc}</span>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+              <div class="panel">
+                <h4>本关调校组件</h4>
+                <p><strong style="color: var(--accent); font-size: 14px;">{lvl.defectLabel}</strong></p>
+                <p style="margin-top: 8px; font-size: 12.5px; line-height: 1.6; color: var(--muted);">{lvl.hook}</p>
+              </div>
+              <div class="panel">
+                <h4>自检规则</h4>
+                <p style="font-size: 12.5px; line-height: 1.6; color: var(--muted);">
+                  本专题侧重 Agent 运行时的上下文动态流动。在右栏观察注意力布局与四把解剖刀随着学习一步步装配完全。
+                </p>
+              </div>
+            </aside>
+          </div>
+        );
+      }))}
+    </div>
+  </div>
+</BaseLayout>
+
+<script is:inline define:vars={{ LEVELS }}>
+  // 将 LEVELS 数据传递给客户端环境以用于答题判断
+  document.addEventListener('DOMContentLoaded', () => {
+    const STORAGE_KEY = "context_course_progress_v1";
+    let state = loadState();
+
+    // ==========================================
+    // 状态与存储管理
+    // ==========================================
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return {
+        current: "CE0",
+        completed: {}, // 结构为 { "CE0": { score: 3, total: 3, at: xxx } }
+        started: Date.now(),
+      };
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function isCompleted(lvlId) {
+      return !!state.completed[lvlId];
+    }
+
+    // 判断关卡解锁状态
+    function isUnlocked(idx) {
+      if (idx === 0) return true;
+      return isCompleted(LEVELS[idx - 1].id);
+    }
+
+    // ==========================================
+    // 关卡及 Tab 控制
+    // ==========================================
+    function initLevels() {
+      const btns = document.querySelectorAll('.level-btn');
+      
+      btns.forEach((btn) => {
+        const lvlId = btn.dataset.lvl;
+        const index = parseInt(btn.dataset.index);
+        const rightIcon = btn.querySelector('.status-icon');
+        
+        // 判断解锁和完成状态
+        const unlocked = isUnlocked(index);
+        const completed = isCompleted(lvlId);
+        
+        btn.classList.remove('active', 'completed', 'locked');
+        
+        if (state.current === lvlId) {
+          btn.classList.add('active');
+        }
+        
+        if (completed) {
+          btn.classList.add('completed');
+          rightIcon.textContent = '✓';
+          rightIcon.className = 'status-icon completed-mark';
+        } else if (!unlocked) {
+          btn.classList.add('locked');
+          btn.setAttribute('disabled', 'true');
+          rightIcon.textContent = '🔒';
+          rightIcon.className = 'status-icon locked-mark';
+        } else {
+          btn.removeAttribute('disabled');
+          rightIcon.textContent = '○';
+          rightIcon.className = 'status-icon';
+        }
+      });
+
+      // 显示当前的关卡 Workspace
+      document.querySelectorAll('.level-workspace-node').forEach((node) => {
+        node.style.display = 'none';
+      });
+      const activeNode = document.getElementById(`node-${state.current}`);
+      if (activeNode) {
+        activeNode.style.display = 'flex';
+      }
+
+      // 更新进度指示器
+      updateSidebarProgress();
+    }
+
+    function updateSidebarProgress() {
+      const total = LEVELS.length;
+      const done = Object.keys(state.completed).length;
+      
+      const percent = Math.round((done / total) * 100);
+      document.getElementById('progressPercent').textContent = `${percent}%`;
+      document.getElementById('progressBarFill').style.width = `${percent}%`;
+      document.getElementById('progressCount').textContent = `${done}/${total} 关已通关`;
+    }
+
+    function switchLevel(lvlId) {
+      const idx = LEVELS.findIndex(l => l.id === lvlId);
+      if (!isUnlocked(idx)) {
+        flashMessage('🔒 这关还没解锁，先完成上一关的自测题吧！');
+        return;
+      }
+      state.current = lvlId;
+      saveState();
+      initLevels();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 绑定关卡按钮点击
+    document.querySelectorAll('.level-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        switchLevel(btn.dataset.lvl);
+      });
+    });
+
+    // Tab 切换逻辑
+    document.querySelectorAll('.tab-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const lvl = btn.dataset.lvl;
+        const tabType = btn.dataset.tab;
+        
+        // 激活对应的 Tab 按钮
+        const container = document.getElementById(`node-${lvl}`);
+        container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // 显示对应的 Tab 内容
+        container.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        container.querySelector(`#tab-${tabType}-${lvl}`).classList.add('active');
+      });
+    });
+
+    // 理论底部的按钮：“我已读完，进入自检闯关”
+    document.querySelectorAll('.go-to-quiz-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const lvl = btn.dataset.lvl;
+        const quizTabBtn = document.querySelector(`.tab-btn[data-lvl="${lvl}"][data-tab="quiz"]`);
+        if (quizTabBtn) quizTabBtn.click();
+      });
+    });
+
+    // ==========================================
+    // 概念卡翻转效果
+    // ==========================================
+    document.querySelectorAll('.concept-card').forEach((card) => {
+      card.addEventListener('click', () => {
+        card.classList.toggle('flipped');
+      });
+    });
+
+    // ==========================================
+    // 答题与拖拽配对核心逻辑
+    // ==========================================
+    const quizStates = {}; // 结构： { lvlId: { answered: { 0: true/false }, correctCount: 0 } }
+
+    function getOrInitQuizState(lvlId, lvlData) {
+      if (!quizStates[lvlId]) {
+        quizStates[lvlId] = {
+          answered: {},
+          correctCount: 0,
+          total: lvlData.quiz.length
+        };
+      }
+      return quizStates[lvlId];
+    }
+
+    // 单选和判断选择
+    document.querySelectorAll('.q-option').forEach((opt) => {
+      opt.addEventListener('click', () => {
+        const lvlId = opt.dataset.lvl;
+        const qi = parseInt(opt.dataset.q);
+        const optIdx = parseInt(opt.dataset.opt);
+        
+        const lvlData = LEVELS.find(l => l.id === lvlId);
+        const quizItem = lvlData.quiz[qi];
+        const qs = getOrInitQuizState(lvlId, lvlData);
+        
+        if (qs.answered[qi] !== undefined) return; // 已经回答过
+
+        const block = document.getElementById(`q-${lvlId}-${qi}`);
+        // 禁用该题的所有选项
+        block.querySelectorAll('.q-option').forEach(el => el.setAttribute('disabled', 'true'));
+
+        const isCorrect = quizItem.answer === optIdx;
+        opt.classList.add(isCorrect ? 'correct' : 'wrong');
+        
+        if (!isCorrect) {
+          block.querySelector(`.q-option[data-opt="${quizItem.answer}"]`).classList.add('correct');
+        }
+        block.classList.add(isCorrect ? 'answered-ok' : 'answered-err');
+
+        // 显示解析
+        showFeedback(lvlId, qi, isCorrect, quizItem.explain);
+
+        qs.answered[qi] = isCorrect;
+        if (isCorrect) qs.correctCount++;
+        
+        updateQuizProgress(lvlId, lvlData, qs);
+      });
+    });
+
+    // 拖拽配对题
+    let activeDragData = null;
+
+    document.querySelectorAll('.drag-chip').forEach((chip) => {
+      chip.addEventListener('dragstart', (e) => {
+        if (chip.classList.contains('placed')) {
+          e.preventDefault();
+          return;
+        }
+        chip.classList.add('dragging');
+        activeDragData = {
+          lvlId: chip.dataset.lvl,
+          qi: parseInt(chip.dataset.q),
+          chipIdx: parseInt(chip.dataset.chip)
+        };
+        e.dataTransfer.setData('text/plain', chip.dataset.chip);
+      });
+
+      chip.addEventListener('dragend', () => {
+        chip.classList.remove('dragging');
+      });
+    });
+
+    document.querySelectorAll('.drop-target').forEach((target) => {
+      target.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        if (activeDragData && activeDragData.lvlId === target.dataset.lvl && activeDragData.qi === parseInt(target.dataset.q)) {
+          target.classList.add('drag-over');
+        }
+      });
+
+      target.addEventListener('dragleave', () => {
+        target.classList.remove('drag-over');
+      });
+
+      target.addEventListener('drop', (e) => {
+        e.preventDefault();
+        target.classList.remove('drag-over');
+        
+        if (!activeDragData) return;
+        
+        const lvlId = target.dataset.lvl;
+        const qi = parseInt(target.dataset.q);
+        const chipIdx = parseInt(e.dataTransfer.getData('text/plain'));
+
+        if (activeDragData.lvlId !== lvlId || activeDragData.qi !== qi) return;
+
+        const lvlData = LEVELS.find(l => l.id === lvlId);
+        const quizItem = lvlData.quiz[qi];
+        const qs = getOrInitQuizState(lvlId, lvlData);
+
+        if (qs.answered[qi] !== undefined) return; // 已经锁定了
+
+        // 执行放置
+        placeChip(target, chipIdx, quizItem, qs, lvlId, qi, lvlData);
+        activeDragData = null;
+      });
+    });
+
+    function placeChip(target, chipIdx, quizItem, qs, lvlId, qi, lvlData) {
+      const chip = document.querySelector(`.drag-chip[data-lvl="${lvlId}"][data-q="${qi}"][data-chip="${chipIdx}"]`);
+      if (!chip) return;
+
+      const targetLabel = target.dataset.target;
+      const defectIdx = quizItem.defects.findIndex(d => d.label === targetLabel);
+      const correctChipIdx = quizItem.mapping[defectIdx];
+      const isCorrect = correctChipIdx === chipIdx;
+
+      target.classList.add(isCorrect ? 'correct' : 'wrong');
+      target.classList.add('filled');
+      target.textContent = chip.textContent;
+      chip.classList.add('placed');
+
+      // 检查本题所有放置框是否都填满了
+      const block = document.getElementById(`q-${lvlId}-${qi}`);
+      const allTargets = block.querySelectorAll('.drop-target');
+      const allFilled = Array.from(allTargets).every(t => t.classList.contains('filled'));
+
+      if (allFilled) {
+        const allCorrect = Array.from(allTargets).every(t => t.classList.contains('correct'));
+        
+        // 渲染错题提示
+        if (!allCorrect) {
+          allTargets.forEach(t => {
+            if (t.classList.contains('wrong')) {
+              const label = t.dataset.target;
+              const di = quizItem.defects.findIndex(d => d.label === label);
+              const correctIdx = quizItem.mapping[di];
+              
+              const row = t.closest('.drop-row');
+              if (row && !row.nextElementSibling?.classList?.contains('wrong-hint-row')) {
+                const hint = document.createElement('div');
+                hint.className = 'wrong-hint-row';
+                hint.style.cssText = "grid-column: 1 / -1; padding: 6px 12px; font-size: 12px; color: #f59e0b; background: rgba(245, 158, 11, 0.08); border-radius: 6px; margin-top: 4px;";
+                hint.textContent = `➔ 正确对应：${quizItem.chips[correctIdx]}`;
+                row.insertAdjacentElement('afterend', hint);
+              }
+            }
+          });
+        }
+
+        showFeedback(lvlId, qi, allCorrect, quizItem.explain);
+        qs.answered[qi] = allCorrect;
+        if (allCorrect) qs.correctCount++;
+        
+        updateQuizProgress(lvlId, lvlData, qs);
+      }
+    }
+
+    function showFeedback(lvlId, qi, ok, explain) {
+      const fb = document.getElementById(`fb-${lvlId}-${qi}`);
+      fb.className = `q-feedback show ${ok ? 'ok' : 'err'}`;
+      fb.innerHTML = `<strong>${ok ? '✓ 回答正确' : '✗ 答案错误'}</strong><br>${explain}`;
+    }
+
+    function updateQuizProgress(lvlId, lvlData, qs) {
+      const total = qs.total;
+      const correct = Object.values(qs.answered).filter(Boolean).length;
+      
+      const progressText = document.getElementById(`quizProgress-${lvlId}`);
+      if (progressText) {
+        progressText.textContent = `${correct} / ${total} 已答对`;
+      }
+
+      const status = document.getElementById(`quizStatus-${lvlId}`);
+      const nextBtn = document.querySelector(`.next-lvl-btn[data-lvl="${lvlId}"]`);
+
+      // 如果所有题目都回答完了
+      if (Object.keys(qs.answered).length === total) {
+        const allCorrect = Object.values(qs.answered).every(Boolean);
+        if (allCorrect) {
+          status.textContent = "🎉 全部答对！本关已通过";
+          status.className = "quiz-status ok";
+          if (nextBtn) nextBtn.removeAttribute('disabled');
+
+          // 保存通关状态
+          if (!isCompleted(lvlId)) {
+            state.completed[lvlId] = { score: correct, total, at: Date.now() };
+            saveState();
+            
+            // 刷新侧边栏关卡锁，因为解锁了下一关
+            initLevels();
+          }
+        } else {
+          status.textContent = "有题目答错了，可以重做本关";
+          status.className = "quiz-status";
+        }
+      }
+    }
+
+    // 重做本关卡
+    document.querySelectorAll('.reset-quiz-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const lvlId = btn.dataset.lvl;
+        if (confirm('确认重做本关？本关已回答的题目和临时得分会被清除（不影响已经存入的通关状态）。')) {
+          const lvlData = LEVELS.find(l => l.id === lvlId);
+          delete quizStates[lvlId];
+          
+          // 重新初始化答题 DOM
+          const node = document.getElementById(`node-${lvlId}`);
+          
+          // 复位选项
+          node.querySelectorAll('.q-option').forEach(opt => {
+            opt.removeAttribute('disabled');
+            opt.classList.remove('correct', 'wrong');
+          });
+
+          // 复位拖拽
+          node.querySelectorAll('.drag-chip').forEach(chip => {
+            chip.classList.remove('placed', 'dragging');
+          });
+          node.querySelectorAll('.drop-target').forEach(t => {
+            t.classList.remove('correct', 'wrong', 'filled');
+            t.textContent = '拖一个选项到这里';
+          });
+          node.querySelectorAll('.wrong-hint-row').forEach(h => h.remove());
+
+          // 复位答题块容器类
+          node.querySelectorAll('.q-block').forEach(b => {
+            b.classList.remove('answered-ok', 'answered-err');
+          });
+
+          // 隐藏反馈
+          node.querySelectorAll('.q-feedback').forEach(f => {
+            f.className = 'q-feedback';
+            f.innerHTML = '';
+          });
+
+          // 复位答题进度
+          const progressText = document.getElementById(`quizProgress-${lvlId}`);
+          if (progressText) progressText.textContent = `0 / ${lvlData.quiz.length} 已答对`;
+
+          const status = document.getElementById(`quizStatus-${lvlId}`);
+          if (status) {
+            status.textContent = '';
+            status.className = 'quiz-status';
+          }
+
+          const nextBtn = node.querySelector('.next-lvl-btn');
+          if (nextBtn) nextBtn.setAttribute('disabled', 'true');
+        }
+      });
+    });
+
+    // 通关下一关按钮点击
+    document.querySelectorAll('.next-lvl-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const lvlId = btn.dataset.lvl;
+        const idx = LEVELS.findIndex(l => l.id === lvlId);
+        
+        if (idx === LEVELS.length - 1) {
+          celebrateGraduation();
+        } else {
+          const nextLvlId = LEVELS[idx + 1].id;
+          switchLevel(nextLvlId);
+        }
+      });
+    });
+
+    // ==========================================
+    // 重置全部与毕业庆祝
+    // ==========================================
+    document.getElementById('resetAllBtn').addEventListener('click', () => {
+      if (confirm('🚨 危险操作：确认重置所有的课程通关进度吗？此操作会清除本机所有答题纪录！')) {
+        localStorage.removeItem(STORAGE_KEY);
+        state = {
+          current: "CE0",
+          completed: {},
+          started: Date.now()
+        };
+        saveState();
+        initLevels();
+        
+        // 刷新整个网页以复位所有答题 DOM
+        location.reload();
+      }
+    });
+
+    function celebrateGraduation() {
+      // 撒花效果
+      const wrap = document.createElement("div");
+      wrap.className = "confetti-container";
+      const colors = ["#fcd34d", "#f59e0b", "#fbbf24", "#d97706", "#34d399"];
+      for (let i = 0; i < 100; i++) {
+        const c = document.createElement("i");
+        c.style.left = Math.random() * 100 + "vw";
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.animationDuration = (1.5 + Math.random() * 2) + "s";
+        c.style.animationDelay = Math.random() * 0.5 + "s";
+        c.style.transform = `rotate(${Math.random() * 360}deg)`;
+        wrap.appendChild(c);
+      }
+      document.body.appendChild(wrap);
+      setTimeout(() => wrap.remove(), 4500);
+
+      // 切换当前 DOM 显示通关祝贺
+      const activeNode = document.getElementById(`node-CE`);
+      const mainArea = activeNode.querySelector('.workspace-main');
+      
+      mainArea.innerHTML = `
+        <div class="lesson-card congrats-card">
+          <div class="congrats-icon">🏆</div>
+          <h2>恭喜通关 Context Engineering 专题课！</h2>
+          <p class="congrats-lead">你已经成功闯过全部 8 个关卡，彻底降服了智能体大脑台面的每一个魔鬼细节！</p>
+          <div class="congrats-details">
+            <p>通过这门特级专题课，你已经熟练掌握了对智能体“上下文管理”的全部解剖与控制手段：</p>
+            <ul>
+              <li><strong>调布局</strong>：掌握位置物理地形，利用首尾置顶防范中段遗忘（Lost in the Middle）；</li>
+              <li><strong>刀一剪</strong>：坚守“每一 token 必须挣得位置”准则，对日志和工具列表进行极致剪枝；</li>
+              <li><strong>刀二压</strong>：在临界点触发历史对话摘要替换，在压缩中强制锁死目标要素；</li>
+              <li><strong>刀三搜</strong>：海量资料存放在外部，使用重排 Rerank 和清洗避免信息淹没；</li>
+              <li><strong>刀四记</strong>：卸载有状态内容到本地文件，跨会话订立读写更新契约并定期脱水；</li>
+              <li><strong>诊翻车</strong>：像名医般从爆窗、假性遗忘、格式越狱等症状倒推桌面缺陷。</li>
+            </ul>
+            <p class="congrats-accent-quote" style="color: #fcd34d !important;">至此，你已经真正获得了设计、改进、诊断任何工业级智能体上下文架构的掌控力。</p>
+          </div>
+          <button class="btn btn-primary" onclick="location.reload()">从头再走一遍</button>
+        </div>
+      `;
+    }
+
+    function flashMessage(msg) {
+      const el = document.createElement("div");
+      el.textContent = msg;
+      el.style.cssText = `
+        position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+        background: var(--bg-panel-strong); border: 1px solid var(--accent);
+        color: var(--text); padding: 12px 24px; border-radius: 8px;
+        font-size: 14px; z-index: 9999; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        backdrop-filter: blur(8px); animation: fadeIn 0.2s ease;
+      `;
+      document.body.appendChild(el);
+      setTimeout(() => {
+        el.style.animation = "fadeOut 0.3s ease";
+        setTimeout(() => el.remove(), 300);
+      }, 2500);
+    }
+
+    // 初始化运行
+    initLevels();
+  });
+</script>
+
+<style>
+  /* ==========================================
+     CSS VARIABLES & THEME OVERRIDES (Context = Amber Highlight)
+     ========================================== */
+  :root {
+    --accent: #fcd34d;        /* Context Amber Accent */
+    --accent-strong: #f59e0b; /* Context Amber Strong */
+  }
+
+  /* ==========================================
+     WORKSPACE LAYOUT
+     ========================================== */
+  .course-workspace {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    background-color: var(--bg);
+    min-height: calc(100vh - 152px);
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+  }
+
+  @media (max-width: 900px) {
+    .course-workspace {
+      grid-template-columns: 1fr;
+      border-left: none;
+      border-right: none;
+      box-shadow: none;
+    }
+    .workspace-sidebar {
+      border-right: none !important;
+      border-bottom: 1px solid var(--line);
+      position: static !important;
+      height: auto !important;
+    }
+  }
+
+  /* ==========================================
+     SIDEBAR (LEFT COLUMN)
+     ========================================== */
+  .workspace-sidebar {
+    background: linear-gradient(180deg, rgba(28, 22, 10, 0.6) 0%, rgba(15, 12, 5, 0.8) 100%);
+    border-right: 1px solid var(--line);
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 152px);
+    overflow-y: auto;
+  }
+
+  .back-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--accent);
+    margin-bottom: 24px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .back-home:hover {
+    color: var(--accent-strong);
+  }
+
+  .course-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .course-logo.c-logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+    color: #0b0f1a;
+    font-weight: 800;
+    font-size: 18px;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+  }
+
+  .course-brand h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .course-brand .sub-text {
+    font-size: 11px;
+    color: var(--subtle);
+  }
+
+  /* Progress Bar */
+  .progress-pill-wrap {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 24px;
+  }
+
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .progress-bar-bg {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+    border-radius: 999px;
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .progress-text-small {
+    display: block;
+    font-size: 11px;
+    color: var(--subtle);
+    text-align: right;
+  }
+
+  /* Levels Nav Buttons */
+  .levels-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-grow: 1;
+  }
+
+  .level-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--muted);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+  }
+
+  .level-btn:hover:not(.locked) {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--line);
+    color: var(--text);
+  }
+
+  .level-btn.active {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: var(--accent);
+  }
+
+  .level-btn.completed {
+    color: var(--text);
+  }
+
+  .level-btn.locked {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .btn-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+  }
+
+  .level-code {
+    font-size: 11px;
+    font-weight: 750;
+    color: var(--accent);
+    background: rgba(252, 211, 77, 0.08);
+    border: 1px solid rgba(252, 211, 77, 0.15);
+    padding: 2px 5px;
+    border-radius: 4px;
+    min-width: 28px;
+    text-align: center;
+  }
+
+  .level-btn.locked .level-code {
+    color: var(--muted);
+    background: rgba(255,255,255,0.05);
+    border-color: transparent;
+  }
+
+  .level-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .status-icon {
+    font-size: 12px;
+    color: var(--subtle);
+  }
+
+  .status-icon.completed-mark {
+    color: var(--accent-strong);
+    font-weight: bold;
+  }
+
+  .status-icon.locked-mark {
+    opacity: 0.6;
+  }
+
+  /* Reset Zone */
+  .reset-zone {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--line);
+  }
+
+  .reset-btn {
+    display: inline-flex;
+    align-items: center;
+    background: transparent;
+    border: none;
+    color: var(--subtle);
+    font-size: 11.5px;
+    cursor: pointer;
+    width: 100%;
+    padding: 6px;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+
+  .reset-btn:hover {
+    color: var(--accent);
+    background: rgba(252, 211, 77, 0.05);
+  }
+
+  /* ==========================================
+     CONTENT FLOW (MIDDLE & RIGHT COLUMNS)
+     ========================================== */
+  .workspace-content-flow {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    width: 100%;
+  }
+
+  .level-workspace-node {
+    display: flex;
+    width: 100%;
+    height: 100%;
+  }
+
+  @media (max-width: 1100px) {
+    .level-workspace-node {
+      flex-direction: column;
+    }
+    .workspace-right {
+      width: 100% !important;
+      border-left: none !important;
+      border-top: 1px solid var(--line);
+      position: static !important;
+      height: auto !important;
+    }
+  }
+
+  /* ==========================================
+     MAIN PANEL (CENTER COLUMN)
+     ========================================== */
+  .workspace-main {
+    flex-grow: 1;
+    padding: 32px 40px;
+    overflow-y: auto;
+    max-width: 860px;
+    width: 100%;
+  }
+
+  @media (max-width: 600px) {
+    .workspace-main {
+      padding: 20px;
+    }
+  }
+
+  .level-header {
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 20px;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .code-tag {
+    font-size: 12px;
+    font-weight: 750;
+    color: #0b0f1a;
+    background: var(--accent-strong);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .defect-tag {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(252, 211, 77, 0.08);
+    border: 1px solid rgba(252, 211, 77, 0.15);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .level-header h2 {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text);
+    margin: 0 0 10px 0;
+  }
+
+  .hook-text {
+    font-size: 14.5px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* ==========================================
+     TABS CONTROLLER
+     ========================================== */
+  .tab-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .tab-headers {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 28px;
+  }
+
+  .tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 10px 16px;
+    color: var(--muted);
+    font-size: 14.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab-btn:hover {
+    color: var(--text);
+  }
+
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  /* ==========================================
+     PROSE / Markdown Overrides
+     ========================================== */
+  .theory-content {
+    margin-bottom: 32px;
+  }
+
+  .theory-content :global(h1) {
+    display: none;
+  }
+
+  .theory-content :global(h2) {
+    font-size: 19px;
+    border-bottom: 1px dashed var(--line);
+    padding-bottom: 8px;
+    margin-top: 28px;
+    margin-bottom: 14px;
+    color: var(--text);
+  }
+
+  .theory-content :global(h3) {
+    font-size: 16px;
+    margin-top: 22px;
+    margin-bottom: 10px;
+    color: var(--accent);
+  }
+
+  .theory-content :global(p) {
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: #c7d8d2;
+    margin-bottom: 16px;
+  }
+
+  .theory-content :global(ul), .theory-content :global(ol) {
+    padding-left: 20px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #c7d8d2;
+  }
+
+  .theory-content :global(li) {
+    margin-bottom: 6px;
+  }
+
+  .theory-content :global(code) {
+    background: rgba(252, 211, 77, 0.08);
+    border: 1px solid rgba(252, 211, 77, 0.15);
+    color: var(--accent);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: monospace;
+  }
+
+  .theory-content :global(pre) {
+    background: #0d111b;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    margin-bottom: 18px;
+  }
+
+  .theory-content :global(pre code) {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    padding: 0;
+    font-size: 13px;
+  }
+
+  .theory-content :global(blockquote) {
+    border-left: 3px solid var(--accent);
+    padding: 8px 16px;
+    background: rgba(252, 211, 77, 0.03);
+    margin: 18px 0;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .theory-content :global(blockquote p) {
+    margin: 0;
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  .theory-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 13.5px;
+  }
+
+  .theory-content :global(th), .theory-content :global(td) {
+    border: 1px solid var(--line);
+    padding: 10px 12px;
+    text-align: left;
+  }
+
+  .theory-content :global(th) {
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  /* Style folds custom */
+  .theory-content :global(details) {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    padding: 14px;
+    margin: 16px 0;
+  }
+  
+  .theory-content :global(summary) {
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 14px;
+  }
+
+  .theory-footer {
+    padding-top: 24px;
+    border-top: 1px dashed var(--line);
+    margin-top: 32px;
+  }
+
+  /* ==========================================
+     TAB 2: INTERACTIVE COMPONENTS (QUIZ/CARDS)
+     ========================================== */
+  .lesson-card {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .takeaway {
+    background: rgba(245, 158, 11, 0.04);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .takeaway .label {
+    font-size: 11px;
+    font-weight: 850;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .takeaway p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    color: var(--text);
+  }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: 780;
+    color: var(--text);
+    margin-top: 12px;
+    margin-bottom: -8px;
+    border-left: 3px solid var(--accent);
+    padding-left: 10px;
+  }
+
+  /* Concepts Grid & Cards */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 600px) {
+    .concept-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .concept-card {
+    height: 140px;
+    perspective: 1000px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .concept-card-front, .concept-card-back {
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    padding: 16px;
+    backface-visibility: hidden;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s;
+    overflow-y: auto;
+  }
+
+  .concept-card-front {
+    background: rgba(22, 28, 40, 0.7);
+    transform: rotateY(0deg);
+  }
+
+  .concept-card-back {
+    background: rgba(30, 24, 15, 0.95);
+    border-color: rgba(245, 158, 11, 0.4);
+    transform: rotateY(180deg);
+  }
+
+  .concept-card.flipped .concept-card-front {
+    transform: rotateY(-180deg);
+  }
+
+  .concept-card.flipped .concept-card-back {
+    transform: rotateY(0deg);
+  }
+
+  .concept-card:hover .concept-card-front,
+  .concept-card:hover .concept-card-back {
+    border-color: rgba(252, 211, 77, 0.4);
+  }
+
+  .concept-card .term {
+    font-weight: 780;
+    font-size: 14px;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .concept-card .def {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .analogy-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+
+  .analogy-text {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  .flip-hint, .flip-back-hint {
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    font-size: 10px;
+    color: var(--subtle);
+    font-weight: 600;
+  }
+
+  .flip-back-hint {
+    color: var(--accent);
+  }
+
+  /* ==========================================
+     QUIZ BOX & QUESTIONS
+     ========================================== */
+  .quiz-box {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(22, 28, 40, 0.4);
+    overflow: hidden;
+    margin-top: 12px;
+  }
+
+  .quiz-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid var(--line);
+    padding: 16px 24px;
+  }
+
+  .quiz-head h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 780;
+    color: var(--text);
+  }
+
+  .quiz-head .progress-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .quiz-container {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .q-block {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 24px;
+    border-bottom: 1px dashed var(--line);
+  }
+
+  .q-block:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .q-num {
+    font-size: 11.5px;
+    font-weight: 750;
+    color: var(--subtle);
+    text-transform: uppercase;
+  }
+
+  .q-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* Option Buttons */
+  .q-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .q-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--muted);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    width: 100%;
+    font: inherit;
+  }
+
+  .q-option:hover:not([disabled]) {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--line-strong);
+    color: var(--text);
+  }
+
+  .q-option[disabled] {
+    cursor: not-allowed;
+  }
+
+  .q-option .marker {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--line);
+    font-size: 11.5px;
+    font-weight: 780;
+    color: var(--subtle);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .q-option:hover:not([disabled]) .marker {
+    border-color: var(--line-strong);
+    color: var(--text);
+  }
+
+  .q-option .opt-txt {
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin-top: 1px;
+  }
+
+  /* Choice statuses */
+  .q-option.correct {
+    background: rgba(245, 158, 11, 0.08) !important;
+    border-color: rgba(245, 158, 11, 0.4) !important;
+    color: #fcd34d !important;
+  }
+  .q-option.correct .marker {
+    background: rgba(245, 158, 11, 0.15) !important;
+    border-color: rgba(245, 158, 11, 0.4) !important;
+    color: #fcd34d !important;
+  }
+
+  .q-option.wrong {
+    background: rgba(248, 113, 113, 0.08) !important;
+    border-color: rgba(248, 113, 113, 0.4) !important;
+    color: #f87171 !important;
+  }
+  .q-option.wrong .marker {
+    background: rgba(248, 113, 113, 0.15) !important;
+    border-color: rgba(248, 113, 113, 0.4) !important;
+    color: #f87171 !important;
+  }
+
+  /* Feedback box */
+  .q-feedback {
+    display: none;
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-top: 8px;
+  }
+
+  .q-feedback.show {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+  }
+
+  .q-feedback.ok {
+    background: rgba(245, 158, 11, 0.05);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    color: #c7d8d2;
+  }
+  .q-feedback.ok strong {
+    color: #fcd34d;
+  }
+
+  .q-feedback.err {
+    background: rgba(248, 113, 113, 0.05);
+    border: 1px solid rgba(248, 113, 113, 0.15);
+    color: #c7d8d2;
+  }
+  .q-feedback.err strong {
+    color: #f87171;
+  }
+
+  /* ==========================================
+     MATCHING / DRAG AND DROP QUESTIONS
+     ========================================== */
+  .match-box {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .drag-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    padding: 14px;
+    min-height: 58px;
+  }
+
+  .drag-chip {
+    background: rgba(22, 28, 40, 0.95);
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    cursor: grab;
+    user-select: none;
+    color: var(--text);
+    transition: transform 0.2s, opacity 0.2s;
+  }
+
+  .drag-chip:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .drag-chip.dragging {
+    opacity: 0.5;
+  }
+
+  .drag-chip.placed {
+    display: none;
+  }
+
+  .drop-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .drop-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 12px;
+    align-items: center;
+  }
+
+  @media (max-width: 600px) {
+    .drop-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+
+  .drop-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  .label-num {
+    color: var(--accent);
+    margin-right: 6px;
+    background: rgba(252, 211, 77, 0.06);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  .drop-target {
+    border: 1.5px dashed var(--line);
+    background: rgba(255, 255, 255, 0.01);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    color: var(--subtle);
+    text-align: center;
+    transition: all 0.2s;
+    min-height: 40px;
+  }
+
+  .drop-target.drag-over {
+    border-color: var(--accent);
+    background: rgba(245, 158, 11, 0.05);
+    color: var(--accent);
+  }
+
+  .drop-target.filled {
+    border-style: solid;
+    color: var(--text);
+  }
+
+  .drop-target.correct {
+    background: rgba(245, 158, 11, 0.08) !important;
+    border-color: rgba(245, 158, 11, 0.4) !important;
+    color: #fcd34d !important;
+  }
+
+  .drop-target.wrong {
+    background: rgba(248, 113, 113, 0.08) !important;
+    border-color: rgba(248, 113, 113, 0.4) !important;
+    color: #f87171 !important;
+  }
+
+  /* Quiz Actions Bottom Bar */
+  .quiz-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.01);
+    border-top: 1px solid var(--line);
+    padding: 16px 24px;
+    gap: 16px;
+  }
+
+  @media (max-width: 600px) {
+    .quiz-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  .quiz-status {
+    font-size: 13.5px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .quiz-status.ok {
+    color: var(--accent-strong);
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+  }
+
+  /* ==========================================
+     RIGHT SIDEBAR (6 REGULATORS PANEL)
+     ========================================== */
+  .workspace-right {
+    width: 280px;
+    border-left: 1px solid var(--line);
+    padding: 24px 20px;
+    background: linear-gradient(180deg, rgba(28, 22, 10, 0.4) 0%, rgba(15, 12, 5, 0.6) 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 152px);
+    overflow-y: auto;
+  }
+
+  .workspace-right h4 {
+    margin: 0 0 14px 0;
+    font-size: 14px;
+    font-weight: 780;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .panel {
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .panel-intro-text {
+    font-size: 11px;
+    color: var(--subtle);
+    margin: 0 0 12px 0;
+  }
+
+  .defect-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .defect-list li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    opacity: 0.35;
+    transition: opacity 0.3s;
+  }
+
+  .defect-list li.covered {
+    opacity: 1;
+  }
+
+  .defect-list li .num {
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 10.5px;
+    font-weight: 800;
+    color: var(--subtle);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .defect-list li.covered .num {
+    background: var(--accent);
+    color: #0b0f1a;
+  }
+
+  .def-name {
+    display: block;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .defect-list li.covered .def-name {
+    color: var(--accent-strong);
+  }
+
+  .defect-list li .desc {
+    display: block;
+    font-size: 11px;
+    color: var(--subtle);
+  }
+
+  .defect-list li.covered .desc {
+    color: var(--muted);
+  }
+
+  /* ==========================================
+     GRADUATION / CONGRATS PAGE
+     ========================================== */
+  .congrats-card {
+    text-align: center;
+    padding: 40px 20px;
+    background: rgba(245, 158, 11, 0.03);
+    border: 1.5px solid rgba(245, 158, 11, 0.3);
+    border-radius: 14px;
+    animation: zoomIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .congrats-icon {
+    font-size: 58px;
+    margin-bottom: 16px;
+    animation: bounce 2s infinite;
+  }
+
+  .congrats-card h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--accent);
+    margin: 0 0 12px 0;
+  }
+
+  .congrats-lead {
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 600;
+    margin-bottom: 28px;
+  }
+
+  .congrats-details {
+    max-width: 600px;
+    margin: 0 auto 32px auto;
+    text-align: left;
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 24px;
+  }
+
+  .congrats-details p {
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  .congrats-details ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 0 16px 0;
+  }
+
+  .congrats-details li {
+    font-size: 13.5px;
+    line-height: 1.6;
+    margin-bottom: 8px;
+    position: relative;
+    padding-left: 16px;
+    color: var(--muted);
+  }
+
+  .congrats-details li::before {
+    content: "➔";
+    color: var(--accent);
+    position: absolute;
+    left: 0;
+  }
+
+  .congrats-accent-quote {
+    font-style: italic;
+    color: var(--accent) !important;
+    text-align: center;
+    margin-top: 16px;
+    font-weight: 600;
+  }
+
+  .confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 99999;
+    overflow: hidden;
+  }
+
+  .confetti-container i {
+    position: absolute;
+    display: block;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    border-radius: 20%;
+    opacity: 0.8;
+    animation: confetti-fall 2.5s ease-out forwards;
+  }
+
+  /* ==========================================
+     ANIMATIONS
+     ========================================== */
+  @keyframes confetti-fall {
+    0% {
+      top: -10px;
+      transform: translateY(0) rotate(0deg) translateX(0);
+      opacity: 1;
+    }
+    100% {
+      top: 100vh;
+      transform: translateY(100vh) rotate(360deg) translateX(50px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, 10px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; transform: translate(-50%, 0); }
+    to { opacity: 0; transform: translate(-50%, 10px); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+</style>
