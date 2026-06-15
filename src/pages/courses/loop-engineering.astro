@@ -35,7 +35,7 @@ const courseDocs = await getCollection('courses');
           <div class="progress-bar-bg">
             <div class="progress-bar-fill" id="progressBarFill" style="width: 0%;"></div>
           </div>
-          <span class="progress-text-small" id="progressCount">0/9 关已通关</span>
+          <span class="progress-text-small" id="progressCount">0/10 关已通关</span>
         </div>
       </div>
       
@@ -240,8 +240,8 @@ const courseDocs = await getCollection('courses');
             <!-- 右栏：控制旋钮追踪看板 -->
             <aside class="workspace-right">
               <div class="panel">
-                <h4>六大控制旋钮</h4>
-                <p class="panel-intro-text">学习对应关卡时自动激活和理解控制组件：</p>
+                <h4>自跑循环六大零件</h4>
+                <p class="panel-intro-text">学习对应关卡时自动激活和理解自跑组件：</p>
                 <ul class="defect-list">
                   {LOOP_DEFECTS.map((d) => {
                     const currentLvlIdx = LEVELS.findIndex(l => l.id === lvl.id);
@@ -741,17 +741,18 @@ const courseDocs = await getCollection('courses');
         <div class="lesson-card congrats-card">
           <div class="congrats-icon">🏆</div>
           <h2>恭喜通关 Loop Engineering 专题课！</h2>
-          <p class="congrats-lead">你已经成功闯过全部 9 个关卡，彻底降服了智能体运行时循环的每一个魔鬼细节！</p>
+          <p class="congrats-lead">你已经成功闯过全部 10 个关卡，彻底降服了智能体无人值守自跑循环的每一个魔鬼细节！</p>
           <div class="congrats-details">
-            <p>通过这门进阶专题课，你已经熟练掌握了对智能体“核心发动机”的全部调校与组装手段：</p>
+            <p>通过这门专题课，你已经熟练掌握了组装与驾驭自跑循环的六大核心武器：</p>
             <ul>
-              <li><strong>调形态</strong>：懂得评估任务的“可预测性”，选用 ReAct 或是 Plan 形态；</li>
-              <li><strong>套缰绳</strong>：学会并联多重预算与“人在环”升级机制，彻底驯服失控的死循环；</li>
-              <li><strong>筑纠错</strong>：通过被动错误回灌与主动复盘反思（Reflexion），让失败成为新燃料；</li>
-              <li><strong>做防范</strong>：运用工头-工人嵌套架构与周期重置抗漂移，构建长程可控的高质量系统；</li>
-              <li><strong>合整车</strong>：整合定时调度、隔离工作区与 Maker/Checker 校验，拼装自运行的无人值守系统。</li>
+              <li><strong>自动化心跳</strong>：掌握了通过定时心跳触发分诊与 Triage 机制，实现 Loop 自动发现；</li>
+              <li><strong>物理隔离器</strong>：熟练使用 Git Worktree 为并行的 Agent 开辟专属物理工作区，防范合并冲突；</li>
+              <li><strong>显式技能库</strong>：学会使用 SKILL.md 固化项目级指令和规范，消除意图债并省下冷启动开销；</li>
+              <li><strong>外部连接器</strong>：精通 MCP 协议连通 Slack、Linear 等外部 API，打破 Agent 的沙箱黑盒；</li>
+              <li><strong>子代理分工</strong>：彻底贯彻 Maker/Checker 双层物理阻断，通过第三方 Checker 无情判卷；</li>
+              <li><strong>落盘记忆体</strong>：熟练使用 loop_status.md 状态文件管理跨会话上下文记忆，防止模型遗忘。</li>
             </ul>
-            <p class="congrats-accent-quote" style="color: #a5b4fc !important;">至此，你已经真正获得了设计、改进、诊断任何工业级智能体循环架构的随身地图。</p>
+            <p class="congrats-accent-quote" style="color: #a5b4fc !important;">记住：造那个循环，但要像一个打算继续当工程师的人去造它。保持你的专业判断力！</p>
           </div>
           <button class="btn btn-primary" onclick="location.reload()">从头再走一遍</button>
         </div>

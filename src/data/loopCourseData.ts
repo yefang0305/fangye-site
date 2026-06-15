@@ -1,392 +1,360 @@
 import type { LevelItem } from './courseData';
 
 export const LOOP_DEFECTS = [
-  { id: 1, name: "形态选型", desc: "ReAct ↔ Plan，定骨架", fixed: ["LE1", "LE4"] },
-  { id: 2, name: "停止与预算", desc: "多重并联缰绳与升级问人", fixed: ["LE2", "LE4"] },
-  { id: 3, name: "纠错与反思", desc: "把失败转化成燃料", fixed: ["LE3"] },
-  { id: 4, name: "嵌套循环", desc: "工头-工人降低复杂度", fixed: ["LE4"] },
-  { id: 5, name: "长程控制", desc: "对抗悄悄跑题的漂移", fixed: ["LE5"] },
-  { id: 6, name: "外循环建设", desc: "评测、人在环与飞轮闭环", fixed: ["LE6"] },
+  { id: 1, name: "自动化心跳", desc: "定时心跳启动与分类分诊", fixed: ["LE2", "LE3", "LE8"] },
+  { id: 2, name: "物理隔离器", desc: "git worktree 运行环境隔离", fixed: ["LE2", "LE3", "LE8"] },
+  { id: 3, name: "显式技能库", desc: "意图债固化与仓库级指引", fixed: ["LE3", "LE8"] },
+  { id: 4, name: "外部连接器", desc: "MCP 协议跨端自由连通 API", fixed: ["LE3", "LE8"] },
+  { id: 5, name: "子代理分工", desc: "Maker/Checker 阻断与监督", fixed: ["LE2", "LE3", "LE4", "LE8"] },
+  { id: 6, name: "落盘记忆体", desc: "跨轮状态存盘与外部记忆", fixed: ["LE2", "LE3", "LE8"] },
 ];
 
 export const LEVELS: LevelItem[] = [
   /* ============ LE0 ============ */
   {
-    id: "LE0", icon: "⚙️", title: "导论：循环是 agent 的本质",
-    hook: "建立'循环=可调发动机'心智模型，切分内/外两个维度",
+    id: "LE0", icon: "⚙️", title: "导论：什么是 Loop Engineering",
+    hook: "建立“把人从循环中换掉”的心智模型，理解 Harness 上一层的意义",
     fixes: [1, 2, 3, 4, 5, 6],
-    defectLabel: "引擎 6 大控制组件总览",
+    defectLabel: "自跑循环六大零件总览",
     concepts: [
-      { term: "内循环 (运行时)", def: "秒级，发生在单个任务之内", analogy: "工人在白房间里打字、跑圈、干活" },
-      { term: "外循环 (改进时)", def: "天/周级，发生在许多任务之上", analogy: "你作为老板定期复盘，给工人立新规" },
-      { term: "循环工程", def: "决定发动机调校和 agent 最终成败的一层手艺", analogy: "拧好发动机面板上的 6 排旋钮" },
-      { term: "纯 ReAct 循环", def: "没有任何规划，走一步看一步的循环", analogy: "蒙眼干活，全靠临场反应" },
+      { term: "自跑循环 (Loop)", def: "坐在 Harness 上一层，无需人肉干预、自动接力运转的系统", analogy: "不再按回车发令，而是自己装了个闹钟、自己分工、自己把上一步输出喂给下一步的自动车间" },
+      { term: "Harness 层", def: "武装单个 Agent 的单次运行状态和工具", analogy: "给工人穿戴好安全带、防毒面罩和工具包，但他不会自己重来" },
+      { term: "人肉时钟", def: "工程师被困在循环内，一句句发 prompt 并回车驱动 AI 的旧交互模式", analogy: "在磨坊里用鞭子一下下抽驴子，停下就得再抽" },
     ],
-    takeaway: "循环是 agent 的本质：模型只提供'每一步的判断力'，是外壳循环把判断力组织成'完成任务'。循环有内（秒级）外（天/周级）两个尺度。",
+    takeaway: "循环工程（Loop Engineering）的核心目标是“替换你自己”，将你从人肉敲回车驱动 Agent 的角色中解放出来，变为设计和把关自跑系统的架构师。",
     quiz: [
       {
         type: "choice",
-        q: "在 Claude Code 中，当它根据测试报错自动修改代码、再跑测试、一步步向前推进，这是属于什么循环？",
-        options: ["内循环（inner loop）", "外循环（outer loop）", "双重循环"],
-        answer: 0,
-        explain: "内循环是秒级、单个任务之内的运行时循环（模型走一步→执行工具→看结果→再走一步），由 Harness 自动跑圈。",
+        q: "在循环工程（Loop Engineering）中，最根本的心智模型转变是什么？",
+        options: [
+          "学习如何写出字句更完美的 System Prompt",
+          "把人从“人肉敲回车发指令给 Agent”的角色换成“设计自跑系统”的架构师",
+          "优化大模型的物理硬件以提高处理速度"
+        ],
+        answer: 1,
+        explain: "如 Addy Osmani 所说，循环工程是 replacing yourself as the person who prompts the agent. You design the system that does it instead。",
       },
       {
         type: "tf",
-        q: "外循环是以天/周为时间尺度的改进循环，主要由工程师（你）通过跑批量任务、复盘失败、改提示词和 CLAUDE.md 来手动或半自动地运行。",
-        options: ["对", "错"],
-        answer: 0,
-        explain: "外循环的核心是让整个智能体系统越跑越好。改 prompt、改规则、加工具都发生在外循环的改进这一侧。",
-      },
-      {
-        type: "tf",
-        q: "给定大模型之后，agent 的成败与好用程度几乎完全取决于模型本身的智能，外壳循环（Harness & Loop）仅仅起辅助作用。",
+        q: "“Loop engineering sits one floor above the harness.” 这句话意味着 Loop 负责武装 Agent 的单次运行工具和权限，而 Harness 负责调度循环。",
         options: ["对", "错"],
         answer: 1,
-        explain: "模型只能走一步就停下来（无状态）。同一个模型，配设计粗糙的循环会一错到底；配设计精良的循环就是靠谱 agent。agent 最终成败是由循环怎么转决定的。",
+        explain: "正好相反！Harness 负责单次运行的武装，而 Loop 坐在 Harness 上一层，负责让它自己醒来并自动接力跑下去。",
       },
     ],
   },
 
   /* ============ LE1 ============ */
   {
-    id: "LE1", icon: "🛹", title: "循环的形态选型",
-    hook: "ReAct ↔ Plan-then-Execute，为任务匹配最合适的骨架",
-    fixes: [1],
-    defectLabel: "拧紧 ① 循环形态 旋钮",
+    id: "LE1", icon: "🪜", title: "三级跳与四层技术栈",
+    hook: "梳理 Prompt、Context、Harness、Loop 四层关系，找准工程位置",
+    fixes: [1, 6],
+    defectLabel: "理解四层技术栈与调度零件",
     concepts: [
-      { term: "ReAct 形态", def: "每步先推理再行动，看结果再决定下一步", analogy: "工人甲：刷一刷、退后看、再刷一刷" },
-      { term: "Plan-then-Execute", def: "先一次性列出完整计划，再逐条去跑", analogy: "工人乙：先列施工代办单，再闭眼顺序执行" },
-      { term: "Plan-and-Reflect", def: "先列计划，执行中根据反馈实时重修计划", analogy: "工人在刷墙时发现缺漆了，主动回头改步骤" },
+      { term: "Prompt 层", def: "写好单次请求的提示词内容", analogy: "写在一张便签纸上的单次留言" },
+      { term: "Context 层", def: "这一个时刻上下文窗口内放什么", analogy: "工作桌面上此时铺开什么参考书和草稿" },
+      { term: "Harness 层", def: "限制并武装单次执行的工具和缰绳", analogy: "工人出门背着的特制战术背包" },
+      { term: "Loop 层", def: "在 Harness 之上进行自动调度与记忆传递", analogy: "自动生产线上的传送带和中控系统" },
     ],
-    takeaway: "ReAct（边想边做）灵活能应变但费 token 且易漂移；Plan-then-Execute（先规划后执行）省钱方向稳但计划错则全错。越可预测越偏 Plan，越未知越偏 ReAct。",
+    takeaway: "大模型工程的四层栈逐层嵌套。每上一层，关注的问题和风险就大一级。Loop 层解决的是怎么让它自己一圈圈跑下去，并在多轮运行中传递记忆。",
     quiz: [
       {
         type: "choice",
-        q: "我们要让 Agent 解决一个'未知的线上 Bug 根因排查'任务，最应该选择哪种循环骨架？",
-        options: ["Plan-then-Execute", "ReAct（边想边做）", "Plan-and-Reflect"],
-        answer: 1,
-        explain: "根因未知需要探索，环境信息随着每步的深入不断被揭开，必须走一步看一步灵活决策。这正是 ReAct 的强项。",
-      },
-      {
-        type: "match",
-        q: "将三种主形态与它们各自的特征/场景拖动配对。",
-        defects: [
-          { label: "ReAct 形态", drop: "探索、环境多变、步骤未知，拿不准时的首选" },
-          { label: "Plan-then-Execute", drop: "可预先拆解、步骤清晰、想省钱/省 token" },
-          { label: "Plan-and-Reflect", drop: "中等复杂、允许在执行时修改或重构计划" },
+        q: "大模型上下文窗口的“中间遗忘”盲区，在技术栈中应该由哪一层来重点设计防御策略？",
+        options: [
+          "Prompt 层",
+          "Context 层 (如 RAG、摘要压缩、信息清洗)",
+          "Harness 层"
         ],
-        chips: ["中等复杂、允许在执行时修改或重构计划", "可预先拆解、步骤清晰、想省钱/省 token", "探索、环境多变、步骤未知，拿不准时的首选"],
-        mapping: { 0: 2, 1: 1, 2: 0 },
-        explain: "选型的判断轴：任务越可预测越偏 Plan，越未知环境多变越偏 ReAct。",
+        answer: 1,
+        explain: "上下文窗口内放什么、怎么清洗压缩、怎么避免中间遗忘，属于 Context Engineering 的管辖范围。",
       },
       {
         type: "tf",
-        q: "当设计一个新的 Agent 功能但拿不准该用哪种形态时，建议直接从 Plan-then-Execute 架构起步，因为最省 token。",
+        q: "即便我们把 Prompt 和 Context 调校得再完美，只要没有设计 Loop 层，Agent 依然无法做到无人值守自动接力运行。",
         options: ["对", "错"],
-        answer: 1,
-        explain: "应该从 ReAct 起步。因为它更鲁棒，不需要'开头就说清全部步骤'的预设前提；等发现 ReAct 重复试错太费 token，再把其中稳定的部分改用 Plan 模式。",
+        answer: 0,
+        explain: "对。前三层解决了“让它单次跑得好”的问题，只有第四层 Loop 负责自动接力与调度运行。",
       },
     ],
   },
 
   /* ============ LE2 ============ */
   {
-    id: "LE2", icon: "⚓", title: "停止与预算：循环的缰绳",
-    hook: "max_steps、成本预算与升级问人，为放权设定硬边界",
-    fixes: [2],
-    defectLabel: "拧紧 ② 停止与预算 旋钮",
+    id: "LE2", icon: "🔄", title: "一个循环的五个动作",
+    hook: "剖析 Discovery, Handoff, Verification, Persistence, Scheduling 五步大跨越",
+    fixes: [1, 2, 5, 6],
+    defectLabel: "拆解五大动作相关零件",
     concepts: [
-      { term: "max_steps", def: "允许循环转的硬最大圈数", analogy: "发动机的硬性最高转速，超了就强掐" },
-      { term: "成本/时间预算", def: "对单次任务限制 token/金额/物理耗时上限", analogy: "油箱里只剩 5 升油，漏光了自动熄火" },
-      { term: "停下问人 (escalation)", def: "遇到高风险或反复失败时交还控制权", analogy: "碰到危险情况，工人放下工具打电话问老板" },
-      { term: "完成判定", def: "模型不再开工具申请单 = 它认为做完了", analogy: "正常收工（不是异常强刹）" },
+      { term: "发现 (Discovery)", def: "定时唤醒去读取环境异动，找出要做什么", analogy: "早会前分诊员去邮箱查收构建失败报错" },
+      { term: "交付 (Handoff)", def: "将任务隔离分派给具体的子 Agent 执行", analogy: "包工头给不同的瓦工安排独立的隔离工作间" },
+      { term: "验证 (Verification)", def: "对产出的代码进行独立的挑刺和测试，判断能否合入", analogy: "质检员单独拿出一张卷子考核厨师，无情打分说不" },
+      { term: "持久化 (Persistence)", def: "把当前的进度和结果落盘记在磁盘上，实现跨轮记忆", analogy: "工地大门口贴着的当日工程进度表" },
     ],
-    takeaway: "永远不给 agent 无限循环的权力。放出多少自由，就要预设多少硬边界。步数、成本、时间、升级这几根缰绳必须并联运作。",
+    takeaway: "五动作是 Discovery、Handoff、Verification、Persistence、Scheduling。其中 Verification（验证）是唯一敢放手让人走开的硬刹车。",
     quiz: [
       {
-        type: "choice",
-        q: "在开发一个自动改代码的 Agent 时，以下哪类操作应该强制触发'停下问人（升级）'机制，而不是让它自动跑？",
-        options: ["修改本地代码文件", "跑一次单元测试", "执行 git push --force 强制推送到生产远端"],
-        answer: 2,
-        explain: "高风险、高破坏或不可逆的动作（如删库、发给真用户邮件、强制推送等）必须有权限闸（升级给人），不能全部让 Agent 自动闭环。",
+        type: "match",
+        q: "将五大动作与它们在循环中对应的典型工程实现形式配对。",
+        defects: [
+          { label: "发现 (Discovery)", drop: "读取昨天 CI 测试失败记录或 Issue 列表" },
+          { label: "交付 (Handoff)", drop: "拉取干净的 Git Worktree 并分发任务" },
+          { label: "验证 (Verification)", drop: "由独立的 Checker 模型来判断 lint 与测试是否通过" },
+          { label: "持久化 (Persistence)", drop: "将当前状态写入 loop_status.md 或 Linear 状态板" },
+          { label: "调度 (Scheduling)", drop: "在系统级使用 cron 周期性唤醒进程" }
+        ],
+        chips: [
+          "读取昨天 CI 测试失败记录或 Issue 列表",
+          "拉取干净 of Git Worktree 并分发任务",
+          "由独立的 Checker 模型来判断 lint 与测试是否通过",
+          "将当前状态写入 loop_status.md 或 Linear 状态板",
+          "在系统级使用 cron 周期性唤醒进程"
+        ],
+        mapping: { 0: 0, 1: 1, 2: 2, 3: 3, 4: 4 },
+        explain: "这五大动作构成了循环每旋转一圈的完整生命周期。",
       },
       {
         type: "tf",
-        q: "因为缰绳检查是循环的守护哨，所以它应该放在每一圈循环的最前面开始判定，任一缰绳触发就退出循环。",
+        q: "为了防止代码合并冲突，在‘交付（Handoff）’动作中，最合理的做法是让多个 Agent 在不同的物理 Git Worktree 下各自独立工作，而不是共用一个工作目录。",
         options: ["对", "错"],
         answer: 0,
-        explain: "对。进入新一圈时第一步永远是缰绳判断：步数超没超？钱超没超？人在不在线？这样能从最根源处切断失控循环。",
-      },
-      {
-        type: "tf",
-        q: "为了简化外壳软件的结构，我们只需要设置累积成本预算（budget）就可以了，不需要再设 max_steps（步数限制）。",
-        options: ["对", "错"],
-        answer: 1,
-        explain: "如果每步都非常便宜，模型也可能因死循环连续转上万圈，虽然没超总成本，但时间被浪费，或者堆积了过长上下文。二者必须多重并联，谁先触发听谁的。",
+        explain: "对。多个 Agent 共用同一个目录就像多个程序员同时在一行代码上提交合并，必然会引发混乱的物理文件冲突。",
       },
     ],
   },
 
   /* ============ LE3 ============ */
   {
-    id: "LE3", icon: "🌋", title: "被动纠错与主动反思",
-    hook: "错误回灌 + Reflexion，把失败变成下一圈的肥料",
-    fixes: [3],
-    defectLabel: "拧紧 ③ 纠错与反思 旋钮",
+    id: "LE3", icon: "📦", title: "自跑循环的六个零件",
+    hook: "拼装 Automation, Worktrees, Skills, MCP, Sub-agents, Memory 六大硬装",
+    fixes: [1, 2, 3, 4, 5, 6],
+    defectLabel: "点亮六大自跑零件",
     concepts: [
-      { term: "错误回灌 (被动)", def: "把工具运行失败报错追加进上下文让模型看到", analogy: "老板把歪墙照片贴在工人额头上" },
-      { term: "主动反思 (Reflexion)", def: "模型主动复盘刚才走过的路，挑刺并给出改法", analogy: "工人每干完一截，退后三步作自我批评" },
-      { term: "Actor-Critic 分离", def: "干活和挑错的使用两个独立的角色/模型调用", analogy: "干活的只管干，另一个质检员专门打分挑刺" },
+      { term: "Skills 技能", def: "固化在仓库里的明确指令或执行包，无需每轮重写", analogy: "工具书和随身手册，要用时直接调取命令" },
+      { term: "MCP 连接器", def: "标准化的外部协议接口，负责跟 Slack / Linear 交互", analogy: "万能插座，插上就能跟真实世界各种系统对话" },
+      { term: "Memory 跨轮记忆", def: "状态必须落盘在 Git/文件上，防止会话结束丢失", analogy: "工地门口每天更新的白板字" },
     ],
-    takeaway: "错误终止循环是灾难，错误回灌循环是进化。纠错质量被'你喂回去的报错信息有多具体'死死卡住。被动纠语法，反思正方向。",
+    takeaway: "六大零件为自动化心跳、物理隔离、Skills 技能包、MCP 连接器、子代理分工与落盘记忆。前两者保运转，中两者连生态，后两者做阻断和状态续航。",
     quiz: [
       {
         type: "choice",
-        q: "被动错误回灌和主动反思（Reflexion）最核心的区别是什么？",
+        q: "如果想让你的 Agent 在执行中自动到 Linear 看板领取缺陷，修复后给 Slack 发一条通知，我们应该优先使用什么技术来实现这些外部连接？",
         options: [
-          "被动回灌不用消耗 token",
-          "被动回灌喂的是环境给的失败报错；反思喂的是模型对自身行径的批判和改法",
-          "反思完全不需要外壳代码支持"
+          "微调（Fine-tune）一个大模型",
+          "编写极其复杂的 Prompt 告诉模型 Slack 网址",
+          "引入 MCP (Model Context Protocol) 外部连接器"
         ],
-        answer: 1,
-        explain: "被动回灌是工具返回的客观错误（如代码缺分号报错）；主动反思则是模型在复盘思考后产出的“自我批评”（如我发现实现思路跑偏了，该如何换个思路）。",
+        answer: 2,
+        explain: "MCP 旨在连通 AI 与各种外部 API（Slack、Linear、数据库等），是循环工程里经典的外部连接器。",
       },
       {
         type: "tf",
-        q: "为了保证 Agent 的绝对安全，循环中任何一步工具调用失败（例如命令找不到），都应当让 Harness 抛异常并立刻终止循环。",
-        options: ["对", "错"],
-        answer: 1,
-        explain: "普通工具失败是宝贵的信息，直接喂回给下一圈模型可以唤醒自我纠错。普通报错强行 break 会毁掉 Agent 的弹性和进化能力。只有撞上 LE2 缰绳才该强退。",
-      },
-      {
-        type: "tf",
-        q: "Agent 之所以'自己能修报错'，是因为外壳（Harness）把报错信息当作 tool 消息塞回了上下文，大模型在下一圈读到它后，开出了一张修正后的工具单。",
+        q: "因为大模型的 messages 上下文会随着交互越积越多，所以我们应该把跨轮的“待办清单”和“已试失败路径”直接写进 Git 仓库中的状态文件，而不是只留在对话里。",
         options: ["对", "错"],
         answer: 0,
-        explain: "对。这揭示了自我纠错的平凡真相：不是大模型有什么神秘的自修本能，仅仅是'错误信息被喂回 + 循环再转一圈'而已。所以喂回去的信息越具体，纠错越轻松。",
+        explain: "对。仓库是不可被擦除的磁盘记忆，利用状态文件存储跨轮数据，第二天醒来还能接力跑。",
       },
     ],
   },
 
   /* ============ LE4 ============ */
   {
-    id: "LE4", icon: "🧺", title: "嵌套循环：工头-工人结构",
-    hook: "多张干净的桌子，用嵌套解耦大循环的爆窗与漂移",
-    fixes: [1, 2, 4],
-    defectLabel: "拧紧 ④ 嵌套结构 旋钮",
+    id: "LE4", icon: "🛡️", title: "生成器与评判器 Maker/Checker",
+    hook: "探讨为什么 AI 绝对不能给自己写的代码打分",
+    fixes: [5],
+    defectLabel: "拧紧 ⑤ 子代理 零件",
     concepts: [
-      { term: "工头/主循环 (Orchestrator)", def: "不亲自干活，负责拆活、派活、汇总、定下一步的循环", analogy: "装修公司的总包工头，不拿铲子只分活" },
-      { term: "工人/子循环 (Worker)", def: "被派出去闷头干专项的小 Agent，拥有独立小循环", analogy: "被总包派过来只负责刷主卧的漆匠" },
-      { term: "结果汇聚 (Aggregation)", def: "子循环跑完后，只把浓缩的结论摘要返回给主循环", analogy: "工人只汇报'做好了，证据是测试通过'，不倒全过程" },
-      { term: "汇报失真", def: "在过滤子步骤细节时，可能把关键错误或漏洞遗漏", analogy: "漆匠报'刷好了'，但没提底下漏了防水层" },
+      { term: "Maker 生成器", def: "负责根据报错，疯狂尝试编写和修改代码的 Agent 角色", analogy: "满头大汗不停炒菜的厨师" },
+      { term: "Checker 评判器", def: "带着独立指令、负责测试和无情挑刺的独立模型实例", analogy: "专门品尝打分、绝对不包庇厨师的无情美食家" },
+      { term: "Checker 物理阻断", def: "用全新、无污染（Fresh）的模型上下文来进行评估判分", analogy: "拉开隔离窗，蒙眼盲测" },
     ],
-    takeaway: "把长而乱的单循环拆成嵌套子循环。子循环上下文独立、预算独立、跑完即弃。主循环只收带证据的结论，用协调开销换取短而干净。",
+    takeaway: "干活的 Agent（Maker）太容易盲目自信和妥协。必须在物理上隔绝上下文，派一个独立模型的 Checker 专门挑刺，这是无人值守系统不失控的前提。",
     quiz: [
       {
         type: "choice",
-        q: "嵌套循环能从根本上缓解单循环连续转几十圈后带来的哪两个核心问题？",
+        q: "为什么在设计自跑循环的 Checker（评判器）时，强调要使用一个“全新且干净（Fresh）”的模型实例，而不是在 Maker 的对话历史里直接问它？",
         options: [
-          "运行速度太慢和缺乏工具",
-          "撑爆上下文窗口（爆窗）和越长越跑题（漂移）",
-          "模型智商下降和本地文件冲突"
+          "为了省 token",
+          "因为 Maker 在自己的对话历史里极其容易说服自己，产生主观偏差和妥协情绪；而干净的模型没有 Maker 的思维惯性",
+          "因为 Fresh 模型运行速度快"
         ],
         answer: 1,
-        explain: "单循环太长会导致 messages 越来越长堆死上下文，也容易因局部决策累计产生漂移。嵌套把大循环切割，子循环跑完就抛弃，主线上下文始终很短。",
+        explain: "Maker 很容易盲目点头。换一个带着无情挑刺指令的 Checker 盲测，才能发现逻辑漏洞。",
       },
       {
         type: "tf",
-        q: "因为子循环是由主循环派出的，且子循环死循环时主循环能够感知，所以子循环无需配置自己的 max_steps 缰绳。",
+        q: "Maker/Checker 阻断机制意味着大模型不能在一次运行里既当选手又当裁判，应该分成两个子 Agent 团队协作运转。",
         options: ["对", "错"],
-        answer: 1,
-        explain: "子循环是完整的 Agent loop，必须拥有独立的缰绳！否则一个失控子循环（如爬取网页死循环）就能烧光分配给它的全部 token 或时间。",
-      },
-      {
-        type: "tf",
-        q: "子循环跑完后，应该把一路上几十步的完整 messages 记录和读过的全部文件内容原样返回给主循环，越详细越好。",
-        options: ["对", "错"],
-        answer: 1,
-        explain: "必须进行结果汇聚（Aggregation），只回传精简后的结论（最好带上单元测试通过的证据）。如果把子循环的 messages 全量倒回，主循环的上下文会被瞬间撑爆。",
+        answer: 0,
+        explain: "对。子代理团队协作和物理隔离，能有效阻断“自我赞美”的恶性循环。",
       },
     ],
   },
 
   /* ============ LE5 ============ */
   {
-    id: "LE5", icon: "⛵", title: "漂移与长程控制",
-    hook: "防止'每步局部最优，整体偏航'，长程控制是一门不断提醒的工程",
-    fixes: [5],
-    defectLabel: "拧紧 ⑤ 长程控制 旋钮",
+    id: "LE5", icon: "🎪", title: "三个真实的自跑 Loop 案例",
+    hook: "拆解 Addy Osmani 的 triage 循环和 Stripe 等经典工业范式",
+    fixes: [1, 2, 3, 4, 5, 6],
+    defectLabel: "检验六大零件协同",
     concepts: [
-      { term: "漂移 (drift)", def: "循环跑久了悄悄偏离原目标，不报错、不自知", analogy: "对着上一面墙调色，40 面墙刷完米白变成了奶黄" },
-      { term: "中间遗忘", def: "写在开头的任务目标，随着循环变长落入了中段盲区", analogy: "桌子摊太满，最初写的那张目标便利贴被压在正中间" },
-      { term: "re-grounding", def: "周期性把原始目标和约束原文重新注入到最显眼位置", analogy: "每刷几面墙，就掏出原始米白卡对比一下" },
-      { term: "状态摘要 (summary)", def: "每隔几步把'目标+当前进展+待做'重新格式化并置顶", analogy: "随身携带进度条，走两步看一眼" },
+      { term: "Triage Loop", def: "Chrome 团队 Addy 实现的早晨分诊循环", analogy: "自动分诊台：过滤错误、提取 issue，给人类列出待办" },
+      { term: "Stripe PR 滚轴", def: "大规模流水线，自动开分支修改、跑测试、合 PR", analogy: "流水线装配车间：只要绿灯亮起，车辆自行开出" },
     ],
-    takeaway: "漂移源于每步只看局部 + 目标沉入中段，最难防。长程控制的核心手艺就是周期性地把'你是谁、要去哪、走到哪了'重新顶回上下文最显眼处。",
+    takeaway: "真实的 Loop 范式都遵循了“小规模起步、高强度验证、人肉留卡点”的逻辑。自动化是手段，人工复核是缰绳。",
     quiz: [
       {
-        type: "choice",
-        q: "关于长长循环里的'漂移'现象，以下哪项描述是最准确的？",
-        options: [
-          "模型突然遇到了未知系统报错并强行终止了",
-          "模型在每一步里都做出了局部合理、没有任何显眼错误的决定，但多步累积起来整体偏离了原目标，且模型自己浑然不觉",
-          "模型因为上下文装不下而发生的溢出"
-        ],
-        answer: 1,
-        explain: "漂移的阴险之处就在于它不报错、不崩溃、局部全对，模型以为在拼命干活，结果刷完整栋楼发现货不对版。",
-      },
-      {
-        type: "choice",
-        q: "以下三种工程防御手段，哪一项并不属于把目标'顶回眼前'以对抗长循环漂移的手段？",
-        options: [
-          "状态摘要（Periodic Summary）",
-          "对大模型进行微调（Fine-tuning）",
-          "重新锚定（Re-grounding）",
-          "计划重述（Plan Restatement）"
-        ],
-        answer: 1,
-        explain: "微调大模型是改变大模型的内在行为，不属于运行时把进度/原始目标/计划顶回上下文显眼处的“长程控制外壳机制”。",
-      },
-      {
         type: "tf",
-        q: "漂移的一大主因是任务目标总写在 messages 数组开头，随着循环推进，开头被淹没在中后部，大模型由于'中间遗忘'盲区，实质上渐渐看不清最初的目标了。",
+        q: "在 Chrome 团队的 Triage 循环中，Addy 强调他并不手动去 Prompt 那个分诊 Agent，而是设置了定时任务（Automation）触发 Skill，并由另一个 Agent 验证结果。",
         options: ["对", "错"],
         answer: 0,
-        explain: "对。这就是为什么我们需要定期 re-grounding，即重新把目标从被压住的中间提取到最显眼的位置，强迫大模型清醒。",
+        explain: "对。这印证了循环的核心——定时心跳 + 自动发现 + 监督验证。",
       },
     ],
   },
 
   /* ============ LE6 ============ */
   {
-    id: "LE6", icon: "🎡", title: "外循环：评测 / 人在环 / 飞轮",
-    hook: "跳出单次任务，调校'跨任务改进闭环'，让发动机一代代变强",
-    fixes: [6],
-    defectLabel: "调校 ⑥ 外循环 维度",
+    id: "LE6", icon: "💸", title: "代价：验证债与 Token 失控",
+    hook: "剖析自跑循环潜藏的四大隐性债务，钉死上限防线",
+    fixes: [5, 6],
+    defectLabel: "抵御验证债与 Token 失控",
     concepts: [
-      { term: "外循环", def: "天/周级，看大量任务的成败去改进提示词、工具、外壳本身", analogy: "公司接完多单业务后复盘、改流程，让以后的单更好做" },
-      { term: "评测闭环 (eval)", def: "用一组固定测试用例把优化结果量化，作为外循环的心跳", analogy: "期末给班级拉一套统一的测试卷子，看平均分高了没" },
-      { term: "人在环路 (HITL)", def: "把人类拉进循环，审批高风险动作、纠偏并输出高标数据", analogy: "工头拿不准时找老板签字，老板顺便挑错打分" },
-      { term: "数据飞轮", def: "把每一次失败沉淀成新的测试用例，使评测集越来越完善", analogy: "把错题订正，攒成越来越厚的错题集，保证不再犯" },
+      { term: "验证债 (Verification Debt)", def: "自动生成的代码没有被严密测试，错误悄悄累积", analogy: "把错题胡乱堆在抽屉里，假装自己全学会了" },
+      { term: "理解腐烂 (Comprehension Debt)", def: "代码在疯长，但由于是 AI 写的，人脑中的项目地图早已过期", analogy: "路越铺越长，你却只拿着十年前的指南针" },
+      { term: "Token 失控", def: "死循环导致在一夜之间烧干一整月的 API 额度", analogy: "水龙头没关，漏了一整晚把地板泡烂" },
     ],
-    takeaway: "内循环让单个任务跑完，外循环让整个系统越跑越好。外循环靠评测闭环量化改进（防盲改）、靠飞轮让改进复利、靠人在环路注入标注与审批。",
+    takeaway: "必须用预算天花板（Token/重试上限）和独立 Checker 来抵御隐性债。执行可以外包，但理解力和判断力绝不可外包。",
     quiz: [
       {
         type: "choice",
-        q: "内循环（运行时）和外循环（开发改进时）本质的目标分别是什么？",
+        q: "为了防止你的 Agent 在你睡觉时因为一个死循环 Bug 烧光你整月的 API 账单，以下哪项措施是最根本的防线？",
         options: [
-          "内循环负责提高运行速度，外循环负责降低 token 成本",
-          "内循环负责把这一个任务自主跑完，外循环负责让这套系统的规则与代码本身越跑越好",
-          "内循环是模型自己转，外循环是操作系统替它转"
+          "改用更贵但更聪明的模型",
+          "给循环强制设置单次运行的 max_steps、每秒/每日 token 上限和最大重试限制，超限即熔断",
+          "期盼代码自然不出 bug"
         ],
         answer: 1,
-        explain: "内循环（LE1-LE5）负责当下具体的活；外循环（LE6）是开发迭代闭环，通过海量复盘提升系统的核心能力。",
+        explain: "多重硬预算并联（Token限额、重试次数、时间熔断）是防止爆账单唯一的硬防线。",
       },
       {
         type: "tf",
-        q: "没有评测的外循环优化等同于盲改。因为不通过用例定量化打分，工程师只会凭直觉凭感觉修改 prompt，经常陷入'修好 A 却搞砸 B'的局限中。",
-        options: ["对", "错"],
-        answer: 0,
-        explain: "对。评测是外循环的心跳，用客观数据把'我觉得好用了'换成'测试通过率从 40% 提升到 85%'的铁证，这是工业化改进的前提。",
-      },
-      {
-        type: "tf",
-        q: "人在环路（Human-in-the-loop）仅仅是指人在 Agent 执行危险操作时点个同意，在开发迭代（外循环）中没有任何作用。",
+        q: "Comprehension Debt（理解债）是指因为 AI 自动写代码太快，人类工程师不需要再阅读和理解任何代码，从而彻底实现了心智的解放。",
         options: ["对", "错"],
         answer: 1,
-        explain: "错！人在环路不仅可以审批过滤危险（内循环入口），还能通过人工纠偏为系统沉淀高品质的正确执行路径数据（外循环飞轮燃料），帮助飞轮运转。",
+        explain: "错！这是认知投降。代码写得越快，人脑的理解缺口越大，最终你会彻底丧失对项目的把控力。必须定期人肉阅读 PR 摘要并抽查核心逻辑。",
       },
     ],
   },
 
   /* ============ LE7 ============ */
   {
-    id: "LE7", icon: "🤖", title: "自跑循环：无人值守的整车组装",
-    hook: "把前六章旋钮与 Harness 零件装配成一台自启动、自派活、自验收的机器",
-    fixes: [1, 2, 3, 4, 5, 6],
-    defectLabel: "整车装配与无人值守 模块",
+    id: "LE7", icon: "👮", title: "当工程师，不只是按下启动键",
+    hook: "警惕认知投降与架空，确定人在环路的判断力价值",
+    fixes: [5],
+    defectLabel: "拧紧 ⑤ 判断力 哨卡",
     concepts: [
-      { term: "定时调度 (心跳)", def: "按时间表自动触发分类与派发任务，使单次运行成为真循环", analogy: "公司的晨会闹钟：每天早上自动响，没人按它也响" },
-      { term: "工作区隔离 (Worktrees)", def: "开辟独立的临时代码分支与目录，使多个 Agent 并行干活不冲突", analogy: "为两位焊工各开一间独立车间，底座历史共用，但料不相干" },
-      { term: "Maker/Checker 分离", def: "写代码的 Agent 与做测试验收的 Agent 物理角色分离，防止自我催眠", analogy: "厨师做菜，质检员尝味并打分，绝不让厨师自评满分" },
-      { term: "状态文件 (Memory)", def: "在单次运行外部落盘进度与已试路径，解决 Agent 跨会话失忆问题", analogy: "工地门口的进度白板：工人下班走了，白板字还在" },
+      { term: "认知投降", def: "对 Agent 的决定和代码产生盲信，闭眼合并 PR", analogy: "当甩手掌柜，连账单都懒得对，最终被管家架空" },
+      { term: "判断力", def: "辨别方案是否真的正确、代码根基是否合理的稀缺资产", analogy: "决定马车朝哪走，而不是去当拉车的马" },
     ],
-    takeaway: "自跑循环是在发动机（harness 运行时）上多装了定时器、子代理与状态文件。它能成立，靠的是心跳自启动、maker/checker 强验证，以及状态文件落盘续命。",
+    takeaway: "循环是个忠实的乘号，它会放大你本身的特质。如果你带入的是理解，它放大理解；如果你带入的是偷懒，它放大偷懒。保持对系统的掌控权。",
     quiz: [
       {
         type: "choice",
-        q: "在自跑循环中，为什么原作者认为'一个你信得过的验证者（Checker）是你敢走开的唯一理由'？",
+        q: "Addy Osmani 说的“Two people can build the same loop and get opposite outcomes.” 核心表达了什么？",
         options: [
-          "因为只有 Checker 才能把代码推送到生产环境",
-          "因为写代码的模型给自己的工作打分太宽容，必须有独立角色进行挑刺，'done'声称才可信",
-          "因为 Checker 能够节省 50% 的 token 消耗"
+          "同样的循环在不同操作系统上运行速度不同",
+          "同样的工具，有人用来放大专业判断，有人用来逃避理解决策，半年后两人的工程能力和项目结局会截然相反",
+          "大模型的返回完全随机，无法预测"
         ],
         answer: 1,
-        explain: "无人值守意味着它会在你不看时犯错。写代码的模型非常容易说服自己。必须有独立的验证者（Checker）严格挑刺，我们才敢放心让它在后台自己跑。",
+        explain: "循环是个乘号，乘的是你本身的输入。保持判断力，stay the engineer！",
       },
       {
         type: "tf",
-        q: "“the agent forgets, the repo doesn't” 意味着在一个需要持续多天运行的任务中，我们应该把目标、已尝试路径和待办落盘成代码仓库中的状态文件，而不是留在上下文窗口中。",
+        q: "在自跑循环中，我们不应该去焊死大门以图再也不进车间，而应该主动留几道人工复核（Escalation）哨口，保留自己说“不”的权力。",
         options: ["对", "错"],
         answer: 0,
-        explain: "对。模型在两次运行之间会把上下文忘得一干二净。必须将状态写进文件（如 markdown / Linear 任务板），明早启动的那一圈才能接上昨天的进度。",
+        explain: "对。留出人肉卡点，让我们始终有钥匙可以走进车间看清发生了什么。",
+      },
+    ],
+  },
+
+  /* ============ LE8 ============ */
+  {
+    id: "LE8", icon: "🚀", title: "今天就动手：搭建第一个 Loop",
+    hook: "在 Claude Code 中实践 /loop 和 /goal 关卡，体验自调度",
+    fixes: [1, 2, 3, 4, 5, 6],
+    defectLabel: "在终端跑起第一个自跑循环",
+    concepts: [
+      { term: "/loop", def: "Claude Code 中原生内置的定时后台循环指令", analogy: "给你本机的 Agent 装一个定时闹钟" },
+      { term: "/goal", def: "直到条件达成（通过 Checker 盲测）才停下的自动化硬指令", analogy: "不见兔子不撒鹰" },
+      { term: "--worktree", def: "克隆出临时物理工作区防止并行 Agent 打架冲突", analogy: "给后台作业的 Agent 批一间单独的隔音工作室" },
+    ],
+    takeaway: "用本地 /loop 和 /goal 练习起步，钉死预算防线、配置 Checker 盲测、拉起 worktree 隔离，你就掌握了拼装自跑循环的全套手艺。",
+    quiz: [
+      {
+        type: "choice",
+        q: "在 Claude Code 中，当你想让它持续修改代码、运行测试，直到 test/auth.test.ts 里的测试全部通过才停下，最应该跑哪条命令？",
+        options: [
+          "/loop 5m run auth test",
+          "/goal all tests in test/auth.test.ts pass",
+          "/help"
+        ],
+        answer: 1,
+        explain: "`/goal` 用于跑到指定条件满足为止。而 `/loop` 只是定时周期执行任务。",
       },
       {
         type: "tf",
-        q: "既然自跑循环可以每天自动启动、自动编写并验证代码，那么人类工程师就完全不需要理解生成的代码，实现了彻底解放。",
+        q: "在 Claude Code 本地终端跑的 `/loop` 任务是 session-scoped（会话级）的，一般在 7 天后会自动过期，且当电脑关机或合盖时会暂停。",
         options: ["对", "错"],
-        answer: 1,
-        explain: "错！这会导致 comprehension debt（理解债）和 cognitive surrender（认知投降）。循环 ship 代码越快，你的理解缺口越大。验证和最终的判断，必须牢牢留给人类自己。",
+        answer: 0,
+        explain: "对。这是本地 Loop 的运行边界，如果想要通宵或云端挂载，需要使用 actions 或 Cloud Routines。",
       },
     ],
   },
 
   /* ============ LE ============ */
   {
-    id: "LE", icon: "🗺️", title: "总图：能力全景解剖",
-    hook: "把六个旋钮与内外两个尺度，串成一张能随身带走的对照地图",
+    id: "LE", icon: "🗺️", title: "总图：五动作与六零件全景解剖图",
+    hook: "温习四层栈、五大动作、六大零件与四大防御手段，拿到毕业寄语",
     fixes: [1, 2, 3, 4, 5, 6],
-    defectLabel: "回收'系统掌控力'",
+    defectLabel: "全面回收系统掌控力",
     isCapstone: true,
     concepts: [
-      { term: "旋钮-失败模式对照表", def: "6 大旋钮 vs 不拧好会发生什么的对照一览", analogy: "发动机排障随身指南" },
-      { term: "同源双尺度", def: "内（秒级）外（天/周级）都是由反馈驱动变好的循环逻辑", analogy: "一个在发动机里快转，一个在整车研发中慢转" },
-      { term: "不断提醒的工程", def: "长程控制的底色，时刻置顶你是谁、去哪、做到了哪", analogy: "循环防漂移的随身指路标" },
+      { term: "四层技术栈", def: "Prompt -> Context -> Harness -> Loop 的分层工程", analogy: "一幢大楼的四层楼板" },
+      { term: "验证债防御", def: "依靠独立 Checker 对生成代码说“不”，拦截低质 PR", analogy: "质量关防洪堤" },
     ],
-    takeaway: "Loop Engineering 的全貌：一个内循环（五个旋钮：形态、缰绳、纠错、嵌套、长程控制）被外循环（评测、飞轮、人在环）套着。内外同源，以反馈谋进化。",
+    takeaway: "恭喜通关！自跑循环的秘密尽在：五大动作保障流程运转、六个零件支撑机器装配、四大代价警醒底线红线。智能不在模型，在循环中运转。Stay the Engineer！",
     quiz: [
       {
         type: "match",
-        q: "【毕业考】将 5 个内循环旋钮与对应的不调好时的'失败模式'拖动配对。",
+        q: "【毕业考】将自跑循环的六大核心零件与对应的典型作用拖动配对。",
         defects: [
-          { label: "① 形态选型", drop: "任务配错骨架导致瞎试或偏科" },
-          { label: "② 停止与预算", drop: "陷入死循环、超支卡死或闯祸" },
-          { label: "③ 纠错与反思", drop: "遇到错误一错到底或死板重试" },
-          { label: "④ 嵌套循环", drop: "单循环撑爆窗口或越长越跑题" },
-          { label: "⑤ 长程控制", drop: "悄悄跑题，局部合理但整体偏航" },
+          { label: "自动化心跳", drop: "定时启动并触发分诊与 Triage" },
+          { label: "物理隔离器", drop: "git worktree 保证并行开发不踩脚" },
+          { label: "显式技能库", drop: "SKILL.md 固化仓库级指令与规范" },
+          { label: "外部连接器", drop: "MCP 协议连通 Slack、Linear 等外部 API" },
+          { label: "子代理分工", drop: "Maker/Checker 分离，无情 Checker 盲评" },
+          { label: "落盘记忆体", drop: "loop_status.md 状态文件让 Agent 续接记忆" }
         ],
-        chips: ["遇到错误一错到底或死板重试", "单循环撑爆窗口或越长越跑题", "任务配错骨架导致瞎试或偏科", "悄悄跑题，局部合理但整体偏航", "陷入死循环、超支卡死或闯祸"],
-        mapping: { 0: 2, 1: 4, 2: 0, 3: 1, 4: 3 },
-        explain: "默写这张对照卡是检验整门课有没有吃透的最好方式。失败模式是病，旋钮是药。",
-      },
-      {
-        type: "choice",
-        q: "看到一个 Agent 转了很多圈最后打断了，我们最应该检查的是哪根缰绳设置得合不合理？",
-        options: [
-          "max_steps（最大步数）或时间/成本预算",
-          "ReAct 形态",
-          "数据飞轮"
+        chips: [
+          "定时启动并触发分诊与 Triage",
+          "git worktree 保证并行开发不踩脚",
+          "SKILL.md 固化仓库级指令与规范",
+          "MCP 协议连通 Slack、Linear 等外部 API",
+          "Maker/Checker 分离，无情 Checker 盲评",
+          "loop_status.md 状态文件让 Agent 续接记忆"
         ],
-        answer: 0,
-        explain: "被强制掐掉一般是触发了 max_steps 或者 wall timeout 预算。根据运行日志的圈数可以重新校准这根缰绳的粗细。",
+        mapping: { 0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5 },
+        explain: "这六大零件是自跑循环组装的终极基石。盖住答案能默写出来，说明你已经完全吃透了本课程！",
       },
       {
         type: "tf",
-        q: "恭喜通关！至此你已经完全拧好了运行时内循环的 5 个旋钮，并建立了系统化的外循环改进评测思路！",
-        options: ["对，我已准备好解剖循环", "错，还需要更多试炼"],
+        q: "恭喜通关 Loop Engineering 课程！你已经掌握了如何将自己从循环中剥离，设计出具有自启动、自隔离、强 Checker 验证和落盘状态延续的自跑循环系统！",
+        options: ["我已做好准备，当一名掌控循环的工程师！", "还需要继续修炼"],
         answer: 0,
-        explain: "太棒了！你手里的不仅仅是离散的知识点，而是一套能分析、能设计、能诊断任意复杂 Agent 循环发动机的系统级手艺。",
+        explain: "向你致敬，掌控循环的工程师！Build the loop, but stay the engineer！",
       },
     ],
   },

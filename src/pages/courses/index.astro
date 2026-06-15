@@ -75,13 +75,13 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           
           <h2 class="course-title">Loop Engineering</h2>
           <p class="course-desc">
-            智能体循环与控制旋钮设计。将发动机的 ReAct 与 Plan 骨架、硬边界缰绳、纠错反思、嵌套架构与漂移控制系统拧好，构建真正的长程可控系统。
+            自跑循环与无人值守调度系统。拆解一个循环的五大动作，组装心跳、隔离区、技能包、MCP连接器、Maker/Checker和落盘记忆六大零件，防范验证债并构建长程可控系统。
           </p>
 
           <!-- 学习进度卡 -->
           <div class="card-progress">
             <div class="progress-meta">
-              <span class="progress-status-label" id="loop-progress-count">0/9 关已通关</span>
+              <span class="progress-status-label" id="loop-progress-count">0/10 关已通关</span>
               <span class="progress-num" id="loop-progress-percent">0%</span>
             </div>
             <div class="progress-bar-bg">
@@ -92,10 +92,11 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           <div class="outline-preview">
             <h4>课程大纲：</h4>
             <ul>
-              <li>LE0-LE1: 循环发动机概念与形态选型(ReAct ↔ Plan)</li>
-              <li>LE2-LE3: 并联停止缰绳与纠错反思(Reflexion)</li>
-              <li>LE4-LE5: 串并行嵌套拆解与周期重置抗漂移</li>
-              <li>LE6-LE7: 外循环评测集与自跑无人值守系统组装</li>
+              <li>LE0-LE1: 导论心智模型与四层技术栈(Prompt ➔ Loop)</li>
+              <li>LE2-LE3: 循环的五大动作与自跑系统六大核心零件组装</li>
+              <li>LE4-LE5: 生成/评判器(Maker/Checker)阻断与三个自跑案例</li>
+              <li>LE6-LE7: 防御验证债与 Token 失控等代价，不只做启动键的人</li>
+              <li>LE8-总图: 终端动手搭建本地 /loop 与 /goal 关卡与全景地图</li>
             </ul>
           </div>
 
@@ -183,10 +184,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         lDone = Object.keys(lState.completed || {}).length;
       } catch (e) {}
     }
-    const lPercent = Math.min(100, Math.round((lDone / 9) * 100));
+    const lPercent = Math.min(100, Math.round((lDone / 10) * 100));
     document.getElementById('loop-progress-bar').style.width = lPercent + '%';
     document.getElementById('loop-progress-percent').textContent = lPercent + '%';
-    document.getElementById('loop-progress-count').textContent = `${lDone}/9 关已通关`;
+    document.getElementById('loop-progress-count').textContent = `${lDone}/10 关已通关`;
 
     // 3. 读取并渲染 Context Engineering 的学习进度
     const cRaw = localStorage.getItem("context_course_progress_v1");
