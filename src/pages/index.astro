@@ -1,525 +1,630 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { tools } from '../data/tools';
+
+const articles = (await getCollection('articles')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+const featuredArticles = articles.filter((article) => article.data.featured).slice(0, 2);
+const latestArticles = articles.slice(0, 4);
+const featuredTools = tools.filter((tool) => tool.status === 'usable' && tool.featured).slice(0, 3);
+const featuredProjects = tools.filter((tool) => tool.status === 'showcase' && tool.featured).slice(0, 2);
+
+const dateFormatter = new Intl.DateTimeFormat('zh-CN', {
+  month: 'short',
+  day: 'numeric',
+  timeZone: 'UTC',
+});
+
+const stats = [
+  { value: `${articles.length}+`, label: '篇 AI 实战文章' },
+  { value: `${tools.filter((tool) => tool.status === 'usable').length}`, label: '个站内可用工具' },
+  { value: '3', label: '套 Agent 工程课程' },
+];
+
+const entryCards = [
+  {
+    eyebrow: 'Read',
+    title: '文章',
+    description: '从 AI Agent、编程工具到普通人的工作流机会，记录真实使用后的判断。',
+    href: '/articles/',
+    action: '进入文章库',
+  },
+  {
+    eyebrow: 'Use',
+    title: '工具',
+    description: '文本清理、公众号排版、数学可视化、TTS 字幕等打开就能用的小工具。',
+    href: '/tools/',
+    action: '打开工具箱',
+  },
+  {
+    eyebrow: 'Build',
+    title: '项目',
+    description: '短视频自动化、多账号发布、节点画布和桌面效率工具的开发记录。',
+    href: '/projects/',
+    action: '查看项目',
+  },
+  {
+    eyebrow: 'Learn',
+    title: '课程',
+    description: '把 Agent 外壳、循环控制和上下文工程拆成可以一步步通关的课程。',
+    href: '/courses/',
+    action: '开始学习',
+  },
+];
+
+const courseTracks = [
+  {
+    title: 'Harness Engineering',
+    description: '从裸模型消息列表开始，理解工具调用、记忆、上下文与可靠性验证。',
+    href: '/courses/harness-engineering/',
+  },
+  {
+    title: 'Loop Engineering',
+    description: '拆解 ReAct、Plan、反思、停止条件与长程任务控制。',
+    href: '/courses/loop-engineering/',
+  },
+  {
+    title: 'Context Engineering',
+    description: '研究裁剪、压缩、检索和外部记忆，降低爆窗与注意力污染。',
+    href: '/courses/context-engineering/',
+  },
+];
 ---
 
 <BaseLayout title="AI 工具实验室" description="记录 AI 工具、自动化工作流和效率实验，也发布一些自己做的小工具。">
-  <!-- Ambient Decorative Glows -->
-  <div class="ambient-glow glow-1"></div>
-  <div class="ambient-glow glow-2"></div>
+  <section class="home-hero" aria-labelledby="home-title">
+    <div class="hero-copy">
+      <p class="eyebrow">fangye.cc / AI 工具实验室</p>
+      <h1 id="home-title">AI 工具实验室</h1>
+      <p class="lead">
+        记录 AI 工具、Agent 工程与自动化工作流。
+        文章、课程和小工具都放在这里。
+      </p>
+      <div class="hero-actions" aria-label="首页主要入口">
+        <a class="primary-link" href="/articles/">阅读最新文章</a>
+        <a class="secondary-link" href="/tools/">使用在线工具</a>
+      </div>
+    </div>
 
-  <div class="home-container">
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="avatar-wrapper">
-        <div class="avatar-ring-spin"></div>
-        <div class="avatar-ring-dashed"></div>
-        <div class="avatar-container">
-          <!-- Custom Vector Beaker SVG for "AI Tools Lab" -->
-          <svg class="avatar-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Beaker Silhouette -->
-            <path d="M42 24H58" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-            <path d="M45 24V34L28 72C25 79 30 85 38 85H62C70 85 75 79 72 72L55 34V24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            
-            <!-- Neural network connections inside the beaker -->
-            <line x1="38" y1="68" x2="48" y2="52" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2" opacity="0.6"/>
-            <line x1="48" y1="52" x2="62" y2="60" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2" opacity="0.6"/>
-            <line x1="62" y1="60" x2="52" y2="76" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2" opacity="0.6"/>
-            <line x1="52" y1="76" x2="38" y2="68" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2" opacity="0.6"/>
-            <line x1="48" y1="52" x2="52" y2="76" stroke="currentColor" stroke-width="1" opacity="0.4"/>
-            <line x1="38" y1="68" x2="62" y2="60" stroke="currentColor" stroke-width="1" opacity="0.4"/>
-            
-            <!-- Glowing Network Nodes -->
-            <circle cx="48" cy="52" r="2.5" fill="currentColor" class="node-pulse-1"/>
-            <circle cx="62" cy="60" r="2.5" fill="currentColor" class="node-pulse-2"/>
-            <circle cx="38" cy="68" r="2" fill="currentColor" class="node-pulse-3"/>
-            <circle cx="52" cy="76" r="3" fill="currentColor" class="node-pulse-1"/>
-            
-            <!-- Drifting ideas (Bubbles/Sparks) floating out of the beaker -->
-            <circle cx="46" cy="15" r="1.5" fill="currentColor" class="bubble-float-1"/>
-            <circle cx="54" cy="10" r="1" fill="currentColor" class="bubble-float-2"/>
-            <circle cx="50" cy="19" r="2" fill="currentColor" class="bubble-float-3"/>
-          </svg>
+    <aside class="hero-dashboard" aria-label="网站内容概览">
+      <div class="dashboard-header">
+        <span class="signal-dot" aria-hidden="true"></span>
+        <span>当前更新方向</span>
+      </div>
+      <div class="focus-list">
+        <a href="/articles/agent-beginner-tutorial/" class="focus-item">
+          <span>01</span>
+          <strong>Agent 入门</strong>
+          <small>从聊天框到数字员工</small>
+        </a>
+        <a href="/courses/" class="focus-item">
+          <span>02</span>
+          <strong>工程课程</strong>
+          <small>脚手架、循环与上下文</small>
+        </a>
+        <a href="/projects/shortvideo-automation-suite/" class="focus-item">
+          <span>03</span>
+          <strong>自动化项目</strong>
+          <small>内容生产工作流实验</small>
+        </a>
+      </div>
+      <div class="stat-row">
+        {stats.map((stat) => (
+          <div>
+            <strong>{stat.value}</strong>
+            <span>{stat.label}</span>
+          </div>
+        ))}
+      </div>
+    </aside>
+  </section>
+
+  <section class="page-section home-section" aria-labelledby="entry-title">
+    <div class="section-heading">
+      <p class="eyebrow">Start Here</p>
+      <h2 id="entry-title">你可以从这里进入</h2>
+      <p>如果是第一次来，先按目的选择入口；如果已经熟悉，可以直接去最新内容。</p>
+    </div>
+
+    <div class="entry-grid">
+      {entryCards.map((card) => (
+        <a class="entry-card" href={card.href}>
+          <span class="entry-eyebrow">{card.eyebrow}</span>
+          <h3>{card.title}</h3>
+          <p>{card.description}</p>
+          <span class="entry-action">{card.action}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="page-section home-section content-layout" aria-labelledby="latest-title">
+    <div class="section-heading">
+      <p class="eyebrow">Latest</p>
+      <h2 id="latest-title">最近写的东西</h2>
+      <p>围绕 AI 工具、Agent、普通人的机会和真实工作流，持续把观察沉淀成文章。</p>
+    </div>
+
+    <div class="article-board">
+      <div class="featured-articles">
+        {featuredArticles.map((article) => (
+          <a class="featured-article" href={`/articles/${article.slug}/`}>
+            <span>{dateFormatter.format(article.data.pubDate)}</span>
+            <h3>{article.data.title}</h3>
+            <p>{article.data.description}</p>
+            <div class="tag-row">
+              {article.data.tags.slice(0, 3).map((tag) => <em>#{tag}</em>)}
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div class="latest-list">
+        {latestArticles.map((article) => (
+          <a href={`/articles/${article.slug}/`} class="latest-row">
+            <time datetime={article.data.pubDate.toISOString()}>{dateFormatter.format(article.data.pubDate)}</time>
+            <span>{article.data.title}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section home-section tools-projects" aria-labelledby="tools-title">
+    <div class="section-heading compact">
+      <p class="eyebrow">Tools & Projects</p>
+      <h2 id="tools-title">能直接用，也能看我是怎么做的</h2>
+    </div>
+
+    <div class="split-panels">
+      <div class="mini-panel">
+        <div class="panel-title-row">
+          <h3>站内工具</h3>
+          <a href="/tools/">全部工具</a>
+        </div>
+        <div class="mini-list">
+          {featuredTools.map((tool) => (
+            <a href={tool.href}>
+              <strong>{tool.name}</strong>
+              <span>{tool.description}</span>
+            </a>
+          ))}
         </div>
       </div>
-      
-      <h1 class="hero-title">AI 工具实验室</h1>
-      <p class="hero-subtitle">记录 AI 工具、自动化工作流和效率实验，也发布一些自己做的小工具。</p>
-    </section>
 
-    <!-- Navigation Portal Grid -->
-    <section class="cards-grid" id="interactive-grid">
-      
-      <!-- Card 1: Articles -->
-      <article class="grid-card">
-        <div class="card-glow"></div>
-        <div class="card-content">
-          <div class="card-icon-container">
-            <!-- Document Icon -->
-            <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-          </div>
-          <h2 class="card-title">文章专栏</h2>
-          <p class="card-desc">AI 工具评测、组合方式、提示词工程与使用经验分享。</p>
-          <a href="/articles/" class="card-link">
-            <span>阅读文章</span>
-            <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </a>
+      <div class="mini-panel">
+        <div class="panel-title-row">
+          <h3>项目展示</h3>
+          <a href="/projects/">全部项目</a>
         </div>
-      </article>
-
-      <!-- Card 2: Tools -->
-      <article class="grid-card">
-        <div class="card-glow"></div>
-        <div class="card-content">
-          <div class="card-icon-container">
-            <!-- Terminal/Code Icon -->
-            <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="4 17 10 11 4 5"></polyline>
-              <line x1="12" y1="19" x2="20" y2="19"></line>
-            </svg>
-          </div>
-          <h2 class="card-title">在线工具</h2>
-          <p class="card-desc">站内可直接使用的文本处理、网页生成及公众号排版小工具。</p>
-          <a href="/tools/" class="card-link">
-            <span>立即使用</span>
-            <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </a>
+        <div class="mini-list">
+          {featuredProjects.map((project) => (
+            <a href={project.href}>
+              <strong>{project.name}</strong>
+              <span>{project.description}</span>
+            </a>
+          ))}
         </div>
-      </article>
+      </div>
+    </div>
+  </section>
 
-      <!-- Card 3: Projects -->
-      <article class="grid-card">
-        <div class="card-glow"></div>
-        <div class="card-content">
-          <div class="card-icon-container">
-            <!-- Layers Icon (Projects) -->
-            <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-              <polyline points="2 17 12 22 22 17"></polyline>
-              <polyline points="2 12 12 17 22 12"></polyline>
-            </svg>
-          </div>
-          <h2 class="card-title">项目专栏</h2>
-          <p class="card-desc">文案视频流水线、多账号发布、桌面悬浮笔记等独立项目展示。</p>
-          <a href="/projects/" class="card-link">
-            <span>查看项目</span>
-            <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </a>
-        </div>
-      </article>
+  <section class="page-section home-section course-strip" aria-labelledby="course-title">
+    <div class="section-heading compact">
+      <p class="eyebrow">Courses</p>
+      <h2 id="course-title">把 Agent 工程拆开学</h2>
+    </div>
 
-      <!-- Card 4: Courses -->
-      <article class="grid-card">
-        <div class="card-glow"></div>
-        <div class="card-content">
-          <div class="card-icon-container">
-            <!-- BookOpen Icon (Courses) -->
-            <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-            </svg>
-          </div>
-          <h2 class="card-title">课程专区</h2>
-          <p class="card-desc">AI 极客通关课：手把手带你构建 Agent 脚手架、循环控制与上下文工程。</p>
-          <a href="/courses/" class="card-link">
-            <span>立即学习</span>
-            <svg class="link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </a>
-        </div>
-      </article>
-
-    </section>
-  </div>
+    <div class="course-grid">
+      {courseTracks.map((course) => (
+        <a class="course-tile" href={course.href}>
+          <h3>{course.title}</h3>
+          <p>{course.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
 </BaseLayout>
 
-<!-- client-side javascript for card cursor glow effect -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const cards = document.querySelectorAll('.grid-card');
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-    if (!isTouchDevice) {
-      cards.forEach(card => {
-        card.addEventListener('mousemove', (e) => {
-          const rect = card.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-
-          card.style.setProperty('--mouse-x', `${x}px`);
-          card.style.setProperty('--mouse-y', `${y}px`);
-        });
-
-        card.addEventListener('mouseleave', () => {
-          card.style.removeProperty('--mouse-x');
-          card.style.removeProperty('--mouse-y');
-        });
-      });
-    }
-  });
-</script>
-
-<!-- Scoped Styles for Homepage layout -->
 <style>
-  /* ==========================================================================
-     LAYOUT STYLING
-     ========================================================================== */
-  .home-container {
-    max-width: 1000px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 3rem 0 5rem 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    z-index: 2;
+  .home-hero,
+  .home-section {
+    width: min(var(--max), calc(100% - 40px));
+    margin-inline: auto;
   }
 
-  /* Ambient glowing backgrounds mapping to green/teal branding color */
-  .ambient-glow {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(140px);
-    z-index: 1;
-    pointer-events: none;
-    opacity: 0.6;
-  }
-
-  .glow-1 {
-    width: 40vw;
-    height: 40vw;
-    max-width: 500px;
-    background: rgba(71, 214, 178, 0.08); /* signature mint color */
-    top: 5%;
-    left: 10%;
-    animation: drift 25s ease-in-out infinite alternate;
-  }
-
-  .glow-2 {
-    width: 35vw;
-    height: 35vw;
-    max-width: 400px;
-    background: rgba(164, 240, 218, 0.06);
-    bottom: 10%;
-    right: 15%;
-    animation: drift 20s ease-in-out infinite alternate-reverse;
-  }
-
-  @keyframes drift {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(6%, 10%) scale(1.1); }
-  }
-
-  /* ==========================================================================
-     HERO & AVATAR CUSTOM DESIGN
-     ========================================================================== */
-  .hero-section {
-    text-align: center;
-    margin-bottom: 4.5rem;
-    max-width: 620px;
-    position: relative;
-  }
-
-  .avatar-wrapper {
-    position: relative;
-    width: 116px;
-    height: 116px;
-    margin: 0 auto 2.25rem auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .avatar-ring-dashed {
-    position: absolute;
-    inset: -8px;
-    border: 1px dashed rgba(164, 240, 218, 0.15);
-    border-radius: 50%;
-    pointer-events: none;
-  }
-
-  .avatar-ring-spin {
-    position: absolute;
-    inset: -14px;
-    border: 1.5px solid transparent;
-    border-top-color: var(--accent-strong);
-    border-bottom-color: var(--accent-strong);
-    border-radius: 50%;
-    opacity: 0.3;
-    animation: spin 16s linear infinite;
-  }
-
-  .avatar-container {
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at center, rgba(20, 33, 40, 0.95) 0%, rgba(11, 17, 22, 0.8) 100%);
-    border: 1px solid var(--line);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--accent);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
-    overflow: hidden;
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
-  }
-
-  .avatar-wrapper:hover .avatar-container {
-    border-color: var(--accent-strong);
-    transform: scale(1.03);
-    box-shadow: 0 15px 45px rgba(71, 214, 178, 0.12);
-  }
-
-  .avatar-svg {
-    width: 60%;
-    height: 60%;
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .avatar-wrapper:hover .avatar-svg {
-    transform: scale(1.06);
-    color: var(--accent-strong);
-  }
-
-  /* Animated elements inside SVG Beaker */
-  .node-pulse-1 { animation: pulse 2s ease-in-out infinite; }
-  .node-pulse-2 { animation: pulse 2s ease-in-out infinite 0.6s; }
-  .node-pulse-3 { animation: pulse 2s ease-in-out infinite 1.2s; }
-
-  .bubble-float-1 { animation: float 3s ease-in-out infinite; }
-  .bubble-float-2 { animation: float 4.2s ease-in-out infinite 0.8s; }
-  .bubble-float-3 { animation: float 2.5s ease-in-out infinite 0.4s; }
-
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 0.5; r: 1.8px; }
-    50% { opacity: 1; r: 3.2px; filter: drop-shadow(0 0 3px var(--accent-strong)); }
-  }
-
-  @keyframes float {
-    0% { transform: translateY(5px); opacity: 0; }
-    50% { opacity: 0.8; }
-    100% { transform: translateY(-7px); opacity: 0; }
-  }
-
-  /* Title and Subtitle */
-  .hero-title {
-    font-size: 2.35rem;
-    font-weight: 780;
-    letter-spacing: -0.01em;
-    margin-bottom: 1.15rem;
-    color: var(--text);
-    background: linear-gradient(135deg, #ffffff 0%, #a9bbb6 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .hero-subtitle {
-    font-size: 1.05rem;
-    font-weight: 350;
-    color: var(--muted);
-    line-height: 1.7;
-    letter-spacing: 0.04em;
-    padding: 0 1.5rem;
-  }
-
-  /* ==========================================================================
-     CARDS GRID SYSTEM
-     ========================================================================== */
-  .cards-grid {
+  .home-hero {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
-    width: 100%;
-  }
-
-  .grid-card {
-    position: relative;
-    border-radius: 14px;
-    background: linear-gradient(135deg, rgba(20, 33, 40, 0.65) 0%, rgba(13, 22, 27, 0.75) 100%);
-    border: 1px solid var(--line);
-    overflow: hidden;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .grid-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--line-strong);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), 0 0 15px rgba(159, 245, 215, 0.02);
-  }
-
-  /* Card Cursor Glow Highlight effect */
-  .card-glow {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: radial-gradient(
-      circle 160px at var(--mouse-x, 50%) var(--mouse-y, 50%),
-      rgba(71, 214, 178, 0.07),
-      transparent 80%
-    );
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    z-index: 1;
-  }
-
-  .grid-card:hover .card-glow {
-    opacity: 1;
-  }
-
-  .card-content {
-    padding: 2.25rem 1.75rem;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    position: relative;
-    z-index: 2;
-  }
-
-  .card-icon-container {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    background-color: rgba(159, 245, 215, 0.05);
-    border: 1px solid var(--line);
-    display: flex;
+    grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+    gap: 40px;
     align-items: center;
-    justify-content: center;
-    color: var(--accent);
-    margin-bottom: 1.6rem;
-    transition: color 0.4s ease, border-color 0.4s ease, background-color 0.4s ease;
+    padding: 70px 0 50px;
   }
 
-  .grid-card:hover .card-icon-container {
-    color: var(--accent-strong);
-    border-color: var(--line-strong);
-    background-color: rgba(159, 245, 215, 0.1);
+  .hero-copy h1 {
+    max-width: 760px;
+    margin-bottom: 18px;
+    font-size: clamp(44px, 6vw, 68px);
   }
 
-  .card-icon {
-    width: 20px;
-    height: 20px;
+  .hero-copy .lead {
+    max-width: 620px;
   }
 
-  .card-title {
-    font-size: 1.15rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
-    color: var(--text);
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 30px;
   }
 
-  .card-desc {
-    font-size: 0.9rem;
-    color: var(--muted);
-    line-height: 1.6;
-    font-weight: 350;
-    margin-bottom: 2rem;
-    flex-grow: 1;
-  }
-
-  .card-link {
+  .primary-link,
+  .secondary-link {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    font-size: 0.875rem;
-    font-weight: 650;
+    min-height: 44px;
+    padding: 10px 16px;
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-weight: 720;
+  }
+
+  .primary-link {
+    color: var(--bg);
+    background: var(--accent);
+  }
+
+  .primary-link:hover,
+  .primary-link:focus-visible {
+    background: var(--accent-strong);
+  }
+
+  .secondary-link {
+    border: 1px solid var(--line);
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .secondary-link:hover,
+  .secondary-link:focus-visible {
+    border-color: var(--line-strong);
+    background: rgba(159, 245, 215, 0.07);
+  }
+
+  .hero-dashboard,
+  .mini-panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background:
+      linear-gradient(135deg, rgba(25, 43, 50, 0.84), rgba(13, 22, 27, 0.9)),
+      radial-gradient(circle at top right, rgba(159, 245, 215, 0.12), transparent 18rem);
+    box-shadow: 0 24px 60px var(--shadow);
+  }
+
+  .hero-dashboard {
+    padding: 22px;
+  }
+
+  .dashboard-header,
+  .panel-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .dashboard-header {
+    justify-content: flex-start;
+    margin-bottom: 16px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .signal-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--accent-strong);
+    box-shadow: 0 0 18px var(--accent-strong);
+  }
+
+  .focus-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .focus-item {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 10px 14px;
+    padding: 14px;
+    border: 1px solid rgba(164, 240, 218, 0.12);
+    border-radius: var(--radius);
+    background: rgba(11, 17, 22, 0.34);
+  }
+
+  .focus-item:hover,
+  .focus-item:focus-visible {
+    border-color: var(--line-strong);
+    background: rgba(159, 245, 215, 0.06);
+  }
+
+  .focus-item span {
+    grid-row: span 2;
     color: var(--accent);
-    width: fit-content;
-    transition: color 0.2s ease;
+    font-size: 13px;
+    font-weight: 780;
   }
 
-  .link-arrow {
-    width: 14px;
-    height: 14px;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  .focus-item strong {
+    color: var(--text);
+    font-size: 17px;
   }
 
-  .grid-card:hover .card-link {
-    color: var(--accent-strong);
+  .focus-item small {
+    color: var(--subtle);
+    font-size: 13px;
   }
 
-  .grid-card:hover .link-arrow {
-    transform: translateX(4px);
-  }
-
-  /* Style override for layout base components (site header & footer) on home page */
-  :global(.site-header) {
-    border-bottom: 1px solid var(--line);
-    margin-bottom: 0 !important;
-    padding: 16px 0 !important;
-  }
-
-  :global(.site-nav a) {
-    font-weight: 600;
-  }
-
-  :global(.site-footer) {
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 18px;
+    padding-top: 18px;
     border-top: 1px solid var(--line);
-    margin-top: 5rem !important;
-    padding: 30px 0 !important;
   }
 
-  /* ==========================================================================
-     RESPONSIVE BREAKPOINTS
-     ========================================================================== */
-  @media (max-width: 900px) {
-    .cards-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.25rem;
-    }
-    
-    .hero-section {
-      margin-bottom: 3.5rem;
-    }
+  .stat-row strong,
+  .stat-row span {
+    display: block;
   }
 
-  @media (max-width: 600px) {
-    .cards-grid {
+  .stat-row strong {
+    color: var(--accent);
+    font-size: 22px;
+  }
+
+  .stat-row span {
+    margin-top: 4px;
+    color: var(--subtle);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .section-heading {
+    max-width: 700px;
+    margin-bottom: 24px;
+  }
+
+  .section-heading.compact {
+    max-width: 760px;
+  }
+
+  .section-heading p {
+    margin-bottom: 0;
+  }
+
+  .entry-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .entry-card,
+  .featured-article,
+  .course-tile {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(20, 33, 40, 0.58);
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .entry-card {
+    padding: 18px;
+  }
+
+  .entry-card:hover,
+  .entry-card:focus-visible,
+  .featured-article:hover,
+  .featured-article:focus-visible,
+  .course-tile:hover,
+  .course-tile:focus-visible {
+    transform: translateY(-3px);
+    border-color: var(--line-strong);
+    background: rgba(25, 43, 50, 0.8);
+  }
+
+  .entry-eyebrow {
+    margin-bottom: 18px;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 780;
+    text-transform: uppercase;
+  }
+
+  .entry-card h3,
+  .featured-article h3,
+  .course-tile h3 {
+    margin-bottom: 8px;
+  }
+
+  .entry-card p,
+  .featured-article p,
+  .course-tile p {
+    margin-bottom: 16px;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .entry-action {
+    margin-top: auto;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .article-board {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+    gap: 18px;
+  }
+
+  .featured-articles {
+    display: grid;
+    gap: 16px;
+  }
+
+  .featured-article {
+    padding: 20px;
+  }
+
+  .featured-article > span {
+    margin-bottom: 12px;
+    color: var(--subtle);
+    font-size: 13px;
+  }
+
+  .tag-row em {
+    color: var(--accent);
+    font-size: 12px;
+    font-style: normal;
+  }
+
+  .latest-list {
+    border-top: 1px solid var(--line);
+  }
+
+  .latest-row {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .latest-row:hover span,
+  .latest-row:focus-visible span {
+    color: var(--accent);
+  }
+
+  .latest-row time {
+    color: var(--subtle);
+    font-size: 13px;
+  }
+
+  .latest-row span {
+    color: var(--text);
+    font-weight: 650;
+    line-height: 1.45;
+  }
+
+  .split-panels {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .mini-panel {
+    padding: 20px;
+  }
+
+  .panel-title-row {
+    margin-bottom: 14px;
+  }
+
+  .panel-title-row h3 {
+    margin-bottom: 0;
+  }
+
+  .panel-title-row a {
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .mini-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .mini-list a {
+    display: grid;
+    gap: 4px;
+    padding: 12px 0;
+    border-top: 1px solid rgba(164, 240, 218, 0.12);
+  }
+
+  .mini-list a:hover strong,
+  .mini-list a:focus-visible strong {
+    color: var(--accent);
+  }
+
+  .mini-list strong {
+    color: var(--text);
+    font-size: 16px;
+  }
+
+  .mini-list span {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .course-tile {
+    padding: 18px;
+  }
+
+  @media (max-width: 980px) {
+    .home-hero,
+    .article-board,
+    .split-panels {
       grid-template-columns: 1fr;
-      gap: 1.25rem;
-    }
-    
-    .hero-section {
-      margin-bottom: 2.75rem;
     }
 
-    .hero-title {
-      font-size: 1.95rem;
+    .entry-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 680px) {
+    .home-hero {
+      padding: 46px 0 34px;
     }
 
-    .hero-subtitle {
-      font-size: 0.95rem;
-      padding: 0;
+    .hero-copy h1 {
+      margin-bottom: 14px;
+      font-size: 36px;
+      line-height: 1.08;
     }
-    
-    .card-content {
-      padding: 2rem 1.5rem;
+
+    .hero-copy .lead {
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    .entry-grid,
+    .course-grid,
+    .stat-row {
+      grid-template-columns: 1fr;
+    }
+
+    .latest-row {
+      grid-template-columns: 1fr;
+      gap: 4px;
     }
   }
 </style>
