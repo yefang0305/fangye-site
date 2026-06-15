@@ -1,0 +1,486 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="AI 极客通关课专区" description="手把手带你构建 Agent 外壳脚手架与循环控制引擎，从裸模型进化到生产级智能体。">
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <div class="portal-container">
+    <header class="portal-header">
+      <h1 class="portal-title">AI 极客通关课专区</h1>
+      <p class="portal-subtitle">
+        在这里，你将剥离大模型虚无的智能光环，像一位真正的系统架构师那样，亲手用确定性的代码装配 Agent 的身体、神经、记忆和发动机。
+      </p>
+    </header>
+
+    <div class="courses-grid">
+      
+      <!-- 课程 1: Harness Engineering -->
+      <article class="course-card">
+        <div class="card-backlight h-glow"></div>
+        <div class="card-content">
+          <div class="course-badge">基础核心课</div>
+          <div class="card-icon-container">
+            <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M42 24H58" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            </svg>
+            <span class="icon-text">🧠</span>
+          </div>
+          
+          <h2 class="course-title">Harness Engineering</h2>
+          <p class="course-desc">
+            大模型外壳/脚手架工程。从裸模型消息列表解剖出发，亲手实现工具调用、上下文工程、记忆系统以及可靠性验证，补全模型的 5 大先天缺陷。
+          </p>
+
+          <!-- 学习进度卡 (客户端 JS 读 localStorage 渲染) -->
+          <div class="card-progress">
+            <div class="progress-meta">
+              <span class="progress-status-label" id="harness-progress-count">0/10 关已通关</span>
+              <span class="progress-num" id="harness-progress-percent">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="harness-progress-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="outline-preview">
+            <h4>课程大纲：</h4>
+            <ul>
+              <li>L0-L2: 地基、API 调用解剖与工具调用闭环</li>
+              <li>L3-L5: 智能体裸循环、上下文工程与长期记忆</li>
+              <li>L6-L8: 子代理团队编排、可靠性验证门与产品化</li>
+            </ul>
+          </div>
+
+          <a href="/courses/harness-engineering/" class="learn-btn">
+            <span>开始闯关学习</span>
+            <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        </div>
+      </article>
+
+      <!-- 课程 2: Loop Engineering -->
+      <article class="course-card">
+        <div class="card-backlight l-glow"></div>
+        <div class="card-content">
+          <div class="course-badge adv">进阶专题课</div>
+          <div class="card-icon-container">
+            <span class="icon-text">🔄</span>
+          </div>
+          
+          <h2 class="course-title">Loop Engineering</h2>
+          <p class="course-desc">
+            智能体循环与控制旋钮设计。将发动机的 ReAct 与 Plan 骨架、硬边界缰绳、纠错反思、嵌套架构与漂移控制系统拧好，构建真正的长程可控系统。
+          </p>
+
+          <!-- 学习进度卡 -->
+          <div class="card-progress">
+            <div class="progress-meta">
+              <span class="progress-status-label" id="loop-progress-count">0/8 关已通关</span>
+              <span class="progress-num" id="loop-progress-percent">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="loop-progress-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="outline-preview">
+            <h4>课程大纲：</h4>
+            <ul>
+              <li>LE0-LE1: 循环发动机概念与形态选型(ReAct ↔ Plan)</li>
+              <li>LE2-LE3: 并联停止缰绳、升级问人机制与纠错反思</li>
+              <li>LE4-LE5: 串并行嵌套拆解、周期 Re-ground 目标抗漂移</li>
+              <li>LE6-总图: 外循环评测集建设、飞轮数据回流与全景图</li>
+            </ul>
+          </div>
+
+          <a href="/courses/loop-engineering/" class="learn-btn adv-btn">
+            <span>进入专题闯关</span>
+            <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</BaseLayout>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    // 1. 读取并渲染 Harness Engineering 的学习进度
+    const hRaw = localStorage.getItem("harness_course_progress_v1");
+    let hDone = 0;
+    if (hRaw) {
+      try {
+        const hState = JSON.parse(hRaw);
+        hDone = Object.keys(hState.completed || {}).length;
+      } catch (e) {}
+    }
+    const hPercent = Math.min(100, Math.round((hDone / 10) * 100));
+    document.getElementById('harness-progress-bar').style.width = hPercent + '%';
+    document.getElementById('harness-progress-percent').textContent = hPercent + '%';
+    document.getElementById('harness-progress-count').textContent = `${hDone}/10 关已通关`;
+
+    // 2. 读取并渲染 Loop Engineering 的学习进度
+    const lRaw = localStorage.getItem("loop_course_progress_v1");
+    let lDone = 0;
+    if (lRaw) {
+      try {
+        const lState = JSON.parse(lRaw);
+        lDone = Object.keys(lState.completed || {}).length;
+      } catch (e) {}
+    }
+    const lPercent = Math.min(100, Math.round((lDone / 8) * 100));
+    document.getElementById('loop-progress-bar').style.width = lPercent + '%';
+    document.getElementById('loop-progress-percent').textContent = lPercent + '%';
+    document.getElementById('loop-progress-count').textContent = `${lDone}/8 关已通关`;
+  });
+</script>
+
+<style>
+  /* ==========================================
+     PORTAL LAYOUT
+     ========================================== */
+  .portal-container {
+    max-width: 1000px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 4rem 0 6rem 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  .portal-header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 4.5rem auto;
+  }
+
+  .portal-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    margin-bottom: 1.25rem;
+    background: linear-gradient(135deg, #ffffff 0%, #a9bbb6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .portal-subtitle {
+    font-size: 1.05rem;
+    font-weight: 350;
+    color: var(--muted);
+    line-height: 1.75;
+    letter-spacing: 0.03em;
+  }
+
+  /* Ambient glowing backgrounds */
+  .ambient-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(150px);
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  .glow-1 {
+    width: 45vw;
+    height: 45vw;
+    max-width: 500px;
+    background: rgba(71, 214, 178, 0.06);
+    top: 5%;
+    left: 8%;
+  }
+
+  .glow-2 {
+    width: 40vw;
+    height: 40vw;
+    max-width: 450px;
+    background: rgba(129, 140, 248, 0.05); /* subtle indigo */
+    bottom: 15%;
+    right: 10%;
+  }
+
+  /* ==========================================
+     COURSES CARD GRID
+     ========================================== */
+  .courses-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    .courses-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      padding: 0 20px;
+    }
+    .portal-container {
+      padding: 2.5rem 0 4rem 0;
+    }
+    .portal-header {
+      margin-bottom: 2.5rem;
+      padding: 0 20px;
+    }
+    .portal-title {
+      font-size: 2rem;
+    }
+  }
+
+  .course-card {
+    position: relative;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(20, 33, 40, 0.7) 0%, rgba(12, 21, 26, 0.85) 100%);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.4s ease;
+    height: 100%;
+  }
+
+  .course-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(159, 245, 215, 0.3);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45), 0 0 25px rgba(71, 214, 178, 0.03);
+  }
+
+  /* Backlight Glow */
+  .card-backlight {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.15;
+    transition: opacity 0.4s ease, filter 0.4s ease;
+    z-index: 1;
+    filter: blur(30px);
+  }
+
+  .h-glow {
+    background: radial-gradient(circle at 80% 20%, var(--accent-strong) 0%, transparent 60%);
+  }
+
+  .l-glow {
+    background: radial-gradient(circle at 80% 20%, #818cf8 0%, transparent 60%); /* indigo glow for Loop */
+  }
+
+  .course-card:hover .card-backlight {
+    opacity: 0.3;
+  }
+
+  .card-content {
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .course-badge {
+    align-self: flex-start;
+    font-size: 11px;
+    font-weight: 750;
+    color: var(--accent);
+    background: rgba(71, 214, 178, 0.08);
+    border: 1px solid rgba(71, 214, 178, 0.2);
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .course-badge.adv {
+    color: #a5b4fc;
+    background: rgba(129, 140, 248, 0.08);
+    border-color: rgba(129, 140, 248, 0.2);
+  }
+
+  .card-icon-container {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  .icon-text {
+    font-size: 22px;
+  }
+
+  .course-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text);
+    margin: 0 0 0.75rem 0;
+  }
+
+  .course-desc {
+    font-size: 0.925rem;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 1.75rem;
+    font-weight: 350;
+  }
+
+  /* ==========================================
+     PROGRESS STYLING
+     ========================================== */
+  .card-progress {
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 1.75rem;
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .progress-num {
+    color: var(--accent);
+  }
+
+  .course-card:hover .progress-num {
+    color: var(--accent-strong);
+  }
+
+  .progress-bar-bg {
+    width: 100%;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+    border-radius: 999px;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .course-card:nth-child(2) .progress-bar-fill {
+    background: linear-gradient(90deg, #818cf8, #a5b4fc);
+  }
+  .course-card:nth-child(2) .progress-num {
+    color: #a5b4fc;
+  }
+
+  /* ==========================================
+     OUTLINE PREVIEW
+     ========================================== */
+  .outline-preview {
+    margin-bottom: 2.25rem;
+    flex-grow: 1;
+  }
+
+  .outline-preview h4 {
+    font-size: 13px;
+    font-weight: 750;
+    color: var(--text);
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .outline-preview ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .outline-preview li {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted);
+    position: relative;
+    padding-left: 14px;
+  }
+
+  .outline-preview li::before {
+    content: "▫";
+    color: var(--accent);
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+  }
+
+  .course-card:nth-child(2) .outline-preview li::before {
+    color: #818cf8;
+  }
+
+  /* ==========================================
+     LEARN BUTTONS
+     ========================================== */
+  .learn-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 46px;
+    background: var(--accent);
+    color: #06100d;
+    border: 1px solid var(--accent-strong);
+    border-radius: 8px;
+    font-size: 14.5px;
+    font-weight: 750;
+    transition: all 0.3s;
+  }
+
+  .learn-btn:hover {
+    background: var(--accent-strong);
+    box-shadow: 0 0 15px rgba(71, 214, 178, 0.25);
+  }
+
+  .btn-arrow {
+    width: 15px;
+    height: 15px;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .learn-btn:hover .btn-arrow {
+    transform: translateX(4px);
+  }
+
+  /* Adv course button custom style */
+  .learn-btn.adv-btn {
+    background: #818cf8;
+    border-color: #a5b4fc;
+    color: #ffffff;
+  }
+
+  .learn-btn.adv-btn:hover {
+    background: #6366f1;
+    box-shadow: 0 0 15px rgba(129, 140, 248, 0.25);
+  }
+</style>
