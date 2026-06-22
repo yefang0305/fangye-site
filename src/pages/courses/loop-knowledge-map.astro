@@ -1,0 +1,304 @@
+---
+// Standalone Page: Loop 知识全景 · 一页读懂
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loop 知识全景 · 一页读懂 | fangye.cc</title>
+<style>
+  :root{
+    --bg:#0e1014;
+    --panel:#161a21;
+    --panel-2:#1c212b;
+    --ink:#e8eaed;
+    --ink-dim:#9aa3b0;
+    --ink-faint:#6b7280;
+    --line:#2a3140;
+    --accent:#ff5b49;      /* 心脏/最致命 = 红 */
+    --gold:#f6c453;        /* 关键金句 = 金 */
+    --cyan:#5ad1c8;        /* 自主性/水管 = 青 */
+    --violet:#9d8cff;      /* 用户洞见 = 紫 */
+    --green:#5fd07a;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:radial-gradient(1200px 700px at 70% -10%,#1a2030 0%,var(--bg) 55%);
+    color:var(--ink);font-family:var(--sans);line-height:1.7;
+    -webkit-font-smoothing:antialiased;padding-bottom:80px;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  /* ---- header ---- */
+  header{padding:72px 0 40px;text-align:center;border-bottom:1px solid var(--line)}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.32em;color:var(--cyan);text-transform:uppercase;margin-bottom:18px}
+  h1{font-size:clamp(34px,6vw,56px);font-weight:800;letter-spacing:-.02em;line-height:1.08}
+  h1 .hl{color:var(--accent)}
+  .sub{margin:20px auto 0;max-width:640px;color:var(--ink-dim);font-size:16px}
+  .src{margin-top:18px;font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
+
+  /* ---- sticky nav ---- */
+  nav{position:sticky;top:0;z-index:20;background:rgba(14,16,20,.82);backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--line);padding:12px 0}
+  nav .wrap{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+  nav a{font-size:12.5px;color:var(--ink-dim);text-decoration:none;padding:5px 11px;border-radius:99px;
+        border:1px solid transparent;transition:.15s;font-family:var(--mono)}
+  nav a:hover{color:var(--ink);border-color:var(--line);background:var(--panel)}
+
+  /* ---- sections ---- */
+  section{padding:56px 0 12px}
+  .eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+  .eyebrow .no{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:700}
+  .eyebrow h2{font-size:25px;font-weight:750;letter-spacing:-.01em}
+  .eyebrow .line{flex:1;height:1px;background:var(--line)}
+
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr}nav{display:none}}
+
+  p{color:var(--ink-dim);margin:10px 0}
+  p strong,.ink{color:var(--ink)}
+  .accent{color:var(--accent)}
+  .gold{color:var(--gold)}
+  .cyan{color:var(--cyan)}
+  .violet{color:var(--violet)}
+  .green{color:var(--green)}
+
+  .quote{border-left:3px solid var(--gold);padding:6px 0 6px 18px;margin:16px 0;color:var(--ink);
+          font-size:16px;font-style:italic}
+  .quote .en{display:block;color:var(--ink-faint);font-style:normal;font-size:13px;margin-top:6px;font-family:var(--mono)}
+
+  pre{background:#0a0c10;border:1px solid var(--line);border-radius:12px;padding:18px 20px;overflow:auto;
+      font-family:var(--mono);font-size:13px;line-height:1.75;color:var(--ink);margin:14px 0}
+  pre .c{color:var(--ink-faint)}
+  pre .a{color:var(--accent)}
+  pre .g{color:var(--gold)}
+  pre .cy{color:var(--cyan)}
+  pre .v{color:var(--violet)}
+
+  .cards{display:grid;gap:14px}
+  .card{background:var(--panel-2);border:1px solid var(--line);border-radius:13px;padding:18px 20px}
+  .card h4{font-size:16px;margin-bottom:6px;display:flex;align-items:center;gap:9px}
+  .badge{font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:6px;font-weight:700}
+  .b-heart{background:rgba(255,91,73,.14);color:var(--accent);border:1px solid rgba(255,91,73,.35)}
+  .b-pipe{background:rgba(90,209,200,.12);color:var(--cyan);border:1px solid rgba(90,209,200,.3)}
+  .b-lock{background:rgba(246,196,83,.12);color:var(--gold);border:1px solid rgba(246,196,83,.3)}
+  .card p{margin:4px 0 0;font-size:14px}
+
+  /* causal chain */
+  .chain{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin:8px 0}
+  .chain .node{flex:1;min-width:150px;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:12px;padding:16px 14px;text-align:center;position:relative}
+  .chain .node .t{font-weight:700;font-size:15px}
+  .chain .node .d{font-size:12px;color:var(--ink-faint);margin-top:4px}
+  .chain .arrow{display:flex;align-items:center;color:var(--accent);font-size:22px;padding:0 6px}
+  @media(max-width:720px){.chain .arrow{transform:rotate(90deg);justify-content:center;width:100%;padding:4px 0}}
+
+  /* checklist */
+  .check{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:720px){.check{grid-template-columns:1fr}}
+
+  .check .it{display:flex;gap:12px;align-items:flex-start;background:var(--panel-2);border:1px solid var(--line);border-radius:11px;padding:14px 16px}
+  .check .it .n{font-family:var(--mono);color:var(--green);font-weight:700;flex-shrink:0}
+  .check .it b{display:block;color:var(--ink);font-size:14.5px}
+  .check .it span{font-size:12.5px;color:var(--ink-faint)}
+
+  /* steps */
+  .steps{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:6px 0}
+  .step{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:11px 16px;
+        font-family:var(--mono);font-size:13px;font-weight:600}
+  .step.hot{border-color:rgba(255,91,73,.5);color:var(--accent);box-shadow:0 0 0 1px rgba(255,91,73,.2) inset}
+  .sep{color:var(--ink-faint)}
+
+  .takeaway{background:linear-gradient(135deg,rgba(157,140,255,.1),rgba(255,91,73,.06));
+    border:1px solid rgba(157,140,255,.35);border-radius:16px;padding:26px 28px;margin-top:8px}
+  .takeaway .tag{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--violet);text-transform:uppercase}
+  .takeaway p{color:var(--ink);font-size:17px;margin-top:10px}
+  .big{font-size:21px;font-weight:750;color:#fff;line-height:1.45}
+
+  footer{text-align:center;margin-top:60px;padding-top:28px;border-top:1px solid var(--line);
+    color:var(--ink-faint);font-size:12.5px;font-family:var(--mono)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="kicker">AGENT ENGINEERING · 一页读懂</div>
+    <h1>Loop <span class="hl">循环</span> 知识全景</h1>
+    <p class="sub">从「你是引擎」到「AI 是引擎」——一条贯穿全文的因果链，把 Verify、成本、5 块积木、搭建顺序全串起来。</p>
+    <p class="src">源：Anatoli Kopadze《Loops explained: Claude, GPT, Mira and what actually works》· 精读重构</p>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="/courses/" style="color: var(--cyan); font-weight: 700; border-color: rgba(90, 209, 200, 0.3); background: rgba(90, 209, 200, 0.05);">← 返回课程类目</a>
+  <a href="#s0">Prompt vs Loop</a>
+  <a href="#s1">五步循环</a>
+  <a href="#s2">因果链 ★</a>
+  <a href="#s3">要不要搭</a>
+  <a href="#s4">5 块积木</a>
+  <a href="#s5">成本</a>
+  <a href="#s6">软硬关卡</a>
+  <a href="#s7">搭建顺序</a>
+  <a href="#s8">带走的话</a>
+</div></nav>
+
+<div class="wrap">
+
+  <!-- 0 -->
+  <section id="s0">
+    <div class="eyebrow"><span class="no">00</span><h2>Prompt 不是 Loop</h2><span class="line"></span></div>
+    <div class="grid2">
+      <div class="panel">
+        <h4 style="color:var(--ink-dim)">Prompt（一问一答）</h4>
+        <p>给 AI <strong>一条指令</strong>。每一步都穿过你：你决定问什么、你判断答案、你决定下一步。</p>
+        <p class="accent" style="font-weight:600">你是引擎，AI 只是手里的工具。你一停，它就停。</p>
+      </div>
+      <div class="panel" style="border-color:rgba(90,209,200,.35)">
+        <h4 class="cyan">Loop（递归目标）</h4>
+        <p>给 AI <strong>一份工作 + 一个「怎么算干完」的标准 + 一条「何时放弃」的规则</strong>。它自己跑完整个循环。</p>
+        <p class="cyan" style="font-weight:600">引擎换成 AI。你走开，活继续。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1 -->
+  <section id="s1">
+    <div class="eyebrow"><span class="no">01</span><h2>五步循环 · 三个承重</h2><span class="line"></span></div>
+    <div class="steps">
+      <span class="step">DISCOVER</span><span class="sep">→</span>
+      <span class="step">PLAN</span><span class="sep">→</span>
+      <span class="step">EXECUTE</span><span class="sep">→</span>
+      <span class="step hot">VERIFY</span><span class="sep">→</span>
+      <span class="step">ITERATE</span>
+    </div>
+    <p>五步里，真正决定成败的是这三个 —— 也是大多数人做错的地方：</p>
+    <div class="cards" style="margin-top:8px">
+      <div class="card">
+        <h4><span class="badge b-heart">心脏</span>Verify｜验证</h4>
+        <p>没有真实检查，你没有 loop，你有的是「agent 在反复给自己点赞」。<strong class="accent">运动员不能兼任裁判</strong> —— 干活的模型给自己改作业，太宽容了。关卡可以是硬测试 / 可测量条件 / rubric。</p>
+      </div>
+      <div class="card">
+        <h4><span class="badge b-pipe">学习</span>State｜状态</h4>
+        <p>每一轮记住「试过什么、什么失败、下一步是什么」，否则它永远重复同一个错。<span class="ink">这也是成本开始变贵的起点。</span></p>
+      </div>
+      <div class="card">
+        <h4><span class="badge b-lock">刹车</span>Stop｜停止条件</h4>
+        <p>每个正经 loop 都要有<strong>两个出口</strong>：成功，以及一条硬上限（「试 8 次就停下来汇报」）。没有出口 = 通宵空转、烧光账户。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 causal chain -->
+  <section id="s2">
+    <div class="eyebrow"><span class="no">02</span><h2>一条因果链：贯穿全文 ★</h2><span class="line"></span></div>
+    <p>整篇文章看似在讲很多东西，其实是<strong>同一条因果链</strong>。读懂它，下面所有内容都是它的推论。</p>
+    <div class="panel">
+      <div class="chain">
+        <div class="node"><div class="t">人在不在场</div><div class="d">你盯着 / 它自己跑</div></div>
+        <div class="arrow">→</div>
+        <div class="node"><div class="t">gate 硬度</div><div class="d">软关卡 / 硬关卡</div></div>
+        <div class="arrow">→</div>
+        <div class="node"><div class="t">接受率</div><div class="d">你扔掉多少废品</div></div>
+        <div class="arrow">→</div>
+        <div class="node"><div class="t accent">成本</div><div class="d">cost per accepted</div></div>
+      </div>
+      <p style="margin-top:16px">人在看 → 软关卡够用（<strong>你</strong>才是最后那道硬闸）。人一走开 + 还在花钱 → 软关卡立刻变陷阱，因为没人接住那句「我觉得干完了」。</p>
+      <div class="quote">你越想让 loop 离开你自己跑，就越需要一道不依赖人的硬 gate。<strong>自动化程度和 gate 硬度，是绑死的。</strong></div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="s3">
+    <div class="eyebrow"><span class="no">03</span><h2>你到底需不需要 Loop？</h2><span class="line"></span></div>
+    <p>认真的人真正在用的测试 —— <strong>四条全满足，才值得搭重型 loop</strong>。缺一条，老实留作手动 prompt。</p>
+    <div class="check">
+      <div class="it"><span class="n">1</span><div><b>任务会重复</b><span>至少每周一次，否则搭建成本回不了本</span></div></div>
+      <div class="it"><span class="n">2</span><div><b>能自动否决坏输出</b><span>测试 / 类型检查 / 构建 / linter / 硬规则</span></div></div>
+      <div class="it"><span class="n">3</span><div><b>agent 能端到端自干</b><span>不会干一半甩回给你</span></div></div>
+      <div class="it"><span class="n">4</span><div><b>「完成」是客观的</b><span>不是品味问题，否则人还是赢</span></div></div>
+    </div>
+    <div class="quote" style="margin-top:18px">loop engineering 是真东西，但大多数人现在还<strong>不需要重型版</strong>。每个人能用的是轻量版 —— 但你得知道这条线在哪。</div>
+  </section>
+
+  <!-- 4 -->
+  <section id="s4">
+    <div class="eyebrow"><span class="no">04</span><h2>重型版的 5 块积木</h2><span class="line"></span></div>
+    <p>一个真 loop = <span class="cyan">3 块自主性水管</span> + <span class="accent">1 颗心脏</span> + <span class="gold">1 把让心脏不作弊的锁</span>。Claude Code / Codex 现在五块全有货。</p>
+    <div class="grid2" style="margin-top:6px">
+      <div class="card"><h4><span class="badge b-pipe">水管</span>① Automation｜心跳</h4><p>触发器 / 节奏，让它自己按时或按事件跑。<span class="ink">/loop（按间隔）、/goal（按条件为真）、hooks、cron / GitHub Actions。</span></p></div>
+      <div class="card"><h4><span class="badge b-pipe">水管</span>② Skill｜可复用指令</h4><p>把规则、模式、「绝不许碰」的硬清单存成文件，loop 每次读它。让循环里的指令<span class="ink">不腐烂</span>。</p></div>
+      <div class="card" style="border-color:rgba(246,196,83,.35)"><h4><span class="badge b-lock">锁</span>③ Sub-agents｜分开做与查</h4><p>第二个 agent（换指令、有时换更强模型）抓第一个「自己说服自己通过」的东西。<strong class="gold">这道隔离就是质量的大头。</strong>无人值守时它从「可选」变「必需」。</p></div>
+      <div class="card"><h4><span class="badge b-pipe">水管</span>④ Connectors｜动手而非建议</h4><p>让 loop 在<span class="ink">真实环境里动手</span> —— 开 PR、关联 ticket、构建一绿就 @ 你，而不只是描述「我要是能做就会做」。</p></div>
+      <div class="card" style="grid-column:1/-1;border-color:rgba(255,91,73,.4)"><h4><span class="badge b-heart">心脏</span>⑤ The Verifier｜那道闸</h4><p>自动否决坏活的测试 / 类型检查 / 构建。<strong class="accent">唯一决定 loop 帮你、还是只是花你钱的积木。其它全是水管。这块才让它成真。</strong></p></div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="s5">
+    <div class="eyebrow"><span class="no">05</span><h2>没人提的成本</h2><span class="line"></span></div>
+    <p>问题不在「每步要花钱」，而在<strong>成本怎么滚雪球</strong>：每转一圈都把整个 context 重读一遍，而且每过一轮还越长。</p>
+    <pre><span class="c">▸ 一个 loop 的粗略成本</span>
+单 agent、一个中等任务:      <span class="g">~50,000 – 200,000 tokens</span>
+每轮重发的 context:          <span class="a">一轮比一轮大</span>
+maker / checker 分开:        <span class="a">账单直接翻倍</span>
+一队 agent 并行:             上面所有的再乘一遍</pre>
+    <div class="quote">真正重要、却几乎没人追踪的指标是 <strong class="gold">cost per accepted change</strong>（每个被采纳的改动的成本）。不是花了多少 token，不是跑了多少轮。<br>接受率低于 50%，loop 花的就比给的多 —— 因为你在做它本该替你省掉的审查工作。</div>
+    <div class="panel" style="border-color:rgba(255,91,73,.3);margin-top:8px">
+      <h4 class="accent">⚠ Ralph Wiggum loop</h4>
+      <p>agent 觉得自己干完了（其实没有），提前退出，循环继续空转、继续花钱、却什么都没产出。<strong>loop 不会崩溃，它默默给你账单（bill you in silence）。</strong></p>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section id="s6">
+    <div class="eyebrow"><span class="no">06</span><h2>软关卡 vs 硬关卡</h2><span class="line"></span></div>
+    <p>三种 gate，强度递减。越想无人值守，越要往左靠。</p>
+    <pre>硬测试 (pass/fail)   <span class="cy">></span>   可测量条件 (数字 > X)   <span class="cy">></span>   rubric 评分表
+<span class="c">最硬,没得争              还算客观                   最软,容易塌回「自我点赞」</span></pre>
+    <div class="grid2">
+      <div class="card"><h4 class="green">人在场 → 软关卡够用</h4><p>模型自评 1–10 只是「提质器」，把草稿推近合格再送到你眼前。<strong>真正的最后一道闸是你。</strong></p></div>
+      <div class="card" style="border-color:rgba(255,91,73,.3)"><h4 class="accent">人走开 + 花钱 → 软关卡变陷阱</h4><p>那句「我觉得行了」背后没人接了。此时 verifier 必须独立（③ sub-agent），否则就是默默烧钱产垃圾。</p></div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section id="s7">
+    <div class="eyebrow"><span class="no">07</span><h2>搭建顺序（顺序比工具重要）</h2><span class="line"></span></div>
+    <pre><span class="cy">1.</span> 先让 <span class="g">一次手动运行</span> 稳定可靠
+<span class="cy">2.</span> 把它存成 <span class="g">skill</span>（保存指令）
+<span class="cy">3.</span> 给 skill 包一个 <span class="g">loop</span>（加 gate + 停止条件）
+<span class="cy">4.</span> <span class="a">最后</span>才上 schedule</pre>
+    <div class="quote">跳步去 schedule 一个你还没手动跑稳的东西，<strong>就是 loop 在你睡觉时炸掉的标准姿势</strong>。先证明一次，加固，再自动化。</div>
+  </section>
+
+  <!-- 8 -->
+  <section id="s8">
+    <div class="eyebrow"><span class="no">08</span><h2>带走的两句话</h2><span class="line"></span></div>
+    <div class="grid2">
+      <div class="takeaway">
+        <span class="tag">文章的态度</span>
+        <p class="big">不要为了 Loop 而 Loop。</p>
+        <p>先用现成的、免费的、轻量的；等你真切感到不够用了，再去想你究竟需要什么。教你怎么搭的人，结尾劝你能不搭就不搭。</p>
+      </div>
+      <div class="takeaway" style="border-color:rgba(255,91,73,.35);background:linear-gradient(135deg,rgba(255,91,73,.1),rgba(246,196,83,.05))">
+        <span class="tag" style="color:var(--accent)">更深一层的杠杆</span>
+        <p class="big">最强的杠杆不是把闸修硬，<br>而是让需要被闸的东西更少。</p>
+        <p>能用确定性代码（Python 脚本）钉死的节点，就别让模型自由发挥。把 agent 表面积压到最小 → 大部分节点天然 100% 接受率 → 人不在场也安全、成本天然就低。<span class="violet">最好的闸，是让水根本没机会乱流。</span></p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Prompt vs Loop · 五步循环 · 人在不在场→gate硬度→接受率→成本 · 四条测试 · 5 块积木 · 搭建顺序<br>
+    一页读懂 Loop · 精读重构于 2026
+  </footer>
+
+</div>
+</body>
+</html>
