@@ -13,6 +13,16 @@ export interface ToolItem {
 
 export const tools: ToolItem[] = [
   {
+    name: '图片瑞士军刀',
+    slug: 'image-tool',
+    description: '纯前端图片处理工具，支持裁剪、等分/边缘分割、缩小及压缩，完全在本地浏览器运行，保护隐私。',
+    category: '图片处理',
+    status: 'usable',
+    href: '/tools/image-tool/',
+    featured: true,
+    hasPage: true,
+  },
+  {
     name: '文本清理器',
     slug: 'text-cleaner',
     description: '清理多余空行、首尾空格和重复空白，适合处理复制来的文本。',

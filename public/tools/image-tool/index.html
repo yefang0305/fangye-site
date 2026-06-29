@@ -1,0 +1,2193 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>图片瑞士军刀 · 裁剪 / 分割 / 缩小 (本地隐私保护)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #09090b;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #27272a;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3f3f46;
+  }
+
+  :root {
+    --bg-main: #09090b;
+    --bg-card: #121215;
+    --bg-input: #1a1a1e;
+    --border-color: #27272a;
+    --text-primary: #f4f4f5;
+    --text-secondary: #a1a1aa;
+    --accent-blue: #3b82f6;
+    --accent-blue-hover: #60a5fa;
+    --accent-red: #ef4444;
+    --accent-red-hover: #f87171;
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.5);
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; outline: none; }
+  body { 
+    margin: 0; 
+    font-family: var(--font-body); 
+    background: var(--bg-main); 
+    color: var(--text-primary); 
+    display: flex; 
+    flex-direction: column; 
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  header { 
+    padding: 14px 24px; 
+    background: var(--bg-card); 
+    border-bottom: 1px solid var(--border-color); 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+    gap: 16px; 
+    z-index: 10;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+    flex-shrink: 0;
+  }
+
+  h1 { 
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 18px; 
+    margin: 0; 
+    background: linear-gradient(to right, #ffffff, #a1a1aa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .lang-select {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: 12px;
+    transition: all 0.2s;
+  }
+  .lang-select:hover {
+    border-color: var(--accent-blue);
+  }
+
+  .file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+  }
+  .btn-upload {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #ffffff;
+    transition: all 0.2s ease;
+  }
+  .btn-upload:hover {
+    border-color: var(--accent-blue);
+    background: rgba(59, 130, 246, 0.05);
+  }
+  .file-input-wrapper input[type=file] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .tabs-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tabs { 
+    display: flex; 
+    background: var(--bg-input);
+    padding: 4px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+  }
+  .tabs button { 
+    padding: 8px 20px; 
+    border: none; 
+    background: transparent; 
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm); 
+    cursor: pointer; 
+    font-weight: 500;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tabs button:hover {
+    color: var(--text-primary);
+  }
+  .tabs button.active { 
+    background: var(--accent-blue); 
+    color: #ffffff; 
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  main { 
+    display: flex; 
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .workspace {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #09090b;
+    position: relative;
+  }
+
+  /* Zoom & Canvas Toolbar */
+  .toolbar {
+    padding: 8px 16px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    min-height: 44px;
+  }
+  .toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toolbar-btn {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .toolbar-btn:hover {
+    border-color: var(--accent-blue);
+    color: var(--text-primary);
+  }
+  .zoom-select {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    width: 75px;
+    cursor: pointer;
+  }
+
+  /* Scrollable stage for Canvas */
+  #canvas-container {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    background: radial-gradient(#1c1c22 1.5px, transparent 1.5px);
+    background-size: 24px 24px;
+    position: relative;
+  }
+
+  #stage { 
+    position: relative; 
+    border-radius: var(--radius-md); 
+    box-shadow: var(--shadow);
+    margin: auto;
+  }
+  #stage.empty { 
+    width: 100%;
+    height: 100%;
+    max-width: 640px;
+    max-height: 400px;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    background: rgba(18, 18, 21, 0.4);
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center; 
+    color: var(--text-secondary);
+    gap: 16px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    padding: 40px;
+  }
+  #stage.empty:hover {
+    border-color: var(--accent-blue);
+    background: rgba(59, 130, 246, 0.02);
+  }
+  #stage.empty svg {
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+  }
+  #stage.empty:hover svg {
+    color: var(--accent-blue);
+    transform: translateY(-4px);
+  }
+  .empty-title {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .canvas-grid {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    grid-template-rows: 20px 1fr;
+    grid-template-areas:
+      "corner top"
+      "left canvas";
+    overflow: hidden;
+    background: #121215;
+    border-radius: var(--radius-md);
+  }
+  
+  #ruler-corner {
+    grid-area: corner;
+    background: #18181b;
+    border-right: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 12;
+  }
+  
+  #ruler-top {
+    grid-area: top;
+    background: #18181b;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: block;
+  }
+  
+  #ruler-left {
+    grid-area: left;
+    background: #18181b;
+    border-right: 1px solid var(--border-color);
+    position: sticky;
+    left: 0;
+    z-index: 10;
+    display: block;
+  }
+
+  .canvas-wrap { 
+    position: relative; 
+    line-height: 0; 
+  }
+  #view, #overlay { 
+    display: block; 
+    border-radius: 6px; 
+  }
+  #overlay { 
+    position: absolute; 
+    left: 0; 
+    top: 0; 
+  }
+
+  /* Sidebar Controls Panel */
+  .panel { 
+    width: 320px; 
+    background: var(--bg-card); 
+    border-left: 1px solid var(--border-color); 
+    padding: 24px; 
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    z-index: 5;
+  }
+  .panel h2 { 
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 16px; 
+    margin: 0 0 20px; 
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+  }
+  .panel.hidden { display: none; }
+  
+  label { 
+    display: block; 
+    margin: 16px 0 6px; 
+    color: var(--text-secondary); 
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  input[type=number], input[type=text], select { 
+    width: 100%; 
+    padding: 10px 12px; 
+    background: var(--bg-input);
+    border: 1px solid var(--border-color); 
+    color: var(--text-primary);
+    border-radius: var(--radius-sm); 
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  input[type=number]:focus, input[type=text]:focus, select:focus {
+    border-color: var(--accent-blue);
+  }
+  
+  .row { display: flex; gap: 8px; }
+  .row > * { flex: 1; }
+  
+  button.act { 
+    width: 100%; 
+    margin-top: 24px; 
+    padding: 12px; 
+    background: var(--accent-blue); 
+    color: #fff; 
+    border: none; 
+    border-radius: var(--radius-sm); 
+    cursor: pointer; 
+    font-size: 14px; 
+    font-weight: 600;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  button.act:hover {
+    background: var(--accent-blue-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px -1px rgba(59, 130, 246, 0.4);
+  }
+  button.act:active {
+    transform: translateY(0);
+  }
+  
+  button.ghost { 
+    background: transparent; 
+    color: var(--text-primary); 
+    border: 1px solid var(--border-color); 
+    border-radius: var(--radius-sm); 
+    padding: 10px 12px; 
+    cursor: pointer; 
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  button.ghost:hover {
+    border-color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.02);
+  }
+  
+  .hint { 
+    color: var(--text-secondary); 
+    font-size: 12px; 
+    line-height: 1.5;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+  }
+  
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #1e1b4b;
+    color: #c7d2fe;
+    border: 1px solid #3730a3;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  /* Aspect Ratio Selector for Crop */
+  .ratio-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .ratio-btn {
+    padding: 8px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .ratio-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--accent-blue);
+  }
+  .ratio-btn.active {
+    color: #ffffff;
+    background: rgba(59, 130, 246, 0.15);
+    border-color: var(--accent-blue);
+  }
+
+  /* Loader Overlay */
+  #loader {
+    position: fixed;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background: rgba(9, 9, 11, 0.8);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+  #loader.show {
+    display: flex;
+  }
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(59, 130, 246, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--accent-blue);
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .loader-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  /* 手机端响应式布局适配 */
+  @media (max-width: 768px) {
+    body {
+      height: auto;
+      overflow: auto;
+    }
+    main {
+      flex-direction: column;
+      height: auto;
+      overflow: visible;
+    }
+    .workspace {
+      height: 55vh;
+      min-height: 380px;
+      flex: none;
+    }
+    .panel {
+      width: 100%;
+      height: auto;
+      border-left: none;
+      border-top: 1px solid var(--border-color);
+      overflow-y: visible;
+      padding: 16px;
+    }
+    header {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 12px 16px;
+      gap: 12px;
+    }
+    .header-right {
+      width: 100%;
+      justify-content: flex-start;
+      gap: 8px;
+    }
+    .tabs-wrapper {
+      width: 100%;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+    .tabs {
+      flex: 1;
+      justify-content: space-between;
+    }
+    .tabs button {
+      flex: 1;
+      padding: 8px 8px;
+      justify-content: center;
+      font-size: 12px;
+      gap: 4px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .toolbar {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 12px;
+    }
+    .toolbar-group {
+      width: 100%;
+      justify-content: space-between;
+    }
+    .header-right {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .file-input-wrapper, .btn-upload {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-left">
+    <div class="logo-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <h1 data-i18n="title">图片瑞士军刀</h1>
+  </div>
+  
+  <div class="header-right" style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+    <!-- 语言切换下拉框 -->
+    <select id="lang-select" class="lang-select" style="margin-left: 0;">
+      <option value="zh">简体中文</option>
+      <option value="en">English</option>
+      <option value="vi">Tiếng Việt</option>
+    </select>
+
+    <div class="file-input-wrapper">
+      <button class="btn-upload">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        <span data-i18n="select_image">选择图片</span>
+      </button>
+      <input type="file" id="file" accept="image/jpeg,image/png,image/webp">
+    </div>
+
+    <div class="tabs-wrapper">
+      <span data-i18n="tools" style="font-size: 12px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">功能选择:</span>
+      <div class="tabs">
+        <button data-mode="crop" class="active">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14"></path><path d="M18 22V8a2 2 0 0 0-2-2H2"></path></svg>
+          <span data-i18n="crop">裁剪</span>
+        </button>
+        <button data-mode="slice">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line></svg>
+          <span data-i18n="slice">分割</span>
+        </button>
+        <button data-mode="resize">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="10" y1="14" x2="3" y2="21"></line></svg>
+          <span data-i18n="resize">缩小</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="workspace">
+    <div class="toolbar">
+      <div id="file-info" class="toolbar-group">
+        <span data-i18n="wait_image" style="color:var(--text-secondary)">等待导入图片...</span>
+      </div>
+      <div class="toolbar-group">
+        <span data-i18n="zoom" style="margin-right: 4px;">视图缩放:</span>
+        <button id="zoom-out" class="toolbar-btn">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+        <span id="zoom-display" style="font-weight:600; min-width:35px; text-align:center;">100%</span>
+        <button id="zoom-in" class="toolbar-btn">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+        <select id="zoom-select" class="zoom-select" style="margin-left: 8px;">
+          <option value="fit" data-i18n="fit">自适应</option>
+          <option value="0.25">25%</option>
+          <option value="0.5">50%</option>
+          <option value="0.75">75%</option>
+          <option value="1">100%</option>
+          <option value="1.5">150%</option>
+          <option value="2">200%</option>
+        </select>
+      </div>
+    </div>
+    <div id="canvas-container">
+      <div id="stage" class="empty drop">
+        <!-- 会被 applyTranslations() 动态生成对应的多语言版本 -->
+      </div>
+    </div>
+  </div>
+  
+  <section class="panel" id="panel-crop">
+    <h2>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14"></path><path d="M18 22V8a2 2 0 0 0-2-2H2"></path></svg>
+      <span data-i18n="crop_title">裁剪 · 抠出一段</span>
+    </h2>
+    <div id="crop-body"></div>
+  </section>
+  
+  <section class="panel hidden" id="panel-slice">
+    <h2>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line></svg>
+      <span data-i18n="slice_title">分割 · 切多段</span>
+    </h2>
+    <div id="slice-body"></div>
+  </section>
+  
+  <section class="panel hidden" id="panel-resize">
+    <h2>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="10" y1="14" x2="3" y2="21"></line></svg>
+      <span data-i18n="resize_title">缩小 · 压尺寸/体积</span>
+    </h2>
+    <div id="resize-body"></div>
+  </section>
+</main>
+
+<div id="loader">
+  <div class="spinner"></div>
+  <div class="loader-text">正在处理...</div>
+</div>
+
+<div id="toast" class="toast">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+  <span class="toast-text">提示信息</span>
+</div>
+
+<script src="src/logic.js"></script>
+<script>
+// 全局状态管理对象
+const state = { img: null, imgW: 0, imgH: 0, scale: 1, mode: 'crop', objUrl: null };
+
+// 多语言字典配置
+const I18N = {
+  zh: {
+    title: "图片瑞士军刀",
+    select_image: "选择图片",
+    tools: "功能选择:",
+    crop: "裁剪",
+    slice: "分割",
+    resize: "缩小",
+    wait_image: "等待导入图片...",
+    zoom: "视图缩放:",
+    fit: "自适应",
+    empty_title: "本地图片极速处理",
+    empty_subtitle: "拖入图片，或点击选择图片",
+    empty_hint: "支持 JPG / PNG / WebP · 图片绝不上传服务器",
+    crop_title: "裁剪 · 抠出一段",
+    crop_hint: "在图上按住并拖动以创建裁切框；拖动边角手柄可调整大小，拖动框内可移动位置。",
+    crop_ratio: "裁剪比例 (Aspect Ratio)",
+    ratio_free: "自由裁剪",
+    ratio_1_1: "1:1 正方形",
+    ratio_16_9: "16:9 宽屏",
+    ratio_4_3: "4:3 标准",
+    crop_btn: "导出裁剪区域",
+    slice_title: "分割 · 切多段",
+    slice_hint: "靠近左右边缘点击可加横切线，靠近上下边缘点击可加竖切线；拖动虚线可移动位置，双击可直接删除切割线。",
+    slice_rows: "横向平均等分",
+    slice_cols: "纵向平均等分",
+    slice_divide: "等分",
+    slice_clear: "清空所有分割线",
+    slice_btn: "批量导出切片 (ZIP)",
+    resize_title: "缩小 · 压尺寸/体积",
+    resize_mode: "缩放调整方式",
+    mode_long: "指定长边边长 (px)",
+    mode_percent: "按百分比等比例 (%)",
+    mode_width: "指定固定宽度 (px)",
+    mode_filesize: "强制目标文件大小 (MB)",
+    resize_val_long: "长边尺寸 (px)",
+    resize_val_percent: "百分比 (%)",
+    resize_val_width: "指定宽度 (px)",
+    resize_val_filesize: "目标文件大小 (MB)",
+    export_format: "导出文件格式",
+    fmt_src: "跟随原图格式",
+    fmt_jpg: "JPG (标准压缩格式)",
+    fmt_webp: "WebP (高效率格式)",
+    fmt_png: "PNG (无损画质)",
+    quality: "有损导出质量:",
+    png_warning: "⚠️ PNG 格式不支持压缩率调节。在目标文件大小模式下，工具会自动将导出的文件转为 JPG 格式以实现压缩体积。",
+    resize_btn: "导出处理后的图片",
+    orig_size: "原图尺寸：",
+    est_size: "预计尺寸：",
+    est_bytes: "预计体积：",
+    estimating: "正在实时估算文件体积...",
+    limit_size: "限定体积：",
+    toast_load_success: "图片加载成功",
+    toast_load_fail: "图片加载失败，请换张图重试",
+    toast_slice_prep: "正在准备批量切片...",
+    toast_slice_proc: "正在剪切并压缩分块 ({cur}/{total})...",
+    toast_slice_zip: "正在将 {count} 个切片打包 ZIP 压缩包...",
+    toast_slice_success: "成功分割为 {count} 个图片文件，并打包下载",
+    toast_slice_fail: "分割导出失败，请重试",
+    toast_resize_enc: "正在对图像进行重置大小编码...",
+    toast_resize_opt: "体积优化器正在进行二分品质搜索...",
+    toast_resize_shrink: "最低质量仍超标，正在按比例缩小尺寸重新估算 ({pct}%)...",
+    toast_resize_success: "图片已成功优化并下载",
+    toast_resize_done: "图片尺寸调整完成并已开始下载",
+    toast_resize_fail: "处理失败，请重试",
+    toast_crop_success: "裁剪区导出成功",
+    toast_crop_no_rect: "请先在图上拖出一个裁切框",
+    toast_line_deleted: "已删除分割线",
+    toast_lines_cleared: "分割线已清空",
+    toast_load_img: "正在读取并加载图片..."
+  },
+  en: {
+    title: "Image Swiss Knife",
+    select_image: "Select Image",
+    tools: "Tools:",
+    crop: "Crop",
+    slice: "Slice",
+    resize: "Resize",
+    wait_image: "Waiting for image...",
+    zoom: "Zoom:",
+    fit: "Fit",
+    empty_title: "High-Speed Local Processing",
+    empty_subtitle: "Drag and drop image here, or click to browse",
+    empty_hint: "Supports JPG / PNG / WebP · Images never leave your machine",
+    crop_title: "Crop · Extract Area",
+    crop_hint: "Click and drag on the image to draw a crop box. Drag corners to resize, drag center to move.",
+    crop_ratio: "Aspect Ratio",
+    ratio_free: "Freeform",
+    ratio_1_1: "1:1 Square",
+    ratio_16_9: "16:9 Widescreen",
+    ratio_4_3: "4:3 Standard",
+    crop_btn: "Export Selection",
+    slice_title: "Slice · Split Grid",
+    slice_hint: "Click near left/right edges to add horizontal guides, near top/bottom for vertical guides. Drag lines to move, double-click to delete.",
+    slice_rows: "Horizontal Rows",
+    slice_cols: "Vertical Columns",
+    slice_divide: "Split",
+    slice_clear: "Clear All Guides",
+    slice_btn: "Export Slices (ZIP)",
+    resize_title: "Resize & Compress",
+    resize_mode: "Resize Mode",
+    mode_long: "Fit Long Edge (px)",
+    mode_percent: "Scale Percentage (%)",
+    mode_width: "Specify Width (px)",
+    mode_filesize: "Target File Size (MB)",
+    resize_val_long: "Long Edge (px)",
+    resize_val_percent: "Percentage (%)",
+    resize_val_width: "Width (px)",
+    resize_val_filesize: "Target Size (MB)",
+    export_format: "Export Format",
+    fmt_src: "Match Original",
+    fmt_jpg: "JPG (Compressed)",
+    fmt_webp: "WebP (High Efficiency)",
+    fmt_png: "PNG (Lossless)",
+    quality: "Quality:",
+    png_warning: "⚠️ PNG format does not support lossy compression adjustments. In Target File Size mode, the tool automatically exports as JPG to compress size.",
+    resize_btn: "Export Processed Image",
+    orig_size: "Original Size: ",
+    est_size: "Est. Size: ",
+    est_bytes: "Est. File Size: ",
+    estimating: "Estimating file size in real-time...",
+    limit_size: "Max size: ",
+    toast_load_success: "Image loaded successfully",
+    toast_load_fail: "Failed to load image. Please try another.",
+    toast_slice_prep: "Preparing batch slicing...",
+    toast_slice_proc: "Clipping and compressing slice ({cur}/{total})...",
+    toast_slice_zip: "Packing {count} slices into ZIP archive...",
+    toast_slice_success: "Successfully split into {count} images and downloaded",
+    toast_slice_fail: "Failed to export slices, please try again",
+    toast_resize_enc: "Encoding resized image...",
+    toast_resize_opt: "Optimizer executing binary quality search...",
+    toast_resize_shrink: "Target exceeded at lowest quality, scaling down dimensions ({pct}%)...",
+    toast_resize_success: "Image optimized and downloaded successfully",
+    toast_resize_done: "Image resized and download started",
+    toast_resize_fail: "Processing failed, please try again",
+    toast_crop_success: "Crop selection exported successfully",
+    toast_crop_no_rect: "Please draw a crop box first",
+    toast_line_deleted: "Slice guide line deleted",
+    toast_lines_cleared: "All slice guides cleared",
+    toast_load_img: "Reading and loading image file..."
+  },
+  vi: {
+    title: "Dao Đa Năng Ảnh",
+    select_image: "Chọn Ảnh",
+    tools: "Chức năng:",
+    crop: "Cắt",
+    slice: "Chia nhỏ",
+    resize: "Thu nhỏ",
+    wait_image: "Đang đợi tải ảnh...",
+    zoom: "Thu phóng:",
+    fit: "Tự thích ứng",
+    empty_title: "Xử Lý Ảnh Cục Bộ Siêu Nhanh",
+    empty_subtitle: "Kéo thả ảnh vào đây, hoặc click để chọn",
+    empty_hint: "Hỗ trợ JPG / PNG / WebP · Ảnh tuyệt đối không tải lên máy chủ",
+    crop_title: "Cắt · Trích xuất vùng",
+    crop_hint: "Nhấn giữ và kéo trên ảnh để tạo khung cắt; Kéo góc để chỉnh kích thước, kéo bên trong để di chuyển.",
+    crop_ratio: "Tỷ lệ khung hình (Aspect Ratio)",
+    ratio_free: "Tự do",
+    ratio_1_1: "1:1 Hình vuông",
+    ratio_16_9: "16:9 Màn hình rộng",
+    ratio_4_3: "4:3 Tiêu chuẩn",
+    crop_btn: "Xuất vùng đã cắt",
+    slice_title: "Chia nhỏ · Cắt nhiều phần",
+    slice_hint: "Click gần cạnh trái/phải để thêm đường cắt ngang, gần cạnh trên/dưới để thêm đường dọc; Kéo để di chuyển, double click để xóa.",
+    slice_rows: "Chia đều chiều ngang",
+    slice_cols: "Chia đều chiều dọc",
+    slice_divide: "Chia đều",
+    slice_clear: "Xóa tất cả đường cắt",
+    slice_btn: "Xuất tất cả lát cắt (ZIP)",
+    resize_title: "Thu nhỏ · Nén kích thước/dung lượng",
+    resize_mode: "Chế độ thu phóng",
+    mode_long: "Cạnh dài tối đa (px)",
+    mode_percent: "Theo phần trăm (%)",
+    mode_width: "Chỉ định chiều rộng (px)",
+    mode_filesize: "Giới hạn dung lượng (MB)",
+    resize_val_long: "Kích thước cạnh dài (px)",
+    resize_val_percent: "Phần trăm (%)",
+    resize_val_width: "Chiều rộng (px)",
+    resize_val_filesize: "Dung lượng mục tiêu (MB)",
+    export_format: "Định dạng xuất",
+    fmt_src: "Theo định dạng gốc",
+    fmt_jpg: "JPG (Định dạng nén tiêu chuẩn)",
+    fmt_webp: "WebP (Định dạng hiệu năng cao)",
+    fmt_png: "PNG (Chất lượng không nén)",
+    quality: "Chất lượng xuất:",
+    png_warning: "⚠️ Định dạng PNG không hỗ trợ nén chất lượng. Ở chế độ Giới hạn dung lượng, hệ thống sẽ tự động xuất dưới định dạng JPG để nén kích thước tệp.",
+    resize_btn: "Xuất ảnh đã xử lý",
+    orig_size: "Kích thước gốc: ",
+    est_size: "Kích thước ước tính: ",
+    est_bytes: "Dung lượng ước tính: ",
+    estimating: "Đang ước lượng dung lượng thực tế...",
+    limit_size: "Giới hạn dung lượng: ",
+    toast_load_success: "Tải ảnh thành công",
+    toast_load_fail: "Tải ảnh thất bại, vui lòng chọn ảnh khác",
+    toast_slice_prep: "Đang chuẩn bị chia nhỏ hình ảnh...",
+    toast_slice_proc: "Đang cắt và nén lát cắt ({cur}/{total})...",
+    toast_slice_zip: "Đang nén {count} lát cắt thành ZIP...",
+    toast_slice_success: "Đã chia nhỏ thành {count} ảnh thành công và bắt đầu tải xuống",
+    toast_slice_fail: "Chia nhỏ và xuất thất bại, vui lòng thử lại",
+    toast_resize_enc: "Đang thay đổi kích thước và mã hóa ảnh...",
+    toast_resize_opt: "Trình tối ưu hóa đang tìm nhị phân chất lượng nén...",
+    toast_resize_shrink: "Dung lượng vượt mức tối thiểu, đang thu nhỏ chiều kích thước ({pct}%)...",
+    toast_resize_success: "Tối ưu hóa và tải ảnh thành công",
+    toast_resize_done: "Thay đổi kích thước hoàn thành, bắt đầu tải xuống",
+    toast_resize_fail: "Xử lý thất bại, vui lòng thử lại",
+    toast_crop_success: "Xuất vùng cắt thành công",
+    toast_crop_no_rect: "Vui lòng kéo khung cắt trên ảnh trước",
+    toast_line_deleted: "Đã xóa đường cắt",
+    toast_lines_cleared: "Đã xóa tất cả đường cắt",
+    toast_load_img: "Đang đọc và phân tích tệp hình ảnh..."
+  }
+};
+
+// 国际化 I18N 引擎状态管理
+let currentLang = localStorage.getItem('img-tool-lang') || 'zh';
+
+function t(key, replacements = {}) {
+  const dict = I18N[currentLang] || I18N.zh;
+  let text = dict[key] || key;
+  for (const [k, v] of Object.entries(replacements)) {
+    text = text.replace(`{${k}}`, v);
+  }
+  return text;
+}
+
+function applyTranslations() {
+  // 翻译包含 data-i18n 属性的所有静态文本元素
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (I18N[currentLang] && I18N[currentLang][key]) {
+      el.textContent = I18N[currentLang][key];
+    }
+  });
+
+  // 更新空画布提示内容
+  const stageEmpty = document.querySelector('#stage.empty');
+  if (stageEmpty) {
+    stageEmpty.innerHTML = `
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 8px;">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+        <polyline points="21 15 16 10 5 21"></polyline>
+      </svg>
+      <div class="empty-title">${t('empty_title')}</div>
+      <div style="font-size:13px; color:var(--text-secondary);">${t('empty_subtitle')}</div>
+      <div style="font-size:11px; color:var(--text-secondary); margin-top:8px; opacity:0.7;">${t('empty_hint')}</div>
+    `;
+  }
+
+  // 更新工具栏文件信息
+  if (!state.img) {
+    document.getElementById('file-info').innerHTML = `<span style="color:var(--text-secondary)">${t('wait_image')}</span>`;
+  } else {
+    document.getElementById('file-info').innerHTML = `
+      <span style="font-weight:600;color:var(--text-primary)">${state.srcName}</span> 
+      <span style="margin:0 4px;color:var(--border-color)">|</span> 
+      ${state.imgW} × ${state.imgH} px
+    `;
+  }
+
+  // 动态重新渲染右侧各个面板的内容
+  cropBody();
+  sliceBody();
+  resizeBody();
+  
+  if (state.img) {
+    drawCropOverlay();
+    drawSliceOverlay();
+  }
+}
+
+// 绑定语言切换选择器事件
+document.getElementById('lang-select').value = currentLang;
+document.getElementById('lang-select').addEventListener('change', e => {
+  currentLang = e.target.value;
+  localStorage.setItem('img-tool-lang', currentLang);
+  applyTranslations();
+});
+
+// 初始化应用语言与窗口尺寸监听
+document.addEventListener('DOMContentLoaded', () => {
+  applyTranslations();
+});
+
+window.addEventListener('resize', () => {
+  if (state.img) {
+    renderBase();
+    if (state.mode === 'crop') drawCropOverlay();
+    if (state.mode === 'slice') drawSliceOverlay();
+  }
+});
+
+const L = window.ImgLogic;
+const MAXW = 760, MAXH = 560; // 默认自适应视口上限
+const stage = document.getElementById('stage');
+
+// 全局加载器 & Toast 控制
+function showToast(text, duration = 3000) {
+  const toast = document.getElementById('toast');
+  toast.querySelector('.toast-text').textContent = text;
+  toast.classList.add('show');
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => {
+    toast.classList.remove('show');
+  }, duration);
+}
+
+function showLoader(show, text = '正在处理...') {
+  const loader = document.getElementById('loader');
+  if (show) {
+    loader.querySelector('.loader-text').textContent = text;
+    loader.classList.add('show');
+  } else {
+    loader.classList.remove('show');
+  }
+}
+
+// 视图缩放状态
+let zoomLevel = 'fit';
+
+function setZoom(level) {
+  zoomLevel = level;
+  document.getElementById('zoom-select').value = level;
+  if (state.img) {
+    renderBase();
+    if (state.mode === 'crop') drawCropOverlay();
+    if (state.mode === 'slice') drawSliceOverlay();
+  }
+}
+
+document.getElementById('zoom-select').addEventListener('change', e => {
+  setZoom(e.target.value);
+});
+
+document.getElementById('zoom-in').addEventListener('click', () => {
+  const presets = ['0.25', '0.5', '0.75', '1.0', '1.5', '2.0'];
+  let currentScale = state.scale;
+  let next = presets.find(p => parseFloat(p) > currentScale + 0.01);
+  if (next) setZoom(next);
+  else if (currentScale < 4.0) setZoom((currentScale + 0.5).toFixed(2));
+});
+
+document.getElementById('zoom-out').addEventListener('click', () => {
+  const presets = ['0.25', '0.5', '0.75', '1.0', '1.5', '2.0'];
+  let currentScale = state.scale;
+  let prev = [...presets].reverse().find(p => parseFloat(p) < currentScale - 0.01);
+  if (prev) setZoom(prev);
+  else if (currentScale > 0.25) setZoom((currentScale - 0.25).toFixed(2));
+});
+
+// 加载图片
+function loadImage(file) {
+  if (!file) return;
+  showLoader(true, t('toast_load_img'));
+  if (state.objUrl) URL.revokeObjectURL(state.objUrl);
+  const url = URL.createObjectURL(file);
+  state.objUrl = url;
+  const img = new Image();
+  img.onload = () => {
+    try {
+      state.img = img; 
+      state.imgW = img.naturalWidth; 
+      state.imgH = img.naturalHeight;
+      state.srcType = file.type; 
+      state.srcName = file.name;
+      
+      // 重置操作状态
+      cropState.rect = null;
+      sliceState.xs = [];
+      sliceState.ys = [];
+      
+      buildStage(); 
+      zoomLevel = 'fit';
+      document.getElementById('zoom-select').value = 'fit';
+      
+      renderBase(); 
+      setMode(state.mode);
+      
+      // 更新工具栏信息
+      document.getElementById('file-info').innerHTML = `
+        <span style="font-weight:600;color:var(--text-primary)">${file.name}</span> 
+        <span style="margin:0 4px;color:var(--border-color)">|</span> 
+        ${img.naturalWidth} × ${img.naturalHeight} px
+      `;
+      
+      showLoader(false);
+      showToast(t('toast_load_success'));
+    } catch (err) {
+      console.error(err);
+      showLoader(false);
+      showToast(t('toast_load_fail'));
+    }
+  };
+  img.onerror = () => {
+    showLoader(false);
+    showToast(t('toast_load_fail'));
+  };
+  img.src = url;
+}
+
+function buildStage() {
+  stage.classList.remove('empty');
+  stage.innerHTML = `
+    <div class="canvas-grid" id="canvas-grid">
+      <div id="ruler-corner"></div>
+      <canvas id="ruler-top"></canvas>
+      <canvas id="ruler-left"></canvas>
+      <div class="canvas-wrap" style="grid-area: canvas; position: relative; line-height: 0;">
+        <canvas id="view"></canvas>
+        <canvas id="overlay"></canvas>
+      </div>
+    </div>
+  `;
+}
+
+function renderBase() {
+  const view = document.getElementById('view');
+  const overlay = document.getElementById('overlay');
+  if (!view || !overlay) return;
+  
+  // 动态测量容器大小以计算自适应缩放比例 (适配手机与平板的多尺寸屏幕)
+  const container = document.getElementById('canvas-container');
+  const containerW = container ? container.clientWidth - 48 : MAXW;
+  const containerH = container ? container.clientHeight - 48 : MAXH;
+  const maxW = Math.max(280, containerW);
+  const maxH = Math.max(200, containerH);
+  
+  const fit = L.fitContain(state.imgW, state.imgH, maxW, maxH);
+  
+  let finalScale;
+  if (zoomLevel === 'fit') {
+    finalScale = fit.scale;
+  } else {
+    finalScale = parseFloat(zoomLevel);
+  }
+  state.scale = finalScale;
+
+  const w = Math.round(state.imgW * finalScale);
+  const h = Math.round(state.imgH * finalScale);
+
+  view.width = overlay.width = w;
+  view.height = overlay.height = h;
+  view.getContext('2d').drawImage(state.img, 0, 0, w, h);
+  
+  // 调整刻度尺的长宽
+  const rt = document.getElementById('ruler-top');
+  const rl = document.getElementById('ruler-left');
+  if (rt && rl) {
+    rt.width = w;
+    rt.height = 20;
+    rl.width = 20;
+    rl.height = h;
+    drawRulers();
+  }
+  
+  document.getElementById('zoom-display').textContent = Math.round(finalScale * 100) + '%';
+}
+
+// 绘制刻度尺 (类似于 Photoshop/CAD 设计软件)
+function drawRulers(mx, my) {
+  const rt = document.getElementById('ruler-top');
+  const rl = document.getElementById('ruler-left');
+  if (!rt || !rl || !state.img) return;
+
+  const w = rt.width;
+  const h = rl.height;
+
+  const ctxT = rt.getContext('2d');
+  const ctxL = rl.getContext('2d');
+
+  // 背景色
+  ctxT.fillStyle = '#18181b';
+  ctxT.fillRect(0, 0, w, 20);
+  ctxL.fillStyle = '#18181b';
+  ctxL.fillRect(0, 0, 20, h);
+
+  // 刻度线颜色
+  ctxT.strokeStyle = '#3f3f46';
+  ctxT.lineWidth = 1;
+  ctxL.strokeStyle = '#3f3f46';
+  ctxL.lineWidth = 1;
+
+  ctxT.fillStyle = 'var(--text-secondary)';
+  ctxT.font = '9px var(--font-body)';
+  ctxL.fillStyle = 'var(--text-secondary)';
+  ctxL.font = '9px var(--font-body)';
+
+  // 根据缩放比例动态计算刻度间距
+  let step = 100;
+  if (state.scale < 0.1) step = 1000;
+  else if (state.scale < 0.25) step = 500;
+  else if (state.scale < 0.5) step = 200;
+  else if (state.scale > 1.5) step = 50;
+
+  // 绘制顶部刻度尺
+  for (let x = 0; x <= state.imgW; x += step) {
+    const dx = Math.round(x * state.scale);
+    if (dx > w) break;
+    ctxT.beginPath();
+    ctxT.moveTo(dx, 12);
+    ctxT.lineTo(dx, 20);
+    ctxT.stroke();
+    
+    // 绘制细分小刻度
+    const minorStep = step / 5;
+    for (let j = 1; j < 5; j++) {
+      const mxTick = Math.round((x + j * minorStep) * state.scale);
+      if (mxTick > w) break;
+      ctxT.beginPath();
+      ctxT.moveTo(mxTick, 16);
+      ctxT.lineTo(mxTick, 20);
+      ctxT.stroke();
+    }
+    
+    ctxT.fillText(x, dx + 3, 10);
+  }
+
+  // 绘制左侧刻度尺
+  for (let y = 0; y <= state.imgH; y += step) {
+    const dy = Math.round(y * state.scale);
+    if (dy > h) break;
+    ctxL.beginPath();
+    ctxL.moveTo(12, dy);
+    ctxL.lineTo(20, dy);
+    ctxL.stroke();
+    
+    // 绘制细分小刻度
+    const minorStep = step / 5;
+    for (let j = 1; j < 5; j++) {
+      const myTick = Math.round((y + j * minorStep) * state.scale);
+      if (myTick > h) break;
+      ctxL.beginPath();
+      ctxL.moveTo(16, myTick);
+      ctxL.lineTo(20, myTick);
+      ctxL.stroke();
+    }
+
+    // 旋转文字以在左侧垂直排版
+    ctxL.save();
+    ctxL.translate(3, dy + 10);
+    ctxL.rotate(-Math.PI / 2);
+    ctxL.fillText(y, 0, 0);
+    ctxL.restore();
+  }
+
+  // 绘制蓝色游标线 (游标跟随鼠标)
+  if (mx !== undefined && my !== undefined) {
+    ctxT.strokeStyle = 'var(--accent-blue)';
+    ctxT.lineWidth = 1;
+    ctxT.beginPath();
+    ctxT.moveTo(mx, 0);
+    ctxT.lineTo(mx, 20);
+    ctxT.stroke();
+
+    ctxL.strokeStyle = 'var(--accent-blue)';
+    ctxL.lineWidth = 1;
+    ctxL.beginPath();
+    ctxL.moveTo(0, my);
+    ctxL.lineTo(20, my);
+    ctxL.stroke();
+  }
+}
+
+// 各模式 overlay 重绘钩子
+const overlayRedraw = { crop: () => {}, slice: () => {}, resize: () => {} };
+
+function setMode(mode) {
+  state.mode = mode;
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  ['crop', 'slice', 'resize'].forEach(m => document.getElementById('panel-' + m).classList.toggle('hidden', m !== mode));
+  
+  // 重置刻度尺交互状态和光标
+  const rt = document.getElementById('ruler-top');
+  const rl = document.getElementById('ruler-left');
+  if (rt) { rt.onmousedown = null; rt.style.cursor = 'default'; }
+  if (rl) { rl.onmousedown = null; rl.style.cursor = 'default'; }
+
+  if (state.img) { 
+    renderBase(); 
+    overlayRedraw[mode](); 
+  }
+}
+
+document.getElementById('file').addEventListener('change', e => loadImage(e.target.files[0]));
+document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+stage.addEventListener('dragover', e => { e.preventDefault(); stage.classList.add('dragover'); });
+stage.addEventListener('dragleave', () => { stage.classList.remove('dragover'); });
+stage.addEventListener('drop', e => { e.preventDefault(); stage.classList.remove('dragover'); loadImage(e.dataTransfer.files[0]); });
+stage.onclick = (e) => {
+  if (stage.classList.contains('empty')) {
+    document.getElementById('file').click();
+  }
+};
+
+// 工具：把 canvas 区域导出为 Blob 并下载
+function downloadBlob(blob, filename) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+// 工具：原图某矩形画到离屏 canvas（用原始像素），返回 canvas (复用单个离屏 Canvas)
+let offscreenCanvas = null;
+function cropToCanvas(x, y, w, h, flatten) {
+  if (!offscreenCanvas) {
+    offscreenCanvas = document.createElement('canvas');
+  }
+  const sw = Math.max(1, Math.round(w)); const sh = Math.max(1, Math.round(h));
+  offscreenCanvas.width = sw; offscreenCanvas.height = sh;
+  const ctx = offscreenCanvas.getContext('2d');
+  if (flatten) { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, sw, sh); }
+  ctx.drawImage(state.img, x, y, sw, sh, 0, 0, sw, sh);
+  return offscreenCanvas;
+}
+
+// 工具：从原始格式推导默认导出 mime / ext
+function defaultExport() {
+  const tM = state.srcType || 'image/png';
+  if (tM === 'image/jpeg') return { mime: 'image/jpeg', ext: 'jpg' };
+  if (tM === 'image/webp') return { mime: 'image/webp', ext: 'webp' };
+  return { mime: 'image/png', ext: 'png' };
+}
+
+// ===== 裁剪模式 =====
+const cropState = { rect: null, drag: null, aspectRatio: 'free' }; // rect 采用原始像素坐标!
+
+function cropBody() {
+  document.getElementById('crop-body').innerHTML = `
+    <div class="hint">${t('crop_hint')}</div>
+    
+    <label>${t('crop_ratio')}</label>
+    <div class="ratio-group">
+      <button class="ratio-btn active" data-ratio="free">${t('ratio_free')}</button>
+      <button class="ratio-btn" data-ratio="1">${t('ratio_1_1')}</button>
+      <button class="ratio-btn" data-ratio="1.7777777777777777">${t('ratio_16_9')}</button>
+      <button class="ratio-btn" data-ratio="1.3333333333333333">${t('ratio_4_3')}</button>
+    </div>
+    
+    <button class="act" id="crop-export">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      ${t('crop_btn')}
+    </button>
+  `;
+  
+  // 绑定比例选择按钮
+  document.querySelectorAll('.ratio-group .ratio-btn').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.ratio-group .ratio-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const ratio = btn.dataset.ratio;
+      cropState.aspectRatio = ratio === 'free' ? 'free' : parseFloat(ratio);
+      
+      // 如果存在裁剪框，按比例重整
+      if (cropState.rect && cropState.aspectRatio !== 'free') {
+        const ratioVal = cropState.aspectRatio;
+        let w = cropState.rect.w;
+        let h = cropState.rect.h;
+        if (w / h > ratioVal) {
+          h = w / ratioVal;
+        } else {
+          w = h * ratioVal;
+        }
+        
+        if (cropState.rect.x + w > state.imgW) {
+          cropState.rect.x = state.imgW - w;
+        }
+        if (cropState.rect.y + h > state.imgH) {
+          cropState.rect.y = state.imgH - h;
+        }
+        cropState.rect.w = w;
+        cropState.rect.h = h;
+        drawCropOverlay();
+      }
+    };
+  });
+  
+  document.getElementById('crop-export').onclick = exportCrop;
+}
+
+function drawCropOverlay() {
+  const o = document.getElementById('overlay'); if (!o) return;
+  const ctx = o.getContext('2d'); ctx.clearRect(0, 0, o.width, o.height);
+  const r = cropState.rect; if (!r) return;
+  
+  const rx = r.x * state.scale;
+  const ry = r.y * state.scale;
+  const rw = r.w * state.scale;
+  const rh = r.h * state.scale;
+  
+  // 绘制蒙版
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  ctx.fillRect(0, 0, o.width, o.height);
+  ctx.clearRect(rx, ry, rw, rh);
+  
+  // 绘制高对比度裁切边框 (白描边 + 蓝主线)
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(rx, ry, rw, rh);
+  
+  ctx.strokeStyle = '#3b82f6';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(rx, ry, rw, rh);
+  
+  // 绘制三分线 (辅助线)
+  if (cropState.drag) {
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    // 竖线
+    ctx.moveTo(rx + rw / 3, ry); ctx.lineTo(rx + rw / 3, ry + rh);
+    ctx.moveTo(rx + 2 * rw / 3, ry); ctx.lineTo(rx + 2 * rw / 3, ry + rh);
+    // 横线
+    ctx.moveTo(rx, ry + rh / 3); ctx.lineTo(rx + rw, ry + rh / 3);
+    ctx.moveTo(rx, ry + 2 * rh / 3); ctx.lineTo(rx + rw, ry + 2 * rh / 3);
+    ctx.stroke();
+  }
+  
+  // 绘制更精致的圆形控制点 (8个)
+  ctx.fillStyle = '#ffffff';
+  ctx.strokeStyle = '#3b82f6';
+  ctx.lineWidth = 1.5;
+  handlePoints({ x: rx, y: ry, w: rw, h: rh }).forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 5, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.stroke();
+  });
+}
+
+function handlePoints(r) {
+  return [
+    { id: 'nw', x: r.x, y: r.y }, { id: 'ne', x: r.x + r.w, y: r.y },
+    { id: 'sw', x: r.x, y: r.y + r.h }, { id: 'se', x: r.x + r.w, y: r.y + r.h },
+    { id: 'n', x: r.x + r.w / 2, y: r.y }, { id: 's', x: r.x + r.w / 2, y: r.y + r.h },
+    { id: 'w', x: r.x, y: r.y + r.h / 2 }, { id: 'e', x: r.x + r.w, y: r.y + r.h / 2 }
+  ];
+}
+
+function hitHandle(r, mx, my) {
+  return handlePoints(r).find(p => Math.abs(p.x - mx) <= 8 && Math.abs(p.y - my) <= 8);
+}
+
+function mousePos(canvas, e) {
+  const b = canvas.getBoundingClientRect();
+  return { x: e.clientX - b.left, y: e.clientY - b.top };
+}
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function bindCrop() {
+  const o = document.getElementById('overlay'); if (!o) return;
+  
+  o.onmousedown = e => {
+    if (!state.img) return;
+    const m = mousePos(o, e);
+    
+    // 在显示坐标上做 HitTest
+    const displayRect = cropState.rect ? {
+      x: cropState.rect.x * state.scale,
+      y: cropState.rect.y * state.scale,
+      w: cropState.rect.w * state.scale,
+      h: cropState.rect.h * state.scale
+    } : null;
+    
+    if (displayRect) {
+      const h = hitHandle(displayRect, m.x, m.y);
+      if (h) { 
+        cropState.drag = { type: 'resize', handle: h.id, startRect: { ...cropState.rect }, startMouse: m }; 
+        return; 
+      }
+      if (m.x >= displayRect.x && m.x <= displayRect.x + displayRect.w &&
+          m.y >= displayRect.y && m.y <= displayRect.y + displayRect.h) {
+        cropState.drag = { type: 'move', startRect: { ...cropState.rect }, startMouse: m }; 
+        return;
+      }
+    }
+    
+    // 如果没有命中，在点击位置绘制新的裁剪区
+    const startImg = L.displayToImage(m.x, m.y, state.scale);
+    cropState.rect = { x: startImg.x, y: startImg.y, w: 0, h: 0 };
+    cropState.drag = { type: 'new', startMouse: m };
+    drawCropOverlay();
+  };
+}
+
+// 绑定全局鼠标移动和释放事件，防止拖拽越界丢失鼠标事件
+window.addEventListener('mousemove', e => {
+  const o = document.getElementById('overlay');
+  if (!o || !state.img) return;
+  
+  const m = mousePos(o, e);
+  
+  // 更新刻度尺上的游标蓝线 (类似 PS)
+  const isOverOverlay = e.target === o;
+  if (isOverOverlay || (state.mode === 'slice' && sliceState.drag)) {
+    drawRulers(m.x, m.y);
+  } else {
+    drawRulers();
+  }
+  
+  if (state.mode === 'crop') {
+    if (cropState.drag) {
+      const d = cropState.drag;
+      const deltaX = (m.x - d.startMouse.x) / state.scale;
+      const deltaY = (m.y - d.startMouse.y) / state.scale;
+      
+      if (d.type === 'new') {
+        const startImg = L.displayToImage(d.startMouse.x, d.startMouse.y, state.scale);
+        const curImg = L.displayToImage(m.x, m.y, state.scale);
+        const x1 = Math.min(startImg.x, curImg.x);
+        const y1 = Math.min(startImg.y, curImg.y);
+        const x2 = Math.max(startImg.x, curImg.x);
+        const y2 = Math.max(startImg.y, curImg.y);
+        
+        let w = x2 - x1;
+        let h = y2 - y1;
+        
+        // 比例约束
+        if (cropState.aspectRatio !== 'free') {
+          const ratio = cropState.aspectRatio;
+          if (w / h > ratio) {
+            h = w / ratio;
+          } else {
+            w = h * ratio;
+          }
+        }
+        
+        cropState.rect = {
+          x: clamp(x1, 0, state.imgW),
+          y: clamp(y1, 0, state.imgH),
+          w: clamp(w, 0, state.imgW - x1),
+          h: clamp(h, 0, state.imgH - y1)
+        };
+      } else if (d.type === 'move') {
+        cropState.rect.x = clamp(d.startRect.x + deltaX, 0, state.imgW - d.startRect.w);
+        cropState.rect.y = clamp(d.startRect.y + deltaY, 0, state.imgH - d.startRect.h);
+      } else if (d.type === 'resize') {
+        let left = d.startRect.x;
+        let top = d.startRect.y;
+        let right = d.startRect.x + d.startRect.w;
+        let bottom = d.startRect.y + d.startRect.h;
+        
+        if (d.handle.includes('w')) left = clamp(d.startRect.x + deltaX, 0, right - 5);
+        if (d.handle.includes('e')) right = clamp(d.startRect.x + d.startRect.w + deltaX, left + 5, state.imgW);
+        if (d.handle.includes('n')) top = clamp(d.startRect.y + deltaY, 0, bottom - 5);
+        if (d.handle.includes('s')) bottom = clamp(d.startRect.y + d.startRect.h + deltaY, top + 5, state.imgH);
+        
+        // 复杂的等比例边界计算
+        if (cropState.aspectRatio !== 'free') {
+          const ratio = cropState.aspectRatio;
+          let w = right - left;
+          let h = bottom - top;
+          
+          if (d.handle === 'e' || d.handle === 'w') {
+            h = w / ratio;
+            bottom = top + h;
+            if (bottom > state.imgH) {
+              bottom = state.imgH;
+              h = bottom - top;
+              w = h * ratio;
+              if (d.handle === 'w') left = right - w;
+              else right = left + w;
+            }
+          } else if (d.handle === 'n' || d.handle === 's') {
+            w = h * ratio;
+            right = left + w;
+            if (right > state.imgW) {
+              right = state.imgW;
+              w = right - left;
+              h = w / ratio;
+              if (d.handle === 'n') top = bottom - h;
+              else bottom = top + h;
+            }
+          } else {
+            // 角手柄
+            if (w / h > ratio) h = w / ratio;
+            else w = h * ratio;
+            
+            if (d.handle.includes('e')) right = left + w;
+            else left = right - w;
+            if (d.handle.includes('s')) bottom = top + h;
+            else top = bottom - h;
+            
+            // 安全限制
+            if (left < 0) { left = 0; right = left + w; }
+            if (right > state.imgW) { right = state.imgW; left = right - w; }
+            if (top < 0) { top = 0; bottom = top + h; }
+            if (bottom > state.imgH) { bottom = state.imgH; top = bottom - h; }
+          }
+        }
+        
+        cropState.rect = { x: left, y: top, w: right - left, h: bottom - top };
+      }
+      drawCropOverlay();
+    } else {
+      // 悬停光标指示器
+      const displayRect = cropState.rect ? {
+        x: cropState.rect.x * state.scale,
+        y: cropState.rect.y * state.scale,
+        w: cropState.rect.w * state.scale,
+        h: cropState.rect.h * state.scale
+      } : null;
+      
+      if (displayRect) {
+        const h = hitHandle(displayRect, m.x, m.y);
+        if (h) {
+          if (h.id === 'nw' || h.id === 'se') o.style.cursor = 'nwse-resize';
+          else if (h.id === 'ne' || h.id === 'sw') o.style.cursor = 'nesw-resize';
+          else if (h.id === 'n' || h.id === 's') o.style.cursor = 'ns-resize';
+          else if (h.id === 'e' || h.id === 'w') o.style.cursor = 'ew-resize';
+        } else if (m.x >= displayRect.x && m.x <= displayRect.x + displayRect.w &&
+                   m.y >= displayRect.y && m.y <= displayRect.y + displayRect.h) {
+          o.style.cursor = 'move';
+        } else {
+          o.style.cursor = 'crosshair';
+        }
+      } else {
+        o.style.cursor = 'crosshair';
+      }
+    }
+  } else if (state.mode === 'slice') {
+    if (sliceState.drag) {
+      const img = L.displayToImage(m.x, m.y, state.scale);
+      if (sliceState.drag.axis === 'x') sliceState.xs[sliceState.drag.i] = clamp(img.x, 1, state.imgW - 1);
+      else sliceState.ys[sliceState.drag.i] = clamp(img.y, 1, state.imgH - 1);
+      drawSliceOverlay();
+    } else {
+      // 靠近切割线的光标变更
+      const hit = nearestLine(m);
+      if (hit) {
+        o.style.cursor = hit.axis === 'x' ? 'ew-resize' : 'ns-resize';
+      } else {
+        const img = L.displayToImage(m.x, m.y, state.scale);
+        const cut = L.classifyCut(img.x, img.y, state.imgW, state.imgH);
+        o.style.cursor = cut ? 'pointer' : 'default';
+      }
+    }
+  }
+});
+
+window.addEventListener('mouseup', () => {
+  if (state.mode === 'crop' && cropState.drag) {
+    const r = cropState.rect;
+    if (r) {
+      if (r.w < 0) { r.x += r.w; r.w = -r.w; }
+      if (r.h < 0) { r.y += r.h; r.h = -r.h; }
+      if (r.w < 3 || r.h < 3) cropState.rect = null;
+    }
+    cropState.drag = null;
+    drawCropOverlay();
+  } else if (state.mode === 'slice' && sliceState.drag) {
+    sliceState.drag = null;
+  }
+});
+
+async function exportCrop() {
+  if (!cropState.rect) { showToast(t('toast_crop_no_rect')); return; }
+  const r = cropState.rect;
+  
+  showLoader(true, '正在提取裁剪区像素...');
+  await new Promise(res => setTimeout(res, 50));
+  
+  const { mime, ext } = defaultExport();
+  const flatten = mime === 'image/jpeg';
+  const c = cropToCanvas(r.x, r.y, r.w, r.h, flatten);
+  
+  c.toBlob(blob => {
+    downloadBlob(blob, 'crop.' + ext);
+    showLoader(false);
+    showToast(t('toast_crop_success'));
+  }, mime, 0.92);
+}
+
+overlayRedraw.crop = () => { cropBody(); bindCrop(); drawCropOverlay(); };
+
+// ===== 分割模式 =====
+const sliceState = { xs: [], ys: [], drag: null }; // 原始像素坐标
+
+function sliceBody() {
+  document.getElementById('slice-body').innerHTML = `
+    <div class="hint">${t('slice_hint')}</div>
+    
+    <label>${t('slice_rows')}</label>
+    <div class="row">
+      <input type="number" id="eq-rows" min="2" value="2">
+      <button class="ghost" id="eq-rows-btn">${t('slice_divide')}</button>
+    </div>
+    
+    <label>${t('slice_cols')}</label>
+    <div class="row">
+      <input type="number" id="eq-cols" min="2" value="2">
+      <button class="ghost" id="eq-cols-btn">${t('slice_divide')}</button>
+    </div>
+    
+    <button class="ghost" id="slice-clear" style="margin-top:16px; width:100%; display:flex; align-items:center; justify-content:center; gap:6px;">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+      ${t('slice_clear')}
+    </button>
+    
+    <button class="act" id="slice-export">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      ${t('slice_btn')}
+    </button>
+  `;
+  
+  document.getElementById('eq-rows-btn').onclick = () => { 
+    sliceState.ys = L.equalCuts(state.imgH, +document.getElementById('eq-rows').value); 
+    drawSliceOverlay(); 
+  };
+  document.getElementById('eq-cols-btn').onclick = () => { 
+    sliceState.xs = L.equalCuts(state.imgW, +document.getElementById('eq-cols').value); 
+    drawSliceOverlay(); 
+  };
+  document.getElementById('slice-clear').onclick = () => { 
+    sliceState.xs = []; 
+    sliceState.ys = []; 
+    drawSliceOverlay(); 
+    showToast(t('toast_lines_cleared'));
+  };
+  document.getElementById('slice-export').onclick = exportSlices;
+}
+
+function drawSliceOverlay() {
+  const o = document.getElementById('overlay'); if (!o) return;
+  const ctx = o.getContext('2d'); ctx.clearRect(0, 0, o.width, o.height);
+  
+  // 绘制网格，采用经典 Photoshop 虚线效果 (高对比度)
+  // 竖线
+  sliceState.xs.forEach(ix => {
+    const d = L.imageToDisplay(ix, 0, state.scale).x;
+    
+    // 白色底层衬托
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+    ctx.lineWidth = 3;
+    line(ctx, d, 0, d, o.height);
+    
+    // 红色核心线
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 1.5;
+    line(ctx, d, 0, d, o.height);
+  });
+  
+  // 横线
+  sliceState.ys.forEach(iy => {
+    const d = L.imageToDisplay(0, iy, state.scale).y;
+    
+    // 白色底层衬托
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+    ctx.lineWidth = 3;
+    line(ctx, 0, d, o.width, d);
+    
+    // 红色核心线
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 1.5;
+    line(ctx, 0, d, o.width, d);
+  });
+}
+
+function line(ctx, x1, y1, x2, y2) { 
+  ctx.beginPath(); 
+  ctx.moveTo(x1, y1); 
+  ctx.lineTo(x2, y2); 
+  ctx.stroke(); 
+}
+
+function nearestLine(m) {
+  // 悬停捕获：显示坐标 6px 范围内
+  for (let i = 0; i < sliceState.xs.length; i++) {
+    if (Math.abs(L.imageToDisplay(sliceState.xs[i], 0, state.scale).x - m.x) <= 6) return { axis: 'x', i };
+  }
+  for (let i = 0; i < sliceState.ys.length; i++) {
+    if (Math.abs(L.imageToDisplay(0, sliceState.ys[i], state.scale).y - m.y) <= 6) return { axis: 'y', i };
+  }
+  return null;
+}
+
+function bindSlice() {
+  const o = document.getElementById('overlay'); if (!o) return;
+  const rt = document.getElementById('ruler-top');
+  const rl = document.getElementById('ruler-left');
+  
+  o.onmousedown = e => {
+    if (!state.img) return;
+    const m = mousePos(o, e); 
+    const hit = nearestLine(m);
+    
+    if (hit) { 
+      sliceState.drag = hit; 
+      return; 
+    }
+    
+    const img = L.displayToImage(m.x, m.y, state.scale);
+    const cut = L.classifyCut(img.x, img.y, state.imgW, state.imgH);
+    
+    if (cut && cut.type === 'horizontal') sliceState.ys.push(cut.pos);
+    else if (cut && cut.type === 'vertical') sliceState.xs.push(cut.pos);
+    drawSliceOverlay();
+  };
+  
+  if (rt) {
+    rt.style.cursor = 'ns-resize';
+    rt.onmousedown = e => {
+      e.preventDefault();
+      if (!state.img) return;
+      const m = mousePos(o, e);
+      const img = L.displayToImage(0, m.y, state.scale);
+      const initY = clamp(img.y, 0, state.imgH);
+      sliceState.ys.push(initY);
+      sliceState.drag = { axis: 'y', i: sliceState.ys.length - 1 };
+      drawSliceOverlay();
+    };
+  }
+  
+  if (rl) {
+    rl.style.cursor = 'ew-resize';
+    rl.onmousedown = e => {
+      e.preventDefault();
+      if (!state.img) return;
+      const m = mousePos(o, e);
+      const img = L.displayToImage(m.x, 0, state.scale);
+      const initX = clamp(img.x, 0, state.imgW);
+      sliceState.xs.push(initX);
+      sliceState.drag = { axis: 'x', i: sliceState.xs.length - 1 };
+      drawSliceOverlay();
+    };
+  }
+  
+  o.ondblclick = e => {
+    const m = mousePos(o, e); 
+    const hit = nearestLine(m);
+    if (hit) { 
+      (hit.axis === 'x' ? sliceState.xs : sliceState.ys).splice(hit.i, 1); 
+      drawSliceOverlay(); 
+      showToast(t('toast_line_deleted'));
+    }
+  };
+}
+
+async function exportSlices() {
+  const rects = L.sliceRects(state.imgW, state.imgH, sliceState.xs, sliceState.ys);
+  if (rects.length === 0) return;
+  
+  showLoader(true, t('toast_slice_prep'));
+  const { mime, ext } = defaultExport();
+  const flatten = mime === 'image/jpeg';
+  const files = [];
+  
+  try {
+    for (let i = 0; i < rects.length; i++) {
+      const r = rects[i];
+      showLoader(true, t('toast_slice_proc', {cur: i + 1, total: rects.length}));
+      
+      // 阻塞片刻使得 loading 状态能重新排版渲染
+      await new Promise(res => setTimeout(res, 25));
+      
+      const canvas = cropToCanvas(r.x, r.y, r.w, r.h, flatten);
+      const blob = await new Promise(res => canvas.toBlob(res, mime, 0.92));
+      const buf = new Uint8Array(await blob.arrayBuffer());
+      files.push({ name: L.numberedName(r.index, ext), data: buf });
+    }
+    
+    showLoader(true, t('toast_slice_zip', {count: files.length}));
+    await new Promise(res => setTimeout(res, 50));
+    
+    const zip = L.zipStore(files);
+    downloadBlob(new Blob([zip], { type: 'application/zip' }), 'slices.zip');
+    showLoader(false);
+    showToast(t('toast_slice_success', {count: files.length}));
+  } catch (err) {
+    console.error(err);
+    showLoader(false);
+    showToast(t('toast_slice_fail'));
+  }
+}
+
+overlayRedraw.slice = () => { sliceBody(); bindSlice(); drawSliceOverlay(); };
+
+// ===== 缩小模式 =====
+function resizeBody() {
+  const def = defaultExport();
+  document.getElementById('resize-body').innerHTML = `
+    <div class="hint" id="rz-orig"></div>
+    
+    <label>${t('resize_mode')}</label>
+    <select id="rz-mode">
+      <option value="longEdge">${t('mode_long')}</option>
+      <option value="percent">${t('mode_percent')}</option>
+      <option value="width">${t('mode_width')}</option>
+      <option value="filesize">${t('mode_filesize')}</option>
+    </select>
+    
+    <div class="row" style="margin-top: 8px; margin-bottom: 8px;">
+      <button class="ghost" style="padding: 6px 8px; font-size: 11px;" data-preset="1080">→1080P</button>
+      <button class="ghost" style="padding: 6px 8px; font-size: 11px;" data-preset="720">→720P</button>
+      <button class="ghost" style="padding: 6px 8px; font-size: 11px;" data-preset="p50">→50%</button>
+    </div>
+    
+    <label id="rz-val-label">${t('resize_val_long')}</label>
+    <input type="number" id="rz-val" value="1080">
+    
+    <label>${t('export_format')}</label>
+    <select id="rz-fmt">
+      <option value="src">${t('fmt_src')} (${def.ext})</option>
+      <option value="image/jpeg">${t('fmt_jpg')}</option>
+      <option value="image/webp">${t('fmt_webp')}</option>
+      <option value="image/png">${t('fmt_png')}</option>
+    </select>
+    
+    <div id="rz-q-group">
+      <label>${t('quality')} <span id="rz-qv">92</span>%</label>
+      <input type="range" id="rz-q" min="10" max="100" value="92" style="width:100%; margin: 8px 0;">
+    </div>
+
+    <div id="rz-png-warning" class="hint" style="display:none; color:#f59e0b; border-color:#d97706; background:rgba(217,119,6,0.04); margin-top: 12px; font-size:11px;">
+      ${t('png_warning')}
+    </div>
+    
+    <div class="hint" id="rz-preview" style="margin-top: 14px; font-size: 12px;">${t('estimating')}</div>
+    
+    <button class="act" id="rz-export">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      ${t('resize_btn')}
+    </button>
+  `;
+  
+  const orig = document.getElementById('rz-orig');
+  orig.textContent = t('orig_size') + state.imgW + ' × ' + state.imgH;
+  
+  document.getElementById('rz-q').oninput = e => {
+    document.getElementById('rz-qv').textContent = e.target.value;
+    debouncedUpdateResizePreview();
+  };
+  
+  document.getElementById('rz-mode').onchange = () => {
+    syncDefaultVal();
+    adjustUIForMode();
+    debouncedUpdateResizePreview();
+  };
+  
+  document.getElementById('rz-val').oninput = debouncedUpdateResizePreview;
+  document.getElementById('rz-fmt').onchange = () => {
+    adjustUIForMode();
+    debouncedUpdateResizePreview();
+  };
+  
+  document.querySelectorAll('[data-preset]').forEach(b => b.onclick = () => {
+    const p = b.dataset.preset;
+    const mode = document.getElementById('rz-mode');
+    if (p === 'p50') {
+      mode.value = 'percent';
+      document.getElementById('rz-val').value = 50;
+    } else {
+      mode.value = 'longEdge';
+      document.getElementById('rz-val').value = p;
+    }
+    adjustUIForMode();
+    debouncedUpdateResizePreview();
+  });
+  
+  document.getElementById('rz-export').onclick = exportResize;
+  adjustUIForMode();
+  debouncedUpdateResizePreview();
+}
+
+function adjustUIForMode() {
+  const mode = document.getElementById('rz-mode').value;
+  const mime = exportMime();
+  const qGroup = document.getElementById('rz-q-group');
+  const valLabel = document.getElementById('rz-val-label');
+  const pngWarning = document.getElementById('rz-png-warning');
+  
+  if (mode === 'percent') valLabel.textContent = t('resize_val_percent');
+  else if (mode === 'filesize') valLabel.textContent = t('resize_val_filesize');
+  else if (mode === 'width') valLabel.textContent = t('resize_val_width');
+  else valLabel.textContent = t('resize_val_long');
+  
+  // 隐藏 PNG 和 filesize 模式的质量滑块
+  if (mime === 'image/png' || mode === 'filesize') {
+    qGroup.style.display = 'none';
+  } else {
+    qGroup.style.display = 'block';
+  }
+  
+  // 显示 PNG 大小限制提示
+  if (mode === 'filesize' && mime === 'image/png') {
+    pngWarning.style.display = 'block';
+  } else {
+    pngWarning.style.display = 'none';
+  }
+}
+
+function syncDefaultVal() {
+  const mode = document.getElementById('rz-mode').value; 
+  const val = document.getElementById('rz-val');
+  if (mode === 'percent') val.value = 50; 
+  else if (mode === 'filesize') val.value = 2; 
+  else if (mode === 'width') val.value = 1280; 
+  else val.value = 1080;
+}
+
+function currentResizeDims() {
+  const mode = document.getElementById('rz-mode').value; 
+  const v = +document.getElementById('rz-val').value;
+  if (mode === 'filesize') return { width: state.imgW, height: state.imgH };
+  return L.computeResize(state.imgW, state.imgH, { mode, value: v });
+}
+
+function exportMime() {
+  const f = document.getElementById('rz-fmt').value;
+  return f === 'src' ? defaultExport().mime : f;
+}
+
+function mimeExt(mime) { 
+  return mime === 'image/jpeg' ? 'jpg' : mime === 'image/webp' ? 'webp' : 'png'; 
+}
+
+// 采用防抖更新预计大小和尺寸，避免频繁编码卡顿
+function debouncedUpdateResizePreview() {
+  clearTimeout(previewTimeout);
+  const el = document.getElementById('rz-preview');
+  if (!el) return;
+  el.innerHTML = `<span style="color:var(--text-secondary)">${t('estimating')}</span>`;
+  
+  previewTimeout = setTimeout(async () => {
+    try {
+      const dims = currentResizeDims();
+      const mime = exportMime();
+      const q = +document.getElementById('rz-q').value / 100;
+      const mode = document.getElementById('rz-mode').value;
+      
+      if (mode === 'filesize') {
+        const targetVal = +document.getElementById('rz-val').value;
+        el.innerHTML = `${t('est_size')} <strong>${dims.width} × ${dims.height} px</strong><br>${t('limit_size')} <strong>≤ ${targetVal} MB</strong>`;
+      } else {
+        const flatten = mime === 'image/jpeg';
+        const c = renderResizeCanvas(dims, flatten);
+        
+        // 执行一次背景 Canvas 编码推算体积
+        const blob = await new Promise(res => c.toBlob(res, mime, q));
+        if (blob) {
+          const kb = (blob.size / 1024).toFixed(1);
+          const mb = (blob.size / (1024 * 1024)).toFixed(2);
+          const sizeStr = blob.size > 1024 * 1024 ? `${mb} MB` : `${kb} KB`;
+          el.innerHTML = `${t('est_size')} <strong>${dims.width} × ${dims.height} px</strong><br>${t('est_bytes')} <strong style="color:#10b981">${sizeStr}</strong>`;
+        } else {
+          el.innerHTML = `${t('est_size')} <strong>${dims.width} × ${dims.height} px</strong>`;
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      const dims = currentResizeDims();
+      el.innerHTML = `${t('est_size')} <strong>${dims.width} × ${dims.height} px</strong>`;
+    }
+  }, 350);
+}
+
+// 统一渲染 offscreen 调整尺寸画布 (复用 Canvas 优化性能)
+let resizeOffscreenCanvas = null;
+function renderResizeCanvas(dims, flatten) {
+  if (!resizeOffscreenCanvas) {
+    resizeOffscreenCanvas = document.createElement('canvas');
+  }
+  resizeOffscreenCanvas.width = dims.width; 
+  resizeOffscreenCanvas.height = dims.height;
+  const ctx = resizeOffscreenCanvas.getContext('2d');
+  if (flatten) { 
+    ctx.fillStyle = '#fff'; 
+    ctx.fillRect(0, 0, dims.width, dims.height); 
+  }
+  ctx.drawImage(state.img, 0, 0, dims.width, dims.height);
+  return resizeOffscreenCanvas;
+}
+
+async function exportResize() {
+  const mode = document.getElementById('rz-mode').value;
+  const mime = exportMime(); 
+  const ext = mimeExt(mime);
+  const q = +document.getElementById('rz-q').value / 100;
+  
+  showLoader(true, t('toast_resize_enc'));
+  await new Promise(resolve => setTimeout(resolve, 50));
+  
+  try {
+    if (mode === 'filesize') {
+      const targetBytes = +document.getElementById('rz-val').value * 1024 * 1024;
+      let dims = { width: state.imgW, height: state.imgH };
+      const encodeMime = mime === 'image/png' ? 'image/jpeg' : mime;
+      const flatten = encodeMime === 'image/jpeg';
+      
+      // 缓存二进制二分搜索中的各个 Blob 结果以防止最终重复编码
+      const blobs = new Map();
+      const measure = async (quality) => {
+        const c = renderResizeCanvas(dims, flatten);
+        const blob = await new Promise(res => c.toBlob(res, encodeMime, quality));
+        blobs.set(quality, blob);
+        return blob.size;
+      };
+      
+      showLoader(true, t('toast_resize_opt'));
+      let result = await L.qualitySearch({ measure, targetBytes });
+      
+      let guard = 0;
+      while (result.bytes > targetBytes && guard++ < 6 && dims.width > 100) {
+        showLoader(true, t('toast_resize_shrink', {pct: Math.round(Math.pow(0.8, guard) * 100)}));
+        dims = L.computeResize(dims.width, dims.height, { mode: 'percent', value: 80 });
+        blobs.clear();
+        result = await L.qualitySearch({ measure, targetBytes });
+      }
+      
+      let finalBlob = blobs.get(result.quality);
+      if (!finalBlob) {
+        const c = renderResizeCanvas(dims, flatten);
+        finalBlob = await new Promise(res => c.toBlob(res, encodeMime, result.quality));
+      }
+      
+      downloadBlob(finalBlob, 'resized.' + (mime === 'image/png' ? 'jpg' : ext));
+      showLoader(false);
+      showToast(t('toast_resize_success'));
+      return;
+    }
+    
+    // 普通重置大小
+    const dims = currentResizeDims();
+    const flatten = mime === 'image/jpeg';
+    const c = renderResizeCanvas(dims, flatten);
+    c.toBlob(b => {
+      downloadBlob(b, 'resized.' + ext);
+      showLoader(false);
+      showToast(t('toast_resize_done'));
+    }, mime, q);
+  } catch (err) {
+    console.error(err);
+    showLoader(false);
+    showToast(t('toast_resize_fail'));
+  }
+}
+
+overlayRedraw.resize = () => {
+  const o = document.getElementById('overlay'); 
+  if (o) o.getContext('2d').clearRect(0, 0, o.width, o.height);
+  if (o) { o.onmousedown = null; }
+  resizeBody();
+};
+</script>
+</body>
+</html>
