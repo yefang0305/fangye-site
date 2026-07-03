@@ -1,0 +1,149 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectPageLayout from '../../components/ProjectPageLayout.astro';
+---
+
+<BaseLayout title="X-Markdown 转换工具" description="一键将微信公众号文章、X (Twitter) 动态和文章解析并导出为 Markdown、PDF、Word (DOCX) 格式的本地 Web 工具。">
+  <ProjectPageLayout
+    title="X-Markdown 转换工具"
+    description="本地运行的 Web 工具，支持一键将微信公众号文章、X (Twitter) 动态/长文章抓取解析，生成干净的 Markdown 文本并支持导出 ZIP 媒体包、DOCX 和 PDF 等多种格式。"
+    eyebrow="Project"
+    githubUrl="https://github.com/yefang0305/x-markdown-web"
+    techStack={[
+      { label: '运行时', items: ['Node.js', 'Python 3', 'Google Chrome'] },
+      { label: '抓取源', items: ['微信公众号 (mp.weixin.qq.com)', 'X / Twitter (x.com)'] },
+      { label: '输出格式', items: ['Markdown (.md)', 'ZIP 压缩包', 'HTML', 'PDF', 'Word (DOCX)'] },
+    ]}
+  >
+    <h2>项目定位</h2>
+    <p>
+      一个<strong>开箱即用的本地 Web 工具</strong>。用于内容创作者、知识库整理者或开发者快速将网页端（微信、Twitter/X）的文章和推文，整理为标准、无杂质的本地 Markdown 排版文件。
+      所有抓取和文件生成过程完全在本地环境运行，绝不上传任何隐私数据，并保持极高的网络请求成功率。
+    </p>
+
+    <h2>核心能力</h2>
+    <div class="capability-grid">
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <h4>智能内容解析</h4>
+        <p>自动匹配微信公众号和 X/Twitter 的页面结构，剔除广告和样式，提取正文、作者、标题及高清原图。</p>
+      </div>
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        <h4>完整资源离线化</h4>
+        <p>支持将文章中引用的全部网络图片下载到本地并转为相对路径，一键打包为 ZIP，或将图片转为 Base64 内嵌于单文件 Markdown 中。</p>
+      </div>
+      <div class="capability-card">
+        <svg class="capability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <h4>多场景一键导出</h4>
+        <p>不仅能输出 Markdown，还可以通过本地无头 Chrome 转换为排版精美的 PDF，或通过 Python 转换脚本生成原生 Microsoft Word 格式。</p>
+      </div>
+    </div>
+
+    <h2>工作流程</h2>
+    <div class="workflow-steps">
+      <div class="workflow-step">
+        <div class="step-num">1</div>
+        <h4>粘贴链接</h4>
+        <p>粘贴微信文章或推文状态的 URL</p>
+      </div>
+      <div class="workflow-step">
+        <div class="step-num">2</div>
+        <h4>抓取与解析</h4>
+        <p>通过本地服务提取文字和图片</p>
+      </div>
+      <div class="workflow-step">
+        <div class="step-num">3</div>
+        <h4>格式生成</h4>
+        <p>渲染为 HTML 并通过本地引擎转换</p>
+      </div>
+      <div class="workflow-step">
+        <div class="step-num">4</div>
+        <h4>下载包下载</h4>
+        <p>下载 ZIP、PDF、DOCX 等到本地</p>
+      </div>
+    </div>
+
+    <div class="project-svg">
+      <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="xm-panel" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#142128"/>
+            <stop offset="100%" stop-color="#0d161b"/>
+          </linearGradient>
+        </defs>
+        <!-- Input Frame -->
+        <rect x="15" y="20" width="180" height="170" rx="6" fill="url(#xm-panel)" stroke="#2a4a3f" stroke-width="1.5"/>
+        <text x="105" y="45" fill="#9ff5d7" font-size="12" font-weight="bold" text-anchor="middle" font-family="monospace">Input URLs</text>
+        <line x1="30" y1="55" x2="180" y2="55" stroke="#2a4a3f" stroke-width="0.8"/>
+        
+        <rect x="30" y="70" width="150" height="32" rx="4" fill="#0a1014" stroke="#2a4a3f" stroke-width="0.8"/>
+        <text x="40" y="90" fill="#78908c" font-size="10" font-family="monospace">mp.weixin.qq.com...</text>
+        
+        <rect x="30" y="115" width="150" height="32" rx="4" fill="#0a1014" stroke="#2a4a3f" stroke-width="0.8"/>
+        <text x="40" y="135" fill="#78908c" font-size="10" font-family="monospace">x.com/status/...</text>
+
+        <!-- Arrow 1 -->
+        <line x1="205" y1="105" x2="245" y2="105" stroke="#47d6b2" stroke-width="2"/>
+        <polygon points="245,100 255,105 245,110" fill="#47d6b2"/>
+
+        <!-- Backend Web Server -->
+        <rect x="265" y="20" width="190" height="170" rx="6" fill="url(#xm-panel)" stroke="#2a4a3f" stroke-width="1.5"/>
+        <text x="360" y="45" fill="#9ff5d7" font-size="12" font-weight="bold" text-anchor="middle" font-family="monospace">Node.js Server</text>
+        <text x="360" y="60" fill="#47d6b2" font-size="9" text-anchor="middle" font-family="monospace">localhost:4377</text>
+        <line x1="280" y1="70" x2="440" y2="70" stroke="#2a4a3f" stroke-width="0.8"/>
+
+        <rect x="280" y="80" width="160" height="24" rx="4" fill="#112420" stroke="#16503f" stroke-width="0.8"/>
+        <text x="360" y="96" fill="#a9bbb6" font-size="10" text-anchor="middle" font-family="monospace">HTML DOM / API Parser</text>
+
+        <rect x="280" y="112" width="160" height="24" rx="4" fill="#112420" stroke="#16503f" stroke-width="0.8"/>
+        <text x="360" y="128" fill="#a9bbb6" font-size="10" text-anchor="middle" font-family="monospace">Headless Chrome (PDF)</text>
+
+        <rect x="280" y="144" width="160" height="24" rx="4" fill="#112420" stroke="#16503f" stroke-width="0.8"/>
+        <text x="360" y="160" fill="#a9bbb6" font-size="10" text-anchor="middle" font-family="monospace">Python Helper (DOCX)</text>
+
+        <!-- Arrow 2 -->
+        <line x1="465" y1="105" x2="505" y2="105" stroke="#47d6b2" stroke-width="2"/>
+        <polygon points="505,100 515,105 505,110" fill="#47d6b2"/>
+
+        <!-- Output Files -->
+        <rect x="525" y="20" width="180" height="170" rx="6" fill="url(#xm-panel)" stroke="#47d6b2" stroke-width="1.5"/>
+        <text x="615" y="45" fill="#47d6b2" font-size="12" font-weight="bold" text-anchor="middle" font-family="monospace">Output formats</text>
+        <line x1="540" y1="55" x2="690" y2="55" stroke="#2a4a3f" stroke-width="0.8"/>
+
+        <text x="545" y="78" fill="#a9bbb6" font-size="11" font-family="monospace">✓ Markdown (.md)</text>
+        <text x="545" y="98" fill="#a9bbb6" font-size="11" font-family="monospace">✓ ZIP Package</text>
+        <text x="545" y="118" fill="#a9bbb6" font-size="11" font-family="monospace">✓ Embedded Markdown</text>
+        <text x="545" y="138" fill="#a9bbb6" font-size="11" font-family="monospace">✓ Web Page (.html)</text>
+        <text x="545" y="158" fill="#a9bbb6" font-size="11" font-family="monospace">✓ PDF & Word (.docx)</text>
+      </svg>
+    </div>
+
+    <h2>本地环境配置与运行</h2>
+    <ol>
+      <li>确认安装 <strong>Node.js</strong> (v18+) 及 <strong>Python 3</strong>。</li>
+      <li>在项目目录内安装 NPM 依赖包：
+        <pre><code>npm install</code></pre>
+      </li>
+      <li>（可选）安装 Python 的 Word 文件生成库：
+        <pre><code>pip install python-docx</code></pre>
+      </li>
+      <li>（可选）对于 PDF 导出，请确保你的电脑上已经安装了 **Google Chrome**（对于 macOS 会默认寻址标准应用目录，非 macOS 系统用户可根据 README 提示通过配置环境变量运行）。</li>
+      <li>使用终端启动本地后台服务：
+        <pre><code>npm start</code></pre>
+      </li>
+      <li>在浏览器中打开 <code>http://localhost:4377</code> 即可使用完整的 Web 解析界面。</li>
+    </ol>
+
+    <h2>项目依赖</h2>
+    <ul>
+      <li><strong>Node.js 运行时：</strong>构建文件服务器、提供抓取中间件接口、解压打包静态站点服务。</li>
+      <li><strong>python-docx 脚本：</strong>通过 Python 底层对生成的 Markdown 执行元素 AST 分割，然后调用 docx APIs 生成原生微软格式文档。</li>
+      <li><strong>Chrome 命令行：</strong>使用 <code>--headless=new --print-to-pdf</code> 特性将生成的嵌入式静态 HTML 页面无损渲染并打印为高质量的 PDF 文件。</li>
+    </ul>
+
+    <div class="project-note">
+      <p><strong>技术设计说明：</strong>由于抓取微信及 X 文章涉及网络协议和跨域资源请求（CORS），工具被设计为通过本地服务器中转并抓取以保证 IP 稳定及请求成功率。所有解析均发生在你的本地电脑中，网页端绝对不会上传或分析你的抓取内容。</p>
+    </div>
+  </ProjectPageLayout>
+</BaseLayout>

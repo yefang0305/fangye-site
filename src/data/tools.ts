@@ -162,4 +162,14 @@ export const tools: ToolItem[] = [
     featured: false,
     hasPage: true,
   },
+  {
+    name: 'X-Markdown 转换工具',
+    slug: 'x-markdown',
+    description: '本地运行的 Web 工具，可将微信公众号文章、X (Twitter) 动态/文章一键导出为 Markdown、PDF、Docx 等格式。',
+    category: '效率工具',
+    status: 'showcase',
+    href: '/projects/x-markdown/',
+    featured: true,
+    hasPage: true,
+  },
 ];
